@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房源信息快速录入 - 粘贴即用</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #1e293b;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .subtitle { color: #64748b; margin-bottom: 32px; font-size: 15px; }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+        .card h2 { font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+        /* 步骤指示器 */
+        .steps { display: flex; gap: 12px; margin-bottom: 32px; }
+        .step {
+            flex: 1; text-align: center; padding: 12px;
+            background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            font-size: 13px; color: #94a3b8;
+        }
+        .step .num {
+            width: 28px; height: 28px; border-radius: 50%; background: #e2e8f0;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 700; margin-bottom: 6px; font-size: 14px;
+        }
+        .step.active .num { background: #2563eb; color: white; }
+        .step.active { color: #1e293b; font-weight: 600; }
+        .step.done .num { background: #10b981; color: white; }
+
+        /* 粘贴区 */
+        .paste-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 15px;
+        }
+        .paste-area:hover, .paste-area.drag-over { border-color: #2563eb; background: #eff6ff; }
+        .paste-area textarea {
+            width: 100%; min-height: 300px; border: none; outline: none;
+            font-size: 14px; font-family: inherit; line-height: 1.8;
+            resize: vertical; color: #1e293b;
+        }
+        .paste-area textarea::placeholder { color: #cbd5e1; }
+
+        /* 预览表格 */
+        .preview-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 13px; margin-top: 16px;
+        }
+        .preview-table th {
+            text-align: left; padding: 10px 12px;
+            background: #f8fafc; color: #64748b; font-size: 11px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .preview-table td {
+            padding: 8px 12px; border-bottom: 1px solid #f1f5f9;
+        }
+        .preview-table tr:hover td { background: #f8fafc; }
+        .preview-ok { color: #10b981; font-size: 16px; }
+        .preview-warn { color: #f59e0b; font-size: 12px; }
+
+        /* 按钮 */
+        .btn {
+            padding: 10px 24px; border-radius: 8px; border: none;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.15s;
+        }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-outline { border: 1.5px solid #e2e8f0; background: white; color: #475569; }
+        .btn-outline:hover { background: #f8fafc; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-row { display: flex; gap: 10px; margin-top: 16px; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: white; padding: 12px 28px;
+            border-radius: 10px; font-size: 14px; z-index: 999;
+            animation: toastIn 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(16px); } }
+
+        .result-box {
+            background: #f8fafc; border-radius: 10px; padding: 20px;
+            font-family: "SF Mono", "Consolas", monospace; font-size: 13px;
+            white-space: pre-wrap; max-height: 400px; overflow-y: auto;
+            line-height: 1.6; margin-top: 12px;
+        }
+
+        /* 标签页 */
+        .tabs { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; }
+        .tab {
+            padding: 10px 20px; cursor: pointer; font-size: 14px; font-weight: 600;
+            color: #94a3b8; border-bottom: 2px solid transparent; margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .tab-content { display: none; padding-top: 20px; }
+        .tab-content.active { display: block; }
+
+        .field-hint {
+            margin-top: 12px; padding: 12px 16px; background: #f0f9ff;
+            border-radius: 8px; font-size: 13px; color: #475569;
+        }
+        .field-hint strong { color: #2563eb; }
+
+        /* 快速表单 */
+        .quick-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .quick-form .full-width { grid-column: 1 / -1; }
+        .quick-form input, .quick-form select {
+            width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0;
+            border-radius: 8px; font-size: 14px; font-family: inherit;
+        }
+        .quick-form input:focus, .quick-form select:focus { outline: none; border-color: #2563eb; }
+        .quick-form label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 4px; }
+
+        @media (max-width: 640px) {
+            .steps { flex-direction: column; }
+            .quick-form { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📋 房源信息快速录入工具</h1>
+    <p class="subtitle">3种方式任选 · 录完直接导入管理后台</p>
+
+    <!-- 步骤 -->
+    <div class="steps">
+        <div class="step active" id="step1">
+            <div class="num">1</div>录入/粘贴信息
+        </div>
+        <div class="step" id="step2">
+            <div class="num">2</div>确认预览
+        </div>
+        <div class="step" id="step3">
+            <div class="num">3</div>一键导入后台
+        </div>
+    </div>
+
+    <!-- 标签页 -->
+    <div class="card" style="padding-bottom:0;">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('tab1')">📋 快速填表</div>
+            <div class="tab" onclick="switchTab('tab2')">📝 智能粘贴解析</div>
+            <div class="tab" onclick="switchTab('tab3')">📄 批量文本导入</div>
+        </div>
+
+        <!-- Tab 1: 快速填表 -->
+        <div class="tab-content active" id="tab1">
+            <div class="quick-form">
+                <div class="full-width">
+                    <label>项目名称 *</label>
+                    <input type="text" id="fName" placeholder="如：南山科技园XX大厦">
+                </div>
+                <div>
+                    <label>区域 *</label>
+                    <select id="fArea">
+                        <option value="">选择区域</option>
+                        <option>南山科技园</option><option>前海</option><option>宝安中心</option>
+                        <option>西乡</option><option>翻身</option><option>新安</option>
+                        <option>兴东</option><option>坪洲</option><option>碧海湾</option>
+                        <option>固戍</option><option>福永</option><option>沙井</option>
+                        <option>会展新城</option>
+                    </select>
+                </div>
+                <div>
+                    <label>地址</label>
+                    <input type="text" id="fLocation" placeholder="具体地址">
+                </div>
+                <div>
+                    <label>面积范围</label>
+                    <input type="text" id="fSize" placeholder="如：150-800㎡">
+                </div>
+                <div>
+                    <label>价格</label>
+                    <input type="text" id="fPrice" placeholder="如：95元/㎡/月">
+                </div>
+                <div>
+                    <label>装修</label>
+                    <select id="fDecoration">
+                        <option>精装修</option><option>豪华装修</option><option>简装</option><option>毛坯</option><option>简装/精装可选</option>
+                    </select>
+                </div>
+                <div>
+                    <label>楼层</label>
+                    <input type="text" id="fFloor" placeholder="如：高区/中区">
+                </div>
+                <div>
+                    <label>特色标签（逗号分隔）</label>
+                    <input type="text" id="fFeatures" placeholder="如：近地铁,配套食堂,停车位">
+                </div>
+                <div>
+                    <label>图片链接</label>
+                    <input type="text" id="fImage" placeholder="留空显示占位图">
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="quickAdd()">➕ 添加到列表</button>
+                <button class="btn btn-outline" onclick="clearQuickForm()">清空表单</button>
+            </div>
+        </div>
+
+        <!-- Tab 2: 智能粘贴解析 -->
+        <div class="tab-content" id="tab2">
+            <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:13px;color:#1e40af;line-height:1.8;">
+                💡 <strong>小技巧：</strong>58/安居客页面无法复制？<br>
+                方法1：把房源<strong>详情页网址</strong>发给我（AI），我帮你解析！<br>
+                方法2：按 <kbd>F12</kbd> → 点 <kbd>Elements</kbd> → 右键页面HTML → <kbd>Copy</kbd> → 粘贴到下方文本框
+            </div>
+            <p style="color:#64748b;font-size:13px;margin-bottom:12px;">
+                把58同城/安居客/贝壳的房源信息粘贴进来，自动解析。<br>
+                ✅ 支持：管道符格式 | 纯文本 | HTML源代码 | 截图文字(OCR)
+            </p>
+            <div class="paste-area" id="pasteArea2">
+                <textarea id="pasteText2" placeholder="粘贴方式1：管道符格式
+南山科技园甲级写字楼 | 南山科技园 | 深圳南山科苑路 | 150-800㎡ | 95元/㎡/月
+
+粘贴方式2：纯文本（从别处复制）
+南山科技园甲级写字楼
+面积：150-800㎡，价格：95元/㎡/月
+地址：深圳南山科苑路
+
+粘贴方式3：HTML源代码（F12复制）
+<div class='houseInfo'>...</div>"></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-success" onclick="smartParse()">🔍 智能解析</button>
+                <button class="btn btn-outline" onclick="document.getElementById('pasteText2').value=''">清空</button>
+                <button class="btn btn-outline" onclick="pasteFromClipboard()">📋 从剪贴板粘贴</button>
+            </div>
+        </div>
+
+        <!-- Tab 3: 批量文本 -->
+        <div class="tab-content" id="tab3">
+            <p style="color:#64748b;font-size:13px;margin-bottom:12px;">
+                每行一个房源，用 <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;">|</code> 分隔字段，顺序：名称 | 区域 | 地址 | 面积 | 价格 | 装修 | 楼层 | 标签 | 图片
+            </p>
+            <div class="paste-area">
+                <textarea id="pasteText3" placeholder="南山科技园甲级写字楼 | 南山科技园 | 深圳南山科苑路 | 150-800㎡ | 95元/㎡/月 | 精装修 | 高区 | 近地铁,配套食堂 |
+前海金融中心 | 前海 | 前海深港合作区 | 200-1200㎡ | 110元/㎡/月 | 豪华装修 | 高区 | 海景,5A甲级 |
+宝安商务中心 | 宝安中心 | 宝安中心区 | 100-500㎡ | 65元/㎡/月 | 精装修 | 中区 | 地铁上盖,24小时空调 |"></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="batchParse()">⚡ 批量解析</button>
+                <button class="btn btn-outline" onclick="document.getElementById('pasteText3').value=''">清空</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预览区 -->
+    <div class="card" id="previewCard" style="display:none;">
+        <h2>📊 已录入房源预览（共 <span id="previewCount">0</span> 条）</h2>
+        <div style="overflow-x:auto;">
+            <table class="preview-table">
+                <thead>
+                    <tr>
+                        <th>#</th><th>项目名称</th><th>区域</th><th>面积</th><th>价格</th><th>装修</th><th>标签</th><th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="previewBody"></tbody>
+            </table>
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-success" onclick="importToAdmin()" id="btnImport">📥 导入到管理后台</button>
+            <button class="btn btn-outline" onclick="copyJSON()">📋 复制JSON</button>
+            <button class="btn btn-outline" onclick="clearAll()">🗑️ 全部清空</button>
+        </div>
+        <div class="result-box" id="resultBox" style="display:none;"></div>
+    </div>
+</div>
+
+<script>
+let collectedProjects = JSON.parse(localStorage.getItem("temp_office_projects") || "[]");
+let nextId = collectedProjects.length > 0 ? Math.max(...collectedProjects.map(p=>p.id)) + 1 : 1;
+
+function saveTemp() {
+    localStorage.setItem("temp_office_projects", JSON.stringify(collectedProjects));
+    renderPreview();
+    updateSteps();
+}
+
+function renderPreview() {
+    const card = document.getElementById("previewCard");
+    const count = document.getElementById("previewCount");
+    const body = document.getElementById("previewBody");
+
+    if (collectedProjects.length === 0) {
+        card.style.display = "none";
+        return;
+    }
+    card.style.display = "block";
+    count.textContent = collectedProjects.length;
+
+    body.innerHTML = collectedProjects.map((p, i) => `
+        <tr>
+            <td>${i + 1}</td>
+            <td><strong>${p.name}</strong></td>
+            <td><span style="background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:4px;font-size:12px;">${p.area}</span></td>
+            <td>${p.size}</td>
+            <td style="color:#dc2626;font-weight:600;">${p.price}</td>
+            <td>${p.decoration}</td>
+            <td>${(p.features || []).slice(0,3).join(", ")}</td>
+            <td>
+                <button class="btn btn-outline" style="padding:4px 10px;font-size:11px;" onclick="deleteItem(${i})">删除</button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+function updateSteps() {
+    const count = collectedProjects.length;
+    document.getElementById("step1").className = "step" + (count >= 0 ? " active" : "");
+    document.getElementById("step2").className = "step" + (count > 0 ? " active" : "");
+    document.getElementById("step3").className = "step" + (count > 0 ? " done" : "");
+}
+
+// ===== Tab切换 =====
+function switchTab(tabId) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    event.target.classList.add("active");
+    document.getElementById(tabId).classList.add("active");
+}
+
+// ===== 快速填表 =====
+function quickAdd() {
+    const data = {
+        id: nextId++,
+        name: document.getElementById("fName").value.trim(),
+        area: document.getElementById("fArea").value,
+        location: document.getElementById("fLocation").value.trim(),
+        size: document.getElementById("fSize").value.trim(),
+        price: document.getElementById("fPrice").value.trim(),
+        decoration: document.getElementById("fDecoration").value,
+        floor: document.getElementById("fFloor").value.trim(),
+        features: document.getElementById("fFeatures").value.split(",").map(s=>s.trim()).filter(Boolean),
+        image: document.getElementById("fImage").value.trim(),
+    };
+    if (!data.name || !data.area) {
+        toast("请至少填写项目名称和区域");
+        return;
+    }
+    collectedProjects.push(data);
+    saveTemp();
+    clearQuickForm();
+    toast(`已添加: ${data.name}`);
+}
+
+function clearQuickForm() {
+    document.getElementById("fName").value = "";
+    document.getElementById("fArea").value = "";
+    document.getElementById("fLocation").value = "";
+    document.getElementById("fSize").value = "";
+    document.getElementById("fPrice").value = "";
+    document.getElementById("fDecoration").value = "精装修";
+    document.getElementById("fFloor").value = "";
+    document.getElementById("fFeatures").value = "";
+    document.getElementById("fImage").value = "";
+}
+
+// ===== 智能粘贴解析 =====
+function smartParse() {
+    let text = document.getElementById("pasteText2").value.trim();
+    if (!text) { toast("请先粘贴房源信息"); return; }
+
+    let added = 0;
+    const AREAS = ["南山科技园","前海","宝安中心","西乡","翻身","新安","兴东","坪洲","碧海湾","固戍","福永","沙井","会展新城","宝安","南山","福田","罗湖","龙华","龙岗","盐田","光明","坪山","大鹏"];
+
+    // ===== 噪音过滤器 =====
+    // 这些词/模式是页面上的UI文字/CSS类名/JSON键名，不是真实房源信息
+    const NOISE_WORDS = [
+        "name", "area", "location", "size", "price", "decoration", "floor", "image",
+        "src", "href", "class", "id", "style", "type", "data", "title", "alt", "rel",
+        "div", "span", "ul", "li", "td", "tr", "th", "table", "body", "head", "html",
+        "meta", "link", "script", "header", "footer", "nav", "main", "section", "article",
+        "button", "input", "select", "option", "form", "label", "p", "h1", "h2", "h3", "h4",
+        "更多","首页","登录","注册","搜索","筛选","排序","返回","投诉","举报",
+        "客服","帮助","关于","设置","我的","收藏","历史","消息","通知",
+        "热线", "广告", "推广", "手机版", "下载APP", "微信", "微博",
+        "热门","推荐","精选","最新","附近","周边","商圈","地铁","公交",
+        "深圳写字楼出租","深圳办公室出租","写字楼出租","办公室出租",
+        "更新时间", "发布时间", "浏览",  "收藏量",
+        "看房","联系","预约","地图","导航",
+        "您可能还喜欢","推荐房源","相似房源",
+        "房源描述","配套设施","交通配套","周边配套",
+        "string", "number", "boolean", "object", "array", "null", "undefined",
+        "function", "true", "false", "const", "let", "var", "export", "import",
+        "target", "blank", "self", "parent", "top",
+        "loading", "error", "success", "warning", "info",
+    ];
+    const NOISE_PATTERNS = [
+        /^["'][a-z]+["']\s*[:=]\s*/,        // "name": ""  JSON键值
+        /^[a-z]+["']?\s*[:=]\s*/,           // name: ""  YAML/JSON键值
+        /^\/\//,                              // // 注释
+        /^#/,                                 // # 注释
+        /^\(\d+\)$/,                         // (123)
+        /^[\d\.]+(px|em|rem|%|vh|vw)$/,     // CSS值
+        /^https?:\/\//,                       // URL
+    ];
+
+    function isNoise(str) {
+        const s = str.trim().toLowerCase();
+        if (s.length < 2) return true;
+        if (s.length > 100) return false; // 长文本不太可能是噪音
+        if (NOISE_WORDS.includes(s) || NOISE_WORDS.includes(str.trim())) return true;
+        if (NOISE_WORDS.some(w => s === w.toLowerCase())) return true;
+        for (const pat of NOISE_PATTERNS) {
+            if (pat.test(s)) return true;
+        }
+        return false;
+    }
+
+    function guessArea(str) {
+        const sorted = [...AREAS].sort((a,b) => b.length - a.length);
+        for (const a of sorted) {
+            if (str.includes(a)) return a;
+        }
+        return "";
+    }
+
+    function guessDecoration(str) {
+        if (str.includes("豪华")||str.includes("豪装")) return "豪华装修";
+        if (str.includes("精装")) return "精装修";
+        if (str.includes("简装")||str.includes("普通装修")) return "简装";
+        if (str.includes("毛坯")) return "毛坯";
+        return "精装修";
+    }
+
+    function guessFloor(str) {
+        const m = str.match(/[低中高]区|整层|整栋|(\d+)楼|(\d+)层|F\d+/);
+        return m ? m[0] : "";
+    }
+
+    function guessSize(str) {
+        let m = str.match(/(\d+[-~]\d+)\s*[㎡平米]/);
+        if (m) return m[1] + "㎡";
+        m = str.match(/(\d+)\s*[㎡平米]/);
+        if (m) return m[1] + "㎡";
+        m = str.match(/(\d+[-~]\d+)\s*平方/);
+        if (m) return m[1] + "㎡";
+        return "";
+    }
+
+    function guessPrice(str) {
+        let m = str.match(/(\d+[\d.]*)\s*元\s*[\/每]\s*[㎡平米月]/);
+        if (m) return m[1] + "元/㎡/月";
+        m = str.match(/(\d+[\d.]*)\s*元\s*[\/每]\s*月/);
+        if (m) return m[1] + "元/月";
+        m = str.match(/(\d+[\d.]*)\s*元\s*[\/每]\s*㎡/);
+        if (m) return m[1] + "元/㎡/月";
+        return "";
+    }
+
+    function guessFeatures(str) {
+        const keywords = ["近地铁","配套食堂","会议室","停车位","海景","5A甲级","中央空调","VIP电梯","光纤入户","24小时空调","拎包入驻","户型方正","采光好","可注册","科创","创业","性价比高","交通便捷","商业配套","地铁上盖","环境优美","低密度","机场","物流","地标","会展","政策优惠"];
+        return keywords.filter(k => str.includes(k));
+    }
+
+    function guessAddr(str) {
+        let m = str.match(/深圳市[^\s,，。；;]{2,20}(?:路|街|道|区|大厦|中心|园|城|广场|片区|村|站)/);
+        if (m) return m[0];
+        m = str.match(/(?:深圳|宝安|南山|前海|福田|罗湖|龙华|龙岗)[^\s,，]{2,20}(?:路|街|道|区|大厦|中心|园|城|广场|片区|村|站)/);
+        return m ? m[0] : "";
+    }
+
+    function guessName(str) {
+        str = str.replace(/^\s*[\d#]+[\.\s]*/, "").trim();
+        const m = str.match(/^[^\d]{2,40}(?:大厦|大楼|中心|广场|写字楼|商务楼|办公楼|产业园|科技园|创业园|公寓|花园|城|馆|阁|苑|府|居|庭|座)/);
+        if (m) return m[0];
+        const firstLine = str.split(/[\n\r]/)[0].trim();
+        if (firstLine.length >= 4 && firstLine.length <= 40) return firstLine;
+        return str.substring(0, 30);
+    }
+
+    // ===== 预处理：HTML源代码 =====
+    if (text.includes("<div") || text.includes("<li") || text.includes("<span") || text.includes("<td")) {
+        // 去掉脚本和样式
+        text = text.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+                   .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+                   .replace(/<[^>]+>/g, " ")      // 标签替换为空格而非|
+                   .replace(/&nbsp;/g, " ")
+                   .replace(/&lt;/g, "<")
+                   .replace(/&gt;/g, ">")
+                   .replace(/&amp;/g, "&")
+                   .replace(/\s+/g, " ")           // 合并多余空格
+                   .trim();
+        document.getElementById("pasteText2").value = text;
+    }
+
+    // ===== 格式检测与解析 =====
+
+    // 尝试管道符格式：检查是否有至少一行包含足够的管道分隔字段
+    const pipeLines = text.split("\n").filter(l => {
+        const parts = l.split("|");
+        // 第1列不能是噪音词
+        return l.includes("|") && parts.length >= 4 && !isNoise(parts[0].trim());
+    });
+
+    if (pipeLines.length >= 1) {
+        // 管道符分隔格式
+        pipeLines.forEach(line => {
+            const parts = line.split("|").map(s => s.trim());
+            // 再次检查第1列不是噪音
+            if (isNoise(parts[0])) return;
+            if (parts.length >= 4) {
+                collectedProjects.push({
+                    id: nextId++,
+                    name: parts[0],
+                    area: parts[1] || guessArea(parts[0]+parts[2]),
+                    location: parts[2] || "",
+                    size: parts[3] || "",
+                    price: parts[4] || "",
+                    decoration: parts[5] || guessDecoration(line),
+                    floor: parts[6] || guessFloor(line),
+                    features: parts[7] ? parts[7].split(/[,，、]/).map(s=>s.trim()).filter(Boolean) : guessFeatures(line),
+                    image: parts[8] || "",
+                });
+                added++;
+            }
+        });
+    } else {
+        // 纯文本/自然语言格式：过滤噪音后按空行分块
+        const lines = text.split("\n").filter(l => {
+            const t = l.trim();
+            return t.length >= 2 && !isNoise(t);
+        });
+
+        if (lines.length === 0) {
+            // 所有行都是噪音，尝试用单空格全文解析
+            const fullText = text.replace(/\s+/g, " ").trim();
+            if (fullText.length > 10) {
+                const proj = {
+                    id: nextId++,
+                    name: guessName(fullText),
+                    area: guessArea(fullText),
+                    location: guessAddr(fullText),
+                    size: guessSize(fullText),
+                    price: guessPrice(fullText),
+                    decoration: guessDecoration(fullText),
+                    floor: guessFloor(fullText),
+                    features: guessFeatures(fullText),
+                    image: "",
+                };
+                if (proj.name && (proj.area || proj.location || proj.size || proj.price)) {
+                    collectedProjects.push(proj);
+                    added++;
+                }
+            }
+        } else {
+            // 用空行把有意义的内容分块
+            const combined = lines.join(" ");
+            // 尝试按空行重新分块
+            const blocks = text.split(/\n{2,}/).filter(b => b.trim());
+            const validBlocks = blocks.filter(b => {
+                const cleaned = b.replace(/\n/g, " ").trim();
+                return cleaned.length > 5 && !isNoise(cleaned.split(" ")[0]);
+            });
+
+            if (validBlocks.length > 1) {
+                validBlocks.forEach(block => {
+                    const txt = block.replace(/\n/g, " ").trim();
+                    const proj = {
+                        id: nextId++,
+                        name: guessName(txt),
+                        area: guessArea(txt),
+                        location: guessAddr(txt),
+                        size: guessSize(txt),
+                        price: guessPrice(txt),
+                        decoration: guessDecoration(txt),
+                        floor: guessFloor(txt),
+                        features: guessFeatures(txt),
+                        image: "",
+                    };
+                    if (proj.name && (proj.area || proj.location || proj.size)) {
+                        collectedProjects.push(proj);
+                        added++;
+                    }
+                });
+            } else {
+                // 单房源全文本解析
+                const proj = {
+                    id: nextId++,
+                    name: guessName(combined),
+                    area: guessArea(combined),
+                    location: guessAddr(combined),
+                    size: guessSize(combined),
+                    price: guessPrice(combined),
+                    decoration: guessDecoration(combined),
+                    floor: guessFloor(combined),
+                    features: guessFeatures(combined),
+                    image: "",
+                };
+                if (proj.name && (proj.area || proj.location || proj.size || proj.price)) {
+                    collectedProjects.push(proj);
+                    added++;
+                }
+            }
+        }
+    }
+
+    if (added === 0) {
+        toast("⚠️ 未能识别有效格式。\n建议：把房源页面URL发给我，我帮你直接抓取解析更准确！");
+    } else {
+        saveTemp();
+        toast(`✅ 成功解析 ${added} 条房源！`);
+    }
+}
+
+// 从剪贴板粘贴
+async function pasteFromClipboard() {
+    try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById("pasteText2").value = text;
+        toast("已粘贴剪贴板内容，点击「智能解析」开始解析");
+    } catch(e) {
+        toast("无法读剪贴板，请手动 Ctrl+V 粘贴");
+    }
+}
+
+// ===== 批量文本解析 =====
+function batchParse() {
+    const text = document.getElementById("pasteText3").value.trim();
+    if (!text) { toast("请先粘贴数据"); return; }
+
+    let added = 0;
+    const lines = text.split("\n").filter(l => l.trim());
+    lines.forEach(line => {
+        const parts = line.split("|").map(s => s.trim());
+        if (parts.length >= 5) {
+            collectedProjects.push({
+                id: nextId++,
+                name: parts[0],
+                area: parts[1] || "",
+                location: parts[2] || "",
+                size: parts[3] || "",
+                price: parts[4] || "",
+                decoration: parts[5] || "精装修",
+                floor: parts[6] || "",
+                features: parts[7] ? parts[7].split(/[,，、]/).map(s => s.trim()).filter(Boolean) : [],
+                image: parts[8] || "",
+            });
+            added++;
+        }
+    });
+
+    if (added === 0) {
+        toast("格式不对，请确保每行用 | 分隔，至少5个字段");
+    } else {
+        saveTemp();
+        document.getElementById("pasteText3").value = "";
+        toast(`成功导入 ${added} 条房源`);
+    }
+}
+
+// ===== 操作 =====
+function deleteItem(idx) {
+    collectedProjects.splice(idx, 1);
+    saveTemp();
+}
+
+function clearAll() {
+    if (!confirm("确定清空所有录入的房源？")) return;
+    collectedProjects = [];
+    nextId = 1;
+    saveTemp();
+}
+
+function copyJSON() {
+    const json = JSON.stringify(collectedProjects.map(({id,...rest}) => rest), null, 2);
+    navigator.clipboard.writeText(json).then(() => {
+        showResult(json);
+        toast("JSON已复制到剪贴板！去 admin.html → 导入JSON");
+    }).catch(() => {
+        const ta = document.createElement("textarea");
+        ta.value = json;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showResult(json);
+        toast("JSON已复制");
+    });
+}
+
+function showResult(json) {
+    const box = document.getElementById("resultBox");
+    box.style.display = "block";
+    box.textContent = json;
+}
+
+// 导入到管理后台（写入localStorage）
+function importToAdmin() {
+    if (collectedProjects.length === 0) { toast("请先录入房源"); return; }
+
+    // 去id后存入管理后台的storage
+    const existing = JSON.parse(localStorage.getItem("office_projects_data") || "[]");
+    const maxId = existing.length > 0 ? Math.max(...existing.map(p => p.id)) : 0;
+    const newItems = collectedProjects.map((p, i) => ({ id: maxId + i + 1, ...p }));
+    const merged = [...existing, ...newItems];
+
+    localStorage.setItem("office_projects_data", JSON.stringify(merged));
+    collectedProjects = [];
+    nextId = 1;
+    saveTemp();
+
+    document.getElementById("resultBox").style.display = "none";
+    toast(`✅ 已导入 ${newItems.length} 条到管理后台！前往 admin.html 查看，或刷新前台页面`);
+}
+
+function toast(msg) {
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+}
+
+// 初始化
+renderPreview();
+updateSteps();
+</script>
+
+</body>
+</html>

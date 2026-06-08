@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="新安片区办公室出租，宝安老城区核心地段，配套成熟，生活便利。">
+    <meta name="keywords" content="新安办公室出租,新安写字楼租赁,宝安新安写字楼">
+    <meta name="author" content="谢经理 15914050727">
+    <meta property="og:title" content="宝安·新安办公室出租 | 新安写字楼租赁">
+    <meta property="og:description" content="新安片区办公室出租，宝安老城区核心地段，配套成熟，生活便利。">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://example.com/xinan.html">
+    <title>宝安·新安办公室出租 | 新安写字楼租赁 | 谢经理15914050727</title>
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "name": "谢经理办公室租赁 - 新安",
+      "description": "新安片区办公室出租，宝安老城区核心地段，配套成熟，生活便利。",
+      "telephone": "15914050727",
+      "areaServed": {
+        "@type": "City",
+        "name": "深圳"
+      },
+      "makesOffer": [
+    {
+        "@type": "Product",
+        "name": "新安传统商区办公室",
+        "description": "新安 100-400㎡ 办公室出租，精装修，55元/㎡/月",
+        "offers": {
+            "@type": "Offer",
+            "price": "55",
+            "priceCurrency": "CNY",
+            "areaServed": {
+                "@type": "City",
+                "name": "深圳"
+            }
+        }
+    }
+]
+    }
+    </script>
+    <style>
+        /* ===== CSS Reset & Base ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .logo span { color: var(--accent); }
+        .header-phone {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .header-phone::before { content: "📞"; font-size: 18px; }
+
+        /* ===== Hero ===== */
+        .hero {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            color: white;
+            padding: 80px 24px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,181.3C960,171,1056,181,1152,186.7C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') bottom center / cover no-repeat;
+            pointer-events: none;
+        }
+        .hero h1 { font-size: 42px; font-weight: 800; margin-bottom: 16px; position: relative; }
+        .hero h1 em { font-style: normal; color: var(--accent); }
+        .hero p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto 32px; position: relative; }
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: white;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(245,158,11,0.4);
+        }
+        .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,158,11,0.5); }
+
+        /* ===== Breadcrumb ===== */
+        .breadcrumb {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        .breadcrumb a { color: var(--primary); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* ===== Navigation Bar ===== */
+        .nav-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 20px;
+        }
+        .nav-bar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .nav-label { font-weight: 600; color: var(--text); margin-right: 8px; white-space: nowrap; }
+        .filter-tag {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--text-light);
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .filter-tag:hover, .filter-tag.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #eff6ff;
+        }
+        .filter-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* ===== Area Directory Cards (index page) ===== */
+        .area-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .area-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .area-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 20px 24px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border);
+            display: block;
+        }
+        .area-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .area-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .area-card-title { font-size: 18px; font-weight: 700; color: var(--text); }
+        .area-card-desc { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+        .badge-count {
+            background: #dcfce7;
+            color: #166534;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-empty {
+            background: #f1f5f9;
+            color: #94a3b8;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+        }
+
+        /* ===== Projects Grid ===== */
+        .projects-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+        .section-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+        .section-subtitle { color: var(--text-light); margin-bottom: 32px; font-size: 16px; }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        /* ===== Project Card ===== */
+        .project-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.25s, box-shadow 0.25s;
+            border: 1px solid var(--border);
+        }
+        .project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+        .card-image { width: 100%; height: 220px; object-fit: cover; display: block; background: #e2e8f0; }
+        .card-image-placeholder {
+            width: 100%; height: 220px;
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 48px;
+        }
+        .card-badge {
+            position: absolute; top: 12px; left: 12px;
+            background: var(--primary); color: white;
+            padding: 4px 12px; border-radius: 50px;
+            font-size: 12px; font-weight: 600;
+        }
+        .card-body { padding: 20px; }
+        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+        .card-location { display: flex; align-items: center; gap: 4px; color: var(--text-light); font-size: 14px; margin-bottom: 12px; }
+        .card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .meta-item { display: flex; flex-direction: column; }
+        .meta-label { font-size: 12px; color: var(--text-light); }
+        .meta-value { font-size: 16px; font-weight: 700; color: var(--primary); }
+        .meta-value.price { color: #dc2626; }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+        .card-tag { padding: 3px 10px; border-radius: 50px; background: #f1f5f9; font-size: 12px; color: var(--text-light); }
+        .card-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 16px; border-top: 1px solid var(--border);
+        }
+        .card-contact-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--primary); color: white;
+            padding: 8px 20px; border-radius: 50px;
+            font-size: 14px; font-weight: 600; text-decoration: none;
+            transition: background 0.2s;
+        }
+        .card-contact-btn:hover { background: var(--primary-dark); }
+
+        /* ===== Info Section (index only) ===== */
+        .info-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        .info-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+        .info-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+        .info-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+
+        /* ===== Contact Banner ===== */
+        .contact-banner {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 60px 24px;
+            text-align: center;
+        }
+        .contact-banner h2 { font-size: 32px; font-weight: 800; margin-bottom: 12px; }
+        .contact-banner p { font-size: 18px; opacity: 0.9; margin-bottom: 32px; }
+        .contact-cards {
+            display: flex; justify-content: center; gap: 24px;
+            flex-wrap: wrap; max-width: 800px; margin: 0 auto;
+        }
+        .contact-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 24px 32px;
+            min-width: 220px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .contact-card-icon { font-size: 32px; margin-bottom: 12px; }
+        .contact-card-label { font-size: 14px; opacity: 0.8; margin-bottom: 4px; }
+        .contact-card-value { font-size: 20px; font-weight: 700; }
+        .contact-card-value a { color: white; text-decoration: none; }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 40px 24px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer a { color: #60a5fa; text-decoration: none; }
+        .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 16px; }
+        .footer-links a { color: #94a3b8; text-decoration: none; font-size: 13px; }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 28px; }
+            .hero p { font-size: 16px; }
+            .projects-grid, .area-cards { grid-template-columns: 1fr; }
+            .nav-bar { overflow-x: auto; flex-wrap: nowrap; padding: 16px; }
+            .filter-tag { flex-shrink: 0; }
+            .contact-cards { flex-direction: column; align-items: center; }
+            .header-inner { padding: 0 16px; }
+            .header-phone span { display: none; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== Search Box ===== */
+        .search-section {
+            padding: 0 0 20px;
+        }
+        .search-box-wrap {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .search-icon { font-size: 20px; color: var(--text-light); flex-shrink: 0; }
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: var(--text);
+            background: transparent;
+            min-width: 0;
+        }
+        .search-input::placeholder { color: #94a3b8; }
+        .search-clear {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 0 4px;
+            display: none;
+        }
+        .search-clear.visible { display: inline; }
+        .search-count {
+            font-size: 13px;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+        .search-no-result {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--text-light);
+            font-size: 16px;
+            display: none;
+        }
+        .search-no-result.visible { display: block; }
+        .highlight { background: #fef08a; border-radius: 2px; padding: 0 2px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">🏢 深圳<span>办公室出租</span></a>
+            <a href="tel:15914050727" class="header-phone"><span>谢经理</span> 15914050727</a>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">🏠 首页</a> &raquo; <strong>宝安·新安办公室出租</strong>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1><em>新安</em>办公室出租</h1>
+        <p>新安片区办公室出租，宝安老城区核心地段，配套成熟，生活便利。</p>
+        <a href="tel:15914050727" class="hero-cta">📞 立即咨询 谢经理 15914050727</a>
+    </section>
+
+    <!-- Navigation -->
+    <div class="nav-section">
+        <div class="nav-bar">
+            <span class="nav-label">📍 区域切换</span>
+                <a href="nanshan-kejiyuan.html" class="filter-tag">南山科技园</a>
+                <a href="qianhai.html" class="filter-tag">前海</a>
+                <a href="baoan-zhongxin.html" class="filter-tag">宝安中心</a>
+                <a href="xixiang.html" class="filter-tag">西乡</a>
+                <a href="fanshen.html" class="filter-tag">翻身</a>
+                <a href="xinan.html" class="filter-tag active">新安</a>
+                <a href="xingdong.html" class="filter-tag">兴东</a>
+                <a href="pingzhou.html" class="filter-tag">坪洲</a>
+                <a href="bihaiwan.html" class="filter-tag">碧海湾</a>
+                <a href="gushu.html" class="filter-tag">固戍</a>
+                <a href="fuyong.html" class="filter-tag">福永</a>
+                <a href="shajing.html" class="filter-tag">沙井</a>
+                <a href="huizhan-xincheng.html" class="filter-tag">会展新城</a>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-section">
+        <div class="search-box-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索项目名称、位置、面积..." autocomplete="off">
+            <button class="search-clear" id="searchClear" onclick="clearSearch()" title="清除搜索">✕</button>
+            <span class="search-count" id="searchCount"></span>
+        </div>
+    </div>
+
+    <!-- Listings -->
+    <section class="projects-section">
+        <h2 class="section-title">新安在租房源</h2>
+        <p class="section-subtitle">宝安·新安区域共 <strong style="color:var(--primary);">1</strong> 套办公室出租，更新时间：2026年6月8日</p>
+        <div class="projects-grid">
+
+            <div class="project-card">
+                <div style="position:relative;">
+                    <img class="card-image" src="https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&h=400&fit=crop" alt="新安传统商区办公室" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
+                    <span class="card-badge">新安</span>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">新安传统商区办公室</div>
+                    <div class="card-location">📍 深圳市宝安区新安街道</div>
+                    <div style="font-size:12px;color:#94a3b8;margin-top:-6px;margin-bottom:12px;">📅 更新于 2026/06/08</div>
+                    <div class="card-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">面积</span>
+                            <span class="meta-value">100-400㎡</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">价格</span>
+                            <span class="meta-value price">55元/㎡/月</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">装修</span>
+                            <span class="meta-value" style="font-size:14px;color:#64748b;">精装修</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">楼层</span>
+                            <span class="meta-value" style="font-size:14px;color:#64748b;">整层/分层</span>
+                        </div>
+                    </div>
+                    <div class="card-tags"><span class="card-tag">商业成熟</span><span class="card-tag">停车方便</span><span class="card-tag">可注册</span><span class="card-tag">配套齐全</span></div>
+                    <div class="card-footer">
+                        <span style="font-size:13px;color:#94a3b8;">☎️ 谢经理 15914050727</span>
+                        <a href="tel:15914050727" class="card-contact-btn">马上咨询</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="search-no-result" id="searchNoResult">😕 未找到匹配的房源，试试换个关键词吧！<br>📞 联系谢经理 15914050727 获取更多房源</p>
+    </section>
+
+    <!-- Contact Banner -->
+    <section class="contact-banner">
+        <h2>📞 预约看房</h2>
+        <p>免费带看新安区域办公室，帮您找到最佳办公空间</p>
+        <div class="contact-cards">
+            <div class="contact-card">
+                <div class="contact-card-icon">📱</div>
+                <div class="contact-card-label">联系电话</div>
+                <div class="contact-card-value"><a href="tel:15914050727">15914050727</a></div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-card-icon">👤</div>
+                <div class="contact-card-label">联系人</div>
+                <div class="contact-card-value">谢经理</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="xingdong.html">兴东办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="huizhan-xincheng.html">会展新城办公室出租</a>
+        </div>
+        <p>© 2026 深圳办公室出租 | 联系人：谢经理 | 电话：15914050727</p>
+        <p style="margin-top:4px;font-size:12px;">
+            <a href="index.html">返回首页</a> | <a href="sitemap.xml">站点地图</a>
+        </p>
+    </footer>
+
+    <script>
+        var _totalCards = 0;
+        var _timer = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var input = document.getElementById('searchInput');
+            var clearBtn = document.getElementById('searchClear');
+            if (!input) return;
+
+            _totalCards = document.querySelectorAll('.project-card').length;
+
+            // 输入防抖
+            input.addEventListener('input', function() {
+                if (_timer) clearTimeout(_timer);
+                _timer = setTimeout(doSearch, 250);
+                updateClearBtn();
+            });
+
+            // 回车立即搜索
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    if (_timer) clearTimeout(_timer);
+                    doSearch();
+                }
+                if (e.key === 'Escape') {
+                    input.value = '';
+                    doSearch();
+                    updateClearBtn();
+                }
+            });
+        });
+
+        function updateClearBtn() {
+            var input = document.getElementById('searchInput');
+            var btn = document.getElementById('searchClear');
+            if (input && btn) {
+                if (input.value.length > 0) btn.classList.add('visible');
+                else btn.classList.remove('visible');
+            }
+        }
+
+        function clearSearch() {
+            var input = document.getElementById('searchInput');
+            if (input) { input.value = ''; updateClearBtn(); }
+            doSearch();
+            var inputEl = document.getElementById('searchInput');
+            if (inputEl) inputEl.focus();
+        }
+
+        function doSearch() {
+            var input = document.getElementById('searchInput');
+            var query = (input ? input.value.trim().toLowerCase() : '');
+            var cards = document.querySelectorAll('.project-card');
+            var countEl = document.getElementById('searchCount');
+            var noResultEl = document.getElementById('searchNoResult');
+            var gridEl = document.querySelector('.projects-grid');
+            var visibleCount = 0;
+
+            cards.forEach(function(card) {
+                // 清除之前的高亮
+                var prev = card.querySelectorAll('.highlight');
+                prev.forEach(function(h) {
+                    h.outerHTML = h.textContent;
+                });
+
+                if (!query) {
+                    card.style.display = '';
+                    visibleCount++;
+                    return;
+                }
+
+                // 搜索文本内容
+                var text = (card.textContent || '').toLowerCase();
+                if (text.indexOf(query) !== -1) {
+                    card.style.display = '';
+                    visibleCount++;
+                    // 高亮匹配文字
+                    highlightText(card.querySelector('.card-title'), query);
+                    highlightText(card.querySelector('.card-location'), query);
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // 更新计数
+            if (countEl) {
+                if (query) {
+                    countEl.textContent = visibleCount + '/' + _totalCards + ' 条';
+                } else {
+                    countEl.textContent = '';
+                }
+            }
+
+            // 无结果提示
+            if (noResultEl) {
+                if (query && visibleCount === 0) {
+                    noResultEl.classList.add('visible');
+                } else {
+                    noResultEl.classList.remove('visible');
+                }
+            }
+        }
+
+        function highlightText(el, query) {
+            if (!el || !query) return;
+            var html = el.innerHTML;
+            // 避免重复高亮已高亮的内容
+            if (html.indexOf('highlight') !== -1) return;
+            var regex = new RegExp('(' + escapeRegExp(query) + ')', 'gi');
+            el.innerHTML = html.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function escapeRegExp(s) {
+            return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+    </script>
+</body>
+</html>
