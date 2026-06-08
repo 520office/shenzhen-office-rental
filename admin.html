@@ -159,9 +159,62 @@
             .modal { width: 95%; padding: 20px; }
             td { font-size: 12px; padding: 8px; }
         }
+
+        /* ===== Password Lock ===== */
+        .pw-overlay {
+            position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+        }
+        .pw-overlay.hidden { display: none; }
+        .pw-box {
+            background: white; border-radius: 16px; padding: 48px 40px;
+            text-align: center; box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            max-width: 400px; width: 90%;
+        }
+        .pw-box .pw-icon { font-size: 48px; margin-bottom: 16px; }
+        .pw-box h2 { font-size: 22px; margin-bottom: 8px; color: #1e293b; }
+        .pw-box p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+        .pw-box input {
+            width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0;
+            border-radius: 10px; font-size: 16px; text-align: center;
+            transition: border-color 0.2s; outline: none;
+        }
+        .pw-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+        .pw-box .pw-btn {
+            width: 100%; margin-top: 16px; padding: 14px; background: var(--primary);
+            color: white; border: none; border-radius: 10px; font-size: 16px;
+            font-weight: 700; cursor: pointer; transition: background 0.2s;
+        }
+        .pw-box .pw-btn:hover { background: #1d4ed8; }
+        .pw-box .pw-error {
+            color: var(--danger); font-size: 13px; margin-top: 12px; display: none;
+        }
+        .pw-box .pw-error.show { display: block; }
+        .pw-shake { animation: pwShake 0.4s ease; }
+        @keyframes pwShake {
+            0%,100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
     </style>
 </head>
 <body>
+
+<!-- ===== Password Lock ===== -->
+<div class="pw-overlay" id="pwOverlay">
+    <div class="pw-box" id="pwBox">
+        <div class="pw-icon">🔐</div>
+        <h2>数据管理后台</h2>
+        <p>请输入管理密码以继续</p>
+        <input type="password" id="pwInput" placeholder="请输入密码" autocomplete="off" maxlength="20">
+        <button class="pw-btn" onclick="checkPassword()">验证进入</button>
+        <p class="pw-error" id="pwError">❌ 密码错误，请重试</p>
+    </div>
+</div>
+
+<!-- ===== Main Content Wrapper ===== -->
 
 <div class="topbar">
     <h1>🏢 办公室房源数据管理后台</h1>
@@ -329,6 +382,50 @@
         </div>
     </div>
 </div>
+
+<script>
+// ============================================================
+// Password Protection
+// ============================================================
+(function() {
+    const PASS = '520office';
+    const SESSION_KEY = '_admin_auth';
+
+    // 已登录则跳过
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+        document.getElementById('pwOverlay').classList.add('hidden');
+        return;
+    }
+
+    window.checkPassword = function() {
+        var input = document.getElementById('pwInput');
+        var overlay = document.getElementById('pwOverlay');
+        var box = document.getElementById('pwBox');
+        var error = document.getElementById('pwError');
+
+        if (input.value === PASS) {
+            sessionStorage.setItem(SESSION_KEY, '1');
+            overlay.classList.add('hidden');
+        } else {
+            error.classList.add('show');
+            box.classList.add('pw-shake');
+            input.value = '';
+            input.focus();
+            setTimeout(function() {
+                box.classList.remove('pw-shake');
+                error.classList.remove('show');
+            }, 1500);
+        }
+    };
+
+    document.getElementById('pwInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') checkPassword();
+    });
+
+    // Auto-focus
+    setTimeout(function() { document.getElementById('pwInput').focus(); }, 300);
+})();
+</script>
 
 <script>
 // ============================================================
