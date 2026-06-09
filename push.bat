@@ -13,6 +13,8 @@ echo.
 REM ====== 自动查找 git.exe ======
 set GIT_CMD=
 for %%d in (
+    "D:\Program Files\Git\cmd"
+    "D:\Program Files\Git\bin"
     "C:\Program Files\Git\cmd"
     "C:\Program Files\Git\bin"
     "C:\Program Files (x86)\Git\cmd"
