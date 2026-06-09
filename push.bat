@@ -24,23 +24,19 @@ for %%d in (
 ) do (
     if exist %%~d\git.exe (
         set GIT_CMD=%%~d\git.exe
-        echo [0] 找到 Git: %%~d\git.exe
+        echo [0] Found Git: %%~d\git.exe
         goto found_git
     )
 )
 
-REM 如果上面都没找到，尝试直接调用
 where git >nul 2>&1
 if %errorlevel% equ 0 (
     set GIT_CMD=git
-    echo [0] 找到 Git: 系统 PATH
+    echo [0] Found Git: system PATH
     goto found_git
 )
 
-echo [错误] 未找到 Git！请先安装 Git for Windows：
-echo  https://git-scm.com/download/win
-echo.
-echo 安装时选择"Use Git from the Windows Command Prompt"
+echo [ERROR] Git not found! Install from https://git-scm.com/download/win
 echo.
 pause
 exit /b 1
@@ -48,38 +44,10 @@ exit /b 1
 :found_git
 echo.
 
-REM ====== 推送到 GitHub ======
-echo [1/2] 推送到 GitHub (520office/shenzhen-office-rental)...
+echo [1/2] Pushing to GitHub...
 "%GIT_CMD%" push github master 2>&1
-if %errorlevel% equ 0 (
-    echo [成功] GitHub 推送完成!
-) else (
-    echo.
-    echo [提示] GitHub 推送失败，可能原因:
-    echo   1. 未配置 github remote，请先运行:
-    echo      "%GIT_CMD%" remote add github https://github.com/520office/shenzhen-office-rental.git
-    echo   2. 当前网络无法访问 GitHub
-    echo.
-    echo 不用担心，Gitee 推送成功后可以手动同步到 GitHub
-)
-echo.
-
-REM ====== 推送到 Gitee ======
-echo [2/2] 推送到 Gitee (office520/shenzhen-office-rental)...
+echo [2/2] Pushing to Gitee...
 "%GIT_CMD%" push origin master 2>&1
-if %errorlevel% equ 0 (
-    echo [成功] Gitee 推送完成!
-) else (
-    echo.
-    echo [提示] Gitee 推送失败
-)
 echo.
-
-echo ================================================
-echo  推送完成！查看上方结果 ^^^
-echo ================================================
-echo.
-echo  GitHub Pages:  https://520office.github.io/shenzhen-office-rental/
-echo  Gitee Pages:   https://gitee.com/office520/shenzhen-office-rental/pages
-echo.
+echo Done! https://520office.github.io/shenzhen-office-rental/
 pause
