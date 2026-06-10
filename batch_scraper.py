@@ -15,6 +15,7 @@
 import argparse
 import datetime
 import json
+import random
 import re
 import sys
 import os
@@ -43,7 +44,13 @@ MOBILE_UA = (
     "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"
 )
 
-REQUEST_DELAY = 1.5  # 每条请求间隔秒数
+DESKTOP_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+)
+
+REQUEST_DELAY_MIN = 2.0   # 最小间隔秒数
+REQUEST_DELAY_MAX = 5.0   # 最大间隔秒数
 
 AREAS = sorted(
     ["会展新城", "宝安中心", "南山科技园", "碧海湾", "前海", "西乡", "翻身", "新安", "兴东",
@@ -59,7 +66,7 @@ AREAS = sorted(
 def fetch_page(url, timeout=20):
     """用移动端UA抓取页面"""
     req = urllib.request.Request(url)
-    req.add_header("User-Agent", MOBILE_UA)
+    req.add_header("User-Agent", DESKTOP_UA)
     req.add_header("Accept", "text/html,application/xhtml+xml")
     req.add_header("Accept-Language", "zh-CN,zh;q=0.9")
     try:
@@ -505,7 +512,8 @@ def main():
             print(f"  ⚠️ 未能解析")
 
         if i < len(urls) and not args.no_delay:
-            time.sleep(REQUEST_DELAY)
+            delay = random.uniform(REQUEST_DELAY_MIN, REQUEST_DELAY_MAX)
+            time.sleep(delay)
 
     # 输出
     print(f"\n📊 完成: {success} 成功, {failed} 失败")
