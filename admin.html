@@ -1970,7 +1970,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "200㎡",
-    "price": "45元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "高区 / 共35层",
     "features": [
@@ -2099,7 +2099,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "200㎡",
-    "price": "48元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "高区 / 共48层",
     "features": [
@@ -2200,7 +2200,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "150㎡",
-    "price": "46元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "中区 / 共45层",
     "features": [
@@ -2342,7 +2342,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "3000㎡",
-    "price": "45元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "中区 / 共54层",
     "features": [
@@ -3079,7 +3079,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "200㎡",
-    "price": "43元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "高区 / 共45层",
     "features": [
@@ -3134,7 +3134,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "200㎡",
-    "price": "45元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "高区 / 共35层",
     "features": [
@@ -3187,7 +3187,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "200㎡",
-    "price": "48元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "高区 / 共48层",
     "features": [
@@ -3240,7 +3240,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "150㎡",
-    "price": "47元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "中区 / 共45层",
     "features": [
@@ -3546,7 +3546,7 @@ const DEFAULT_DATA = [
     "area": "南山-前海",
     "location": "南山-前海",
     "size": "1000㎡",
-    "price": "28元/㎡/月",
+    "price": "",
     "decoration": "豪华装修",
     "floor": "高区 / 共60层",
     "features": [
@@ -3592,20 +3592,36 @@ const DEFAULT_DATA = [
 ];
 
 const STORAGE_KEY = "office_projects_data";
+const DATA_VERSION_KEY = "office_data_version";
 let nextId = 14;
+
+// 计算默认数据的简单哈希（用于检测内容变更）
+function hashData(data) {
+    let hash = 0;
+    const str = JSON.stringify(data);
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString(16);
+}
+const DEFAULT_HASH = hashData(DEFAULT_DATA);
 
 function loadData() {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
+    const storedVersion = localStorage.getItem(DATA_VERSION_KEY);
+    if (stored && storedVersion) {
         try {
             const data = JSON.parse(stored);
             if (Array.isArray(data) && data.length > 0) {
-                // 自动检测：如果本地数据过期（少于默认数据量），自动同步
-                if (data.length < DEFAULT_DATA.length) {
-                    console.warn('[admin] 检测到数据不一致，自动同步云端数据...');
+                // 检测版本或数量不一致时自动同步
+                if (storedVersion !== DEFAULT_HASH || data.length < DEFAULT_DATA.length) {
+                    console.warn('[admin] 检测到默认数据已更新，自动同步...');
                     const newData = JSON.parse(JSON.stringify(DEFAULT_DATA));
                     nextId = DEFAULT_DATA.length + 1;
                     saveData(newData);
+                    localStorage.setItem(DATA_VERSION_KEY, DEFAULT_HASH);
                     return newData;
                 }
                 return data;
@@ -3615,11 +3631,13 @@ function loadData() {
     const data = JSON.parse(JSON.stringify(DEFAULT_DATA));
     nextId = DEFAULT_DATA.length + 1;
     saveData(data);
+    localStorage.setItem(DATA_VERSION_KEY, DEFAULT_HASH);
     return data;
 }
 
 function saveData(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(DATA_VERSION_KEY, DEFAULT_HASH);
 }
 
 let projects = loadData();
@@ -3641,7 +3659,7 @@ function renderTable() {
             <td><strong>${p.name}</strong><br><small style="color:#94a3b8;">${p.location}</small></td>
             <td><span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:50px;font-size:12px;font-weight:600;">${p.area}</span></td>
             <td>${p.size}</td>
-            <td><strong style="color:#dc2626;">${p.price}</strong></td>
+            <td><strong style="color:#dc2626;">${p.price || '<span style="color:#94a3b8;">—</span>'}</strong></td>
             <td>${p.decoration}</td>
             <td>${p.floor}</td>
             <td>${(p.features||[]).slice(0,3).map(f=>`<span style="background:#f1f5f9;padding:2px 8px;border-radius:4px;font-size:11px;margin:2px;display:inline-block;">${f}</span>`).join("")}${(p.features||[]).length>3?`<span style="color:#94a3b8;font-size:11px;"> +${p.features.length-3}</span>`:""}</td>
@@ -3660,9 +3678,17 @@ function updateStats() {
     document.getElementById("statTotal").textContent = projects.length;
     const areas = new Set(projects.map(p => p.area));
     document.getElementById("statAreas").textContent = areas.size;
-    const prices = projects.map(p => parseInt(p.price.replace(/[^\d]/g, ''))).filter(n => n > 0);
+    const prices = projects.map(p => {
+        const pr = p.price || '';
+        const m = pr.match(/\d+/);
+        return m ? parseInt(m[0]) : 0;
+    }).filter(n => n > 0);
     document.getElementById("statMinPrice").textContent = prices.length ? Math.min(...prices) : 0;
-    const sizes = projects.map(p => parseInt(p.size.match(/\d+/g)?.pop() || '0')).filter(n => n > 0);
+    const sizes = projects.map(p => {
+        const sz = p.size || '';
+        const m = sz.match(/\d+/);
+        return m ? parseInt(m[0]) : 0;
+    }).filter(n => n > 0);
     document.getElementById("statMaxSize").textContent = sizes.length ? Math.max(...sizes) + '㎡' : 0;
 }
 
@@ -3695,14 +3721,14 @@ function showEditModal(id) {
     const p = projects.find(x => x.id === id);
     if (!p) return;
     document.getElementById("modalTitle").textContent = "编辑房源";
-    document.getElementById("editId").value = p.id;
-    document.getElementById("editName").value = p.name;
-    document.getElementById("editArea").value = p.area;
-    document.getElementById("editLocation").value = p.location;
-    document.getElementById("editSize").value = p.size;
-    document.getElementById("editPrice").value = p.price;
+    document.getElementById("editId").value = p.id || "";
+    document.getElementById("editName").value = p.name || "";
+    document.getElementById("editArea").value = p.area || "";
+    document.getElementById("editLocation").value = p.location || "";
+    document.getElementById("editSize").value = p.size || "";
+    document.getElementById("editPrice").value = p.price || "";
     document.getElementById("editDecoration").value = p.decoration || "精装修";
-    document.getElementById("editFloor").value = p.floor;
+    document.getElementById("editFloor").value = p.floor || "";
     document.getElementById("editFeatures").value = (p.features || []).join(",");
     document.getElementById("editImage").value = p.image || "";
     previewTags();
@@ -3758,6 +3784,7 @@ function resetToDefault() {
     projects = JSON.parse(JSON.stringify(DEFAULT_DATA));
     nextId = DEFAULT_DATA.length + 1;
     saveData(projects);
+    localStorage.setItem(DATA_VERSION_KEY, DEFAULT_HASH);
     renderTable();
     toast("🔄 已恢复默认数据");
 }
