@@ -1,437 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>房源数据管理后台</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --primary: #2563eb;
-            --danger: #ef4444;
-            --success: #10b981;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
-            --radius: 10px;
-            --shadow: 0 2px 12px rgba(0,0,0,0.06);
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-        }
-        .topbar {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 0 24px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .topbar h1 { font-size: 18px; font-weight: 700; }
-        .topbar-actions { display: flex; gap: 8px; }
-        .container { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
-
-        /* 统计卡片 */
-        .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-        .stat-card .num { font-size: 32px; font-weight: 800; color: var(--primary); }
-        .stat-card .lbl { font-size: 13px; color: #64748b; margin-top: 4px; }
-
-        /* 操作栏 */
-        .toolbar {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 16px 20px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        /* 按钮 */
-        .btn {
-            padding: 9px 20px;
-            border-radius: 8px;
-            border: none;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: #059669; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-outline { border: 1.5px solid var(--border); background: white; color: var(--text); }
-        .btn-outline:hover { background: #f8fafc; }
-        .btn-sm { padding: 4px 12px; font-size: 12px; border-radius: 6px; }
-
-        /* 房源表格 */
-        .table-wrap {
-            background: var(--card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-        .table-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #64748b; background: #f8fafc; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
-        tr:hover td { background: #f8fafc; }
-        .td-actions { display: flex; gap: 6px; }
-
-        /* 模态框 */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .modal {
-            background: white; border-radius: 14px; padding: 32px;
-            width: 560px; max-height: 85vh; overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        }
-        .modal h2 { font-size: 20px; margin-bottom: 24px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
-            border-radius: 8px; font-size: 14px; font-family: inherit;
-            transition: border-color 0.2s;
-        }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .form-group textarea { resize: vertical; min-height: 60px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
-
-        /* JSON 编辑器 */
-        .json-editor {
-            width: 100%; min-height: 240px; font-family: "SF Mono", "Fira Code", "Consolas", monospace;
-            font-size: 13px; padding: 14px; border: 1.5px solid var(--border);
-            border-radius: 8px; resize: vertical; line-height: 1.5;
-        }
-        .json-editor:focus { outline: none; border-color: var(--primary); }
-
-        /* Toast */
-        .toast {
-            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-            background: #1e293b; color: white; padding: 12px 24px;
-            border-radius: 8px; font-size: 14px; z-index: 300;
-            animation: toastIn 0.3s ease;
-        }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } }
-
-        .tag-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-        .tag-preview span {
-            padding: 4px 12px; background: #f1f5f9; border-radius: 50px;
-            font-size: 12px; display: flex; align-items: center; gap: 4px;
-            cursor: pointer;
-        }
-        .tag-preview span:hover { background: #fee2e2; color: var(--danger); }
-
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .modal { width: 95%; padding: 20px; }
-            td { font-size: 12px; padding: 8px; }
-        }
-
-        /* ===== Password Lock ===== */
-        .pw-overlay {
-            position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            z-index: 9999; display: flex; align-items: center; justify-content: center;
-        }
-        .pw-overlay.hidden { display: none; }
-        .pw-box {
-            background: white; border-radius: 16px; padding: 48px 40px;
-            text-align: center; box-shadow: 0 25px 80px rgba(0,0,0,0.4);
-            max-width: 400px; width: 90%;
-        }
-        .pw-box .pw-icon { font-size: 48px; margin-bottom: 16px; }
-        .pw-box h2 { font-size: 22px; margin-bottom: 8px; color: #1e293b; }
-        .pw-box p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
-        .pw-box input {
-            width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0;
-            border-radius: 10px; font-size: 16px; text-align: center;
-            transition: border-color 0.2s; outline: none;
-        }
-        .pw-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
-        .pw-box .pw-btn {
-            width: 100%; margin-top: 16px; padding: 14px; background: var(--primary);
-            color: white; border: none; border-radius: 10px; font-size: 16px;
-            font-weight: 700; cursor: pointer; transition: background 0.2s;
-        }
-        .pw-box .pw-btn:hover { background: #1d4ed8; }
-        .pw-box .pw-error {
-            color: var(--danger); font-size: 13px; margin-top: 12px; display: none;
-        }
-        .pw-box .pw-error.show { display: block; }
-        .pw-shake { animation: pwShake 0.4s ease; }
-        @keyframes pwShake {
-            0%,100% { transform: translateX(0); }
-            20% { transform: translateX(-8px); }
-            40% { transform: translateX(8px); }
-            60% { transform: translateX(-6px); }
-            80% { transform: translateX(6px); }
-        }
-    </style>
-</head>
-<body>
-
-<!-- ===== Password Lock ===== -->
-<div class="pw-overlay" id="pwOverlay">
-    <div class="pw-box" id="pwBox">
-        <div class="pw-icon">🔐</div>
-        <h2>数据管理后台</h2>
-        <p>请输入管理密码以继续</p>
-        <input type="password" id="pwInput" placeholder="请输入密码" autocomplete="off" maxlength="20">
-        <button class="pw-btn" onclick="checkPassword()">验证进入</button>
-        <p class="pw-error" id="pwError">❌ 密码错误，请重试</p>
-    </div>
-</div>
-
-<!-- ===== Main Content Wrapper ===== -->
-
-<div class="topbar">
-    <h1>🏢 办公室房源数据管理后台</h1>
-    <div class="topbar-actions">
-        <button class="btn btn-success" onclick="exportJSON()">📦 导出JSON</button>
-        <button class="btn btn-outline" onclick="showImportModal()">📥 导入JSON</button>
-        <button class="btn btn-outline" onclick="showBatchAddModal()">⚡ 批量添加</button>
-        <a href="quick-entry.html" class="btn btn-outline" target="_blank">⚡ 快速录入</a>
-                <a href="index.html" class="btn btn-outline" target="_blank">🌐 查看前台</a>
-    </div>
-</div>
-
-<div class="container">
-    <!-- 统计 -->
-    <div class="stats">
-        <div class="stat-card"><div class="num" id="statTotal">0</div><div class="lbl">总房源</div></div>
-        <div class="stat-card"><div class="num" id="statAreas">0</div><div class="lbl">覆盖区域</div></div>
-        <div class="stat-card"><div class="num" id="statMinPrice">0</div><div class="lbl">最低价（元/㎡/月）</div></div>
-        <div class="stat-card"><div class="num" id="statMaxSize">0</div><div class="lbl">最大面积</div></div>
-    </div>
-
-    <!-- 工具栏 -->
-    <div class="toolbar">
-        <button class="btn btn-primary" onclick="showAddModal()">➕ 添加房源</button>
-        <select id="filterArea" style="padding:8px 12px;border-radius:8px;border:1.5px solid #e2e8f0;" onchange="renderTable()">
-            <option value="all">全部区域</option>
-        </select>
-        <input type="text" id="searchInput" placeholder="🔍 搜索项目名称或地址..." style="flex:1;min-width:180px;padding:8px 12px;border-radius:8px;border:1.5px solid #e2e8f0;" oninput="renderTable()">
-    </div>
-
-    <!-- 表格 -->
-    <div class="table-wrap">
-        <div class="table-header">
-            <span style="font-weight:600;">📋 房源列表（共 <span id="listCount">0</span> 条）</span>
-            <button class="btn btn-sm btn-outline" onclick="resetToDefault()">🔄 恢复默认数据</button>
-        </div>
-        <div style="overflow-x:auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>项目名称</th>
-                        <th>区域</th>
-                        <th>面积</th>
-                        <th>价格</th>
-                        <th>装修</th>
-                        <th>楼层</th>
-                        <th>标签</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 添加/编辑模态框 ===== -->
-<div class="modal-overlay" id="editModal" style="display:none;">
-    <div class="modal">
-        <h2 id="modalTitle">添加房源</h2>
-        <input type="hidden" id="editId" value="">
-        <div class="form-row">
-            <div class="form-group">
-                <label>项目名称 *</label>
-                <input type="text" id="editName" placeholder="如：南山科技园甲级写字楼">
-            </div>
-            <div class="form-group">
-                <label>所属区域 *</label>
-                <input type="text" id="editArea" list="areaSuggestions" placeholder="选择或手动输入区域名">
-                <datalist id="areaSuggestions">
-                    <option>南山科技园</option><option>前海</option><option>宝安中心</option>
-                    <option>西乡</option><option>翻身</option><option>新安</option>
-                    <option>兴东</option><option>坪洲</option><option>碧海湾</option>
-                    <option>固戍</option><option>福永</option><option>沙井</option>
-                    <option>会展新城</option><option>南山</option><option>福田</option>
-                    <option>罗湖</option><option>龙华</option><option>龙岗</option>
-                    <option>盐田</option><option>光明</option><option>坪山</option>
-                    <option>大鹏</option><option>宝安</option><option>其他</option>
-                </datalist>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>详细地址 *</label>
-            <input type="text" id="editLocation" placeholder="如：深圳市南山区科技园科苑路XX号">
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>面积</label>
-                <input type="text" id="editSize" placeholder="如：150-800㎡">
-            </div>
-            <div class="form-group">
-                <label>价格</label>
-                <input type="text" id="editPrice" placeholder="如：95元/㎡/月">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>装修情况</label>
-                <select id="editDecoration">
-                    <option>精装修</option><option>豪华装修</option><option>简装</option>
-                    <option>简装/毛坯</option><option>毛坯</option><option>简装/精装可选</option>
-                    <option>简装/毛坯可选</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>楼层</label>
-                <input type="text" id="editFloor" placeholder="如：高区/中区">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>特色标签（逗号分隔）</label>
-            <input type="text" id="editFeatures" placeholder="如：近地铁,配套食堂,会议室,停车位" oninput="previewTags()">
-            <div class="tag-preview" id="tagsPreview"></div>
-        </div>
-        <div class="form-group">
-            <label>图片链接</label>
-            <input type="text" id="editImage" placeholder="留空则显示占位图">
-            <small style="color:#94a3b8;">可填写URL网络图片，或 images/xxx.jpg 引用本地图片</small>
-        </div>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeEditModal()">取消</button>
-            <button class="btn btn-primary" onclick="saveProject()">💾 保存</button>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 导入JSON模态框 ===== -->
-<div class="modal-overlay" id="importModal" style="display:none;">
-    <div class="modal" style="width:640px;">
-        <h2>📥 导入JSON数据</h2>
-        <p style="color:#64748b;margin-bottom:16px;font-size:14px;">将JSON格式的房源数据粘贴到下方，<strong style="color:#16a34a;">新数据将追加到现有列表中</strong>（不会删除已有房源）。</p>
-        <textarea class="json-editor" id="importJson" placeholder='粘贴JSON数组，格式如:
 [
-  {
-    "name": "项目名称",
-    "area": "区域",
-    "location": "地址",
-    "size": "150-800㎡",
-    "price": "95元/㎡/月",
-    "decoration": "精装修",
-    "floor": "高区",
-    "features": ["近地铁","配套食堂"],
-    "image": ""
-  }
-]'></textarea>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeImportModal()">取消</button>
-            <button class="btn btn-primary" onclick="importJSON()">📥 追加导入</button>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 批量添加模态框 ===== -->
-<div class="modal-overlay" id="batchModal" style="display:none;">
-    <div class="modal" style="width:640px;">
-        <h2>⚡ 批量添加房源</h2>
-        <p style="color:#64748b;margin-bottom:6px;font-size:14px;">每行一个房源，用 <code>|</code> 分隔字段</p>
-        <p style="color:#94a3b8;margin-bottom:16px;font-size:12px;">格式：项目名称 | 区域 | 地址 | 面积 | 价格 | 装修 | 楼层 | 标签1,标签2 | 图片链接</p>
-        <textarea class="json-editor" id="batchText" placeholder="南山科技园甲级写字楼 | 南山科技园 | 深圳市南山区科技园 | 150-800㎡ | 95元/㎡/月 | 精装修 | 高区 | 近地铁,停车位 |
-前海金融中心 | 前海 | 深圳市前海合作区 | 200-1200㎡ | 110元/㎡/月 | 豪华装修 | 高区 | 海景,5A甲级 |"></textarea>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeBatchModal()">取消</button>
-            <button class="btn btn-success" onclick="batchAdd()">⚡ 批量添加</button>
-        </div>
-    </div>
-</div>
-
-<script>
-// ============================================================
-// Password Protection
-// ============================================================
-(function() {
-    const PASS = '520office';
-    const SESSION_KEY = '_admin_auth';
-
-    // 已登录则跳过
-    if (sessionStorage.getItem(SESSION_KEY) === '1') {
-        document.getElementById('pwOverlay').classList.add('hidden');
-        return;
-    }
-
-    window.checkPassword = function() {
-        var input = document.getElementById('pwInput');
-        var overlay = document.getElementById('pwOverlay');
-        var box = document.getElementById('pwBox');
-        var error = document.getElementById('pwError');
-
-        if (input.value === PASS) {
-            sessionStorage.setItem(SESSION_KEY, '1');
-            overlay.classList.add('hidden');
-        } else {
-            error.classList.add('show');
-            box.classList.add('pw-shake');
-            input.value = '';
-            input.focus();
-            setTimeout(function() {
-                box.classList.remove('pw-shake');
-                error.classList.remove('show');
-            }, 1500);
-        }
-    };
-
-    document.getElementById('pwInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') checkPassword();
-    });
-
-    // Auto-focus
-    setTimeout(function() { document.getElementById('pwInput').focus(); }, 300);
-})();
-</script>
-
-<script>
-// ============================================================
-// 默认数据
-// ============================================================
-const DEFAULT_DATA = [
   {
     "name": "南山科技园甲级写字楼",
     "area": "南山科技园",
@@ -3024,7 +2591,7 @@ const DEFAULT_DATA = [
   },
   {
     "name": "前海鸿荣源中心",
-    "area": "南山-前海",
+    "area": "",
     "location": "",
     "size": "1000㎡",
     "price": "",
@@ -3045,12 +2612,12 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
     "name": "前海金融中心",
-    "area": "南山-前海",
+    "area": "",
     "location": "",
     "size": "600㎡",
     "price": "60元/㎡/月",
@@ -3071,7 +2638,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3099,7 +2666,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3126,7 +2693,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3152,7 +2719,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1497215842964-222b430dc094?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3179,7 +2746,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3206,7 +2773,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3232,7 +2799,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3258,12 +2825,12 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
     "name": "前海世茂大厦",
-    "area": "南山-前海",
+    "area": "",
     "location": "",
     "size": "100㎡",
     "price": "",
@@ -3283,7 +2850,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3307,7 +2874,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1486718448742-163732cd1544?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3331,7 +2898,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3357,7 +2924,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3383,7 +2950,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3409,7 +2976,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3435,7 +3002,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3462,7 +3029,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3488,7 +3055,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1486718448742-163732cd1544?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3513,7 +3080,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3538,7 +3105,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3561,7 +3128,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   },
   {
@@ -3586,323 +3153,7 @@ const DEFAULT_DATA = [
       "中央空调",
       "交通便捷"
     ],
-    "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop",
+    "image": "",
     "date": "2026-06-10"
   }
-];
-
-const STORAGE_KEY = "office_projects_data";
-let nextId = 14;
-
-function loadData() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-        try {
-            const data = JSON.parse(stored);
-            if (Array.isArray(data) && data.length > 0) {
-                // 自动检测：如果本地数据过期（少于默认数据量），自动同步
-                if (data.length < DEFAULT_DATA.length) {
-                    console.warn('[admin] 检测到数据不一致，自动同步云端数据...');
-                    const newData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                    nextId = DEFAULT_DATA.length + 1;
-                    saveData(newData);
-                    return newData;
-                }
-                return data;
-            }
-        } catch(e) {}
-    }
-    const data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-    nextId = DEFAULT_DATA.length + 1;
-    saveData(data);
-    return data;
-}
-
-function saveData(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-let projects = loadData();
-
-// ===== 表格渲染 =====
-function renderTable() {
-    const filter = document.getElementById("filterArea").value;
-    const search = document.getElementById("searchInput").value.toLowerCase();
-    let filtered = projects;
-    if (filter !== "all") filtered = filtered.filter(p => p.area === filter);
-    if (search) filtered = filtered.filter(p => (p.name + p.location).toLowerCase().includes(search));
-
-    document.getElementById("listCount").textContent = filtered.length;
-
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = filtered.map(p => `
-        <tr>
-            <td>${p.id}</td>
-            <td><strong>${p.name}</strong><br><small style="color:#94a3b8;">${p.location}</small></td>
-            <td><span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:50px;font-size:12px;font-weight:600;">${p.area}</span></td>
-            <td>${p.size}</td>
-            <td><strong style="color:#dc2626;">${p.price}</strong></td>
-            <td>${p.decoration}</td>
-            <td>${p.floor}</td>
-            <td>${(p.features||[]).slice(0,3).map(f=>`<span style="background:#f1f5f9;padding:2px 8px;border-radius:4px;font-size:11px;margin:2px;display:inline-block;">${f}</span>`).join("")}${(p.features||[]).length>3?`<span style="color:#94a3b8;font-size:11px;"> +${p.features.length-3}</span>`:""}</td>
-            <td class="td-actions">
-                <button class="btn btn-sm btn-outline" onclick="showEditModal(${p.id})">✏️</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">🗑️</button>
-            </td>
-        </tr>
-    `).join("");
-
-    updateStats();
-    updateFilterOptions();
-}
-
-function updateStats() {
-    document.getElementById("statTotal").textContent = projects.length;
-    const areas = new Set(projects.map(p => p.area));
-    document.getElementById("statAreas").textContent = areas.size;
-    const prices = projects.map(p => parseInt(p.price.replace(/[^\d]/g, ''))).filter(n => n > 0);
-    document.getElementById("statMinPrice").textContent = prices.length ? Math.min(...prices) : 0;
-    const sizes = projects.map(p => parseInt(p.size.match(/\d+/g)?.pop() || '0')).filter(n => n > 0);
-    document.getElementById("statMaxSize").textContent = sizes.length ? Math.max(...sizes) + '㎡' : 0;
-}
-
-function updateFilterOptions() {
-    const sel = document.getElementById("filterArea");
-    const current = sel.value;
-    const areas = [...new Set(projects.map(p => p.area))];
-    sel.innerHTML = '<option value="all">全部区域</option>' + areas.map(a => `<option value="${a}">${a}</option>`).join("");
-    if ([...sel.options].some(o => o.value === current)) sel.value = current;
-}
-
-// ===== 增删改 =====
-function showAddModal() {
-    document.getElementById("modalTitle").textContent = "添加房源";
-    document.getElementById("editId").value = "";
-    document.getElementById("editName").value = "";
-    document.getElementById("editArea").value = "";
-    document.getElementById("editLocation").value = "";
-    document.getElementById("editSize").value = "";
-    document.getElementById("editPrice").value = "";
-    document.getElementById("editDecoration").value = "精装修";
-    document.getElementById("editFloor").value = "";
-    document.getElementById("editFeatures").value = "";
-    document.getElementById("editImage").value = "";
-    document.getElementById("tagsPreview").innerHTML = "";
-    document.getElementById("editModal").style.display = "flex";
-}
-
-function showEditModal(id) {
-    const p = projects.find(x => x.id === id);
-    if (!p) return;
-    document.getElementById("modalTitle").textContent = "编辑房源";
-    document.getElementById("editId").value = p.id;
-    document.getElementById("editName").value = p.name;
-    document.getElementById("editArea").value = p.area;
-    document.getElementById("editLocation").value = p.location;
-    document.getElementById("editSize").value = p.size;
-    document.getElementById("editPrice").value = p.price;
-    document.getElementById("editDecoration").value = p.decoration || "精装修";
-    document.getElementById("editFloor").value = p.floor;
-    document.getElementById("editFeatures").value = (p.features || []).join(",");
-    document.getElementById("editImage").value = p.image || "";
-    previewTags();
-    document.getElementById("editModal").style.display = "flex";
-}
-
-function closeEditModal() {
-    document.getElementById("editModal").style.display = "none";
-}
-
-function saveProject() {
-    const id = document.getElementById("editId").value;
-    const isNew = !id;
-    const data = {
-        id: id ? parseInt(id) : nextId++,
-        name: document.getElementById("editName").value.trim(),
-        area: document.getElementById("editArea").value,
-        location: document.getElementById("editLocation").value.trim(),
-        size: document.getElementById("editSize").value.trim(),
-        price: document.getElementById("editPrice").value.trim(),
-        decoration: document.getElementById("editDecoration").value,
-        floor: document.getElementById("editFloor").value.trim(),
-        features: document.getElementById("editFeatures").value.split(",").map(s => s.trim()).filter(Boolean),
-        image: document.getElementById("editImage").value.trim(),
-        date: isNew ? new Date().toISOString().split('T')[0] : (projects.find(p=>p.id===parseInt(id))?.date || new Date().toISOString().split('T')[0]),
-    };
-    if (!data.name || !data.area || !data.location) {
-        toast("⚠️ 项目名称、区域、地址为必填项");
-        return;
-    }
-    if (id) {
-        const idx = projects.findIndex(p => p.id === parseInt(id));
-        if (idx >= 0) projects[idx] = data;
-    } else {
-        projects.push(data);
-    }
-    saveData(projects);
-    closeEditModal();
-    renderTable();
-    toast(id ? "✅ 房源已更新" : "✅ 房源已添加");
-}
-
-function deleteProject(id) {
-    if (!confirm(`确定要删除 ID=${id} 的房源吗？此操作不可恢复。`)) return;
-    projects = projects.filter(p => p.id !== id);
-    saveData(projects);
-    renderTable();
-    toast("🗑️ 已删除");
-}
-
-function resetToDefault() {
-    if (!confirm("确定要恢复为默认数据吗？当前修改的数据将丢失。")) return;
-    projects = JSON.parse(JSON.stringify(DEFAULT_DATA));
-    nextId = DEFAULT_DATA.length + 1;
-    saveData(projects);
-    renderTable();
-    toast("🔄 已恢复默认数据");
-}
-
-// ===== 标签预览 =====
-function previewTags() {
-    const val = document.getElementById("editFeatures").value;
-    const tags = val.split(",").map(s => s.trim()).filter(Boolean);
-    document.getElementById("tagsPreview").innerHTML = tags.map((t, i) =>
-        `<span onclick="removeTag(${i})">${t} ✕</span>`
-    ).join("");
-}
-function removeTag(idx) {
-    const el = document.getElementById("editFeatures");
-    const tags = el.value.split(",").map(s => s.trim()).filter(Boolean);
-    tags.splice(idx, 1);
-    el.value = tags.join(",");
-    previewTags();
-}
-
-// ===== JSON 导出/导入 =====
-function exportJSON() {
-    const data = projects.map(({id, ...rest}) => rest); // 去掉id，index.html会自己生成
-    const json = JSON.stringify(data, null, 2);
-    navigator.clipboard.writeText(json).then(() => {
-        toast("📋 已复制到剪贴板！请粘贴到 index.html 的 PROJECTS 变量中替换原数据");
-    }).catch(() => {
-        // fallback: create a temp textarea
-        const ta = document.createElement("textarea");
-        ta.value = json;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        toast("📋 JSON已复制");
-    });
-    // 同时下载为文件
-    const blob = new Blob([json], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "office-projects.json";
-    a.click();
-    URL.revokeObjectURL(url);
-    toast("📦 JSON已复制到剪贴板并下载");
-}
-
-function showImportModal() {
-    document.getElementById("importJson").value = "";
-    document.getElementById("importModal").style.display = "flex";
-}
-function closeImportModal() {
-    document.getElementById("importModal").style.display = "none";
-}
-function importJSON() {
-    try {
-        const raw = document.getElementById("importJson").value.trim();
-        if (!raw) { toast("⚠️ 请粘贴JSON数据"); return; }
-        const imported = JSON.parse(raw);
-        if (!Array.isArray(imported)) { toast("⚠️ 数据格式错误，需要一个数组"); return; }
-        const prevCount = projects.length;
-        imported.forEach(item => {
-            projects.push({id: nextId++, ...item});
-        });
-        saveData(projects);
-        closeImportModal();
-        renderTable();
-        toast(`✅ 成功追加 ${imported.length} 条房源（共 ${projects.length} 条）`);
-    } catch(e) {
-        toast("⚠️ JSON解析失败，请检查格式: " + e.message);
-    }
-}
-
-// ===== 批量添加 =====
-function showBatchAddModal() {
-    document.getElementById("batchText").value = "";
-    document.getElementById("batchModal").style.display = "flex";
-}
-function closeBatchModal() {
-    document.getElementById("batchModal").style.display = "none";
-}
-function batchAdd() {
-    const text = document.getElementById("batchText").value.trim();
-    if (!text) { toast("⚠️ 请输入数据"); return; }
-    const lines = text.split("\n").filter(l => l.trim());
-    let added = 0;
-    lines.forEach(line => {
-        const parts = line.split("|").map(s => s.trim());
-        if (parts.length < 5) return;
-        projects.push({
-            id: nextId++,
-            name: parts[0],
-            area: parts[1],
-            location: parts[2],
-            size: parts[3],
-            price: parts[4],
-            decoration: parts[5] || "精装修",
-            floor: parts[6] || "",
-            features: parts[7] ? parts[7].split(",").map(s => s.trim()).filter(Boolean) : [],
-            image: parts[8] || "",
-        });
-        added++;
-    });
-    saveData(projects);
-    closeBatchModal();
-    renderTable();
-    toast(`✅ 批量添加成功，共 ${added} 条`);
-}
-
-// ===== Modal点击遮罩关闭 =====
-document.getElementById("editModal").addEventListener("click", function(e) {
-    if (e.target === this) closeEditModal();
-});
-document.getElementById("importModal").addEventListener("click", function(e) {
-    if (e.target === this) closeImportModal();
-});
-document.getElementById("batchModal").addEventListener("click", function(e) {
-    if (e.target === this) closeBatchModal();
-});
-
-// ===== Toast =====
-function toast(msg) {
-    const el = document.createElement("div");
-    el.className = "toast";
-    el.textContent = msg;
-    document.body.appendChild(el);
-    setTimeout(() => { el.remove(); }, 2500);
-}
-
-// ===== 键盘快捷键 =====
-document.addEventListener("keydown", function(e) {
-    if (e.key === "Escape") {
-        closeEditModal();
-        closeImportModal();
-        closeBatchModal();
-    }
-    if (e.ctrlKey && e.key === "n") {
-        e.preventDefault();
-        showAddModal();
-    }
-});
-
-// ===== 初始化 =====
-renderTable();
-</script>
-
-</body>
-</html>
+]
