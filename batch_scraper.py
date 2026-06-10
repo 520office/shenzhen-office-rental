@@ -24,11 +24,15 @@ import urllib.error
 import time
 from urllib.parse import urlparse
 
-# Windows 编码修复
+# Windows 编码修复 + 禁用输出缓冲
 if sys.platform == "win32":
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
     except Exception:
         pass
 
