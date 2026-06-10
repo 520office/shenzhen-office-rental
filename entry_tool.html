@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>房源数据录入工具</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; }
+.header { background: #1a1a2e; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .count { font-size: 14px; opacity: .7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+.card { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.06); padding: 24px; }
+.card h2 { font-size: 16px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #1a1a2e; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label { font-size: 13px; color: #666; margin-bottom: 4px; font-weight: 500; }
+.form-group input, .form-group select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color .2s; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #1a1a2e; }
+.form-group input[list] { background: #fff; }
+.btn-row { display: flex; gap: 8px; margin-top: 8px; }
+.btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500; transition: all .2s; }
+.btn-primary { background: #1a1a2e; color: #fff; }
+.btn-primary:hover { background: #2d2d4a; }
+.btn-success { background: #27ae60; color: #fff; }
+.btn-success:hover { background: #219a52; }
+.btn-danger { background: #e74c3c; color: #fff; }
+.btn-danger:hover { background: #c0392b; }
+.btn-outline { background: #fff; color: #1a1a2e; border: 2px solid #1a1a2e; }
+.btn-outline:hover { background: #f0f0f5; }
+.btn-skip { padding: 4px 10px; font-size: 12px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
+.btn-skip:hover { background: #e0e0e0; }
+.table-wrap { max-height: 600px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f8f8f8; padding: 8px 10px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 1; }
+td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+tr:hover td { background: #fafafa; }
+td.actions { white-space: nowrap; }
+td.actions button { padding: 3px 8px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px; }
+td.actions .del { background: #fff0f0; color: #e74c3c; }
+td.actions .del:hover { background: #ffe0e0; }
+td.actions .edit { background: #f0f0ff; color: #1a1a2e; }
+td.actions .edit:hover { background: #e0e0ff; }
+.url-list { max-height: 500px; overflow-y: auto; font-size: 12px; }
+.url-item { display: flex; align-items: center; padding: 6px 8px; border-bottom: 1px solid #f0f0f0; gap: 6px; }
+.url-item:hover { background: #fafafa; }
+.url-item .idx { color: #999; min-width: 24px; font-weight: 600; }
+.url-item .link { color: #2d8cf0; text-decoration: none; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.url-item .link:visited { color: #7a44cf; }
+.url-item .link:hover { text-decoration: underline; }
+.url-item .done { color: #27ae60; font-size: 11px; font-weight: 600; white-space: nowrap; display: none; }
+.url-item .done.show { display: inline; }
+.url-item .skip { cursor: pointer; color: #999; font-size: 11px; white-space: nowrap; }
+.url-item .skip:hover { color: #e74c3c; }
+.toast { position: fixed; top: 20px; right: 20px; padding: 12px 24px; background: #27ae60; color: #fff; border-radius: 8px; font-size: 14px; z-index: 999; display: none; animation: fadeInOut 2s ease; }
+@keyframes fadeInOut { 0%{opacity:0;transform:translateY(-10px)} 10%{opacity:1;transform:translateY(0)} 80%{opacity:1} 100%{opacity:0} }
+.empty { text-align: center; padding: 40px; color: #999; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏢 房源数据录入工具</h1>
+  <span class="count" id="totalCount">已录入: 0 条</span>
+</div>
+
+<div class="container">
+  <!-- 左侧：录入表单 -->
+  <div class="card" id="formCard">
+    <h2>📝 录入新房源</h2>
+    <div class="form-row three">
+      <div class="form-group">
+        <label>项目名称 *</label>
+        <input type="text" id="inputName" placeholder="如：前海HOP国际">
+      </div>
+      <div class="form-group">
+        <label>区域 *</label>
+        <select id="inputArea">
+          <option value="">请选择</option>
+          <option>南山科技园</option>
+          <option>南山-前海</option>
+          <option>宝安-宝安中心区</option>
+          <option>宝安-西乡</option>
+          <option>宝安-福永</option>
+          <option>宝安-沙井</option>
+          <option>宝安-固戍</option>
+          <option>宝安-碧海湾</option>
+          <option>宝安-坪洲</option>
+          <option>宝安-新安</option>
+          <option>宝安-翻身</option>
+          <option>宝安-兴东</option>
+          <option>宝安-会展新城</option>
+          <option>福田CBD</option>
+          <option>福田-车公庙</option>
+          <option>罗湖</option>
+          <option>龙华</option>
+          <option>龙岗</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>面积 *</label>
+        <input type="text" id="inputSize" placeholder="如：150㎡ 或 200-500㎡">
+      </div>
+    </div>
+    <div class="form-row three">
+      <div class="form-group">
+        <label>租金价格 *</label>
+        <input type="text" id="inputPrice" placeholder="如：80元/㎡/月">
+      </div>
+      <div class="form-group">
+        <label>装修情况</label>
+        <select id="inputDeco">
+          <option>精装修</option>
+          <option>豪华装修</option>
+          <option>毛坯</option>
+          <option>简装</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>楼层</label>
+        <input type="text" id="inputFloor" placeholder="如：高区/中区/低区">
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>详细位置</label>
+      <input type="text" id="inputLocation" placeholder="如：深圳市宝安区xx路xx号">
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>特色标签（逗号分隔）</label>
+      <input type="text" id="inputFeatures" placeholder="如：近地铁,配套食堂,停车位,海景视野">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addEntry()">✅ 添加</button>
+      <button class="btn btn-outline" onclick="clearForm()">🔄 重置</button>
+    </div>
+  </div>
+
+  <!-- 右侧：待录入URL列表 -->
+  <div class="card">
+    <h2>🔗 待录入链接（共 <span id="urlCount">-</span> 条）</h2>
+    <div class="url-list" id="urlList"></div>
+  </div>
+</div>
+
+<!-- 已录入列表 -->
+<div class="card" style="max-width:1200px;margin:0 auto 20px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <h2 style="margin:0;padding:0;border:none;">📋 已录入列表</h2>
+    <div class="btn-row" style="margin:0;">
+      <button class="btn btn-success" onclick="exportJSON()">📥 导出 JSON</button>
+      <button class="btn btn-danger" onclick="clearAll()">🗑 清空全部</button>
+    </div>
+  </div>
+  <div class="table-wrap" id="entryTableWrap">
+    <table id="entryTable">
+      <thead>
+        <tr>
+          <th>项目名称</th>
+          <th>区域</th>
+          <th>面积</th>
+          <th>价格</th>
+          <th>装修</th>
+          <th>楼层</th>
+          <th>位置</th>
+          <th>特色</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="entryTbody">
+        <tr><td colspan="9"><div class="empty">暂无数据，开始录入吧 📝</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// === URL 列表 ===
+const URLS = [
+  { id: 1, short: "sz.sydc.anjuke.com/xzl-zu/7402249980/", full: "https://sz.sydc.anjuke.com/xzl-zu/7402249980/" },
+  { id: 2, short: "sz.sydc.anjuke.com/xzl-zu/7399401606/", full: "https://sz.sydc.anjuke.com/xzl-zu/7399401606/" },
+  { id: 3, short: "sz.sydc.anjuke.com/xzl-zu/7462934818/", full: "https://sz.sydc.anjuke.com/xzl-zu/7462934818/" },
+  { id: 4, short: "sz.sydc.anjuke.com/xzl-zu/7445334034/", full: "https://sz.sydc.anjuke.com/xzl-zu/7445334034/" },
+  { id: 5, short: "sz.sydc.anjuke.com/xzl-zu/7454874900/", full: "https://sz.sydc.anjuke.com/xzl-zu/7454874900/" },
+  { id: 6, short: "sz.sydc.anjuke.com/xzl-zu/7449672814/", full: "https://sz.sydc.anjuke.com/xzl-zu/7449672814/" },
+  { id: 7, short: "sz.sydc.anjuke.com/xzl-zu/7453426529/", full: "https://sz.sydc.anjuke.com/xzl-zu/7453426529/" },
+  { id: 8, short: "sz.sydc.anjuke.com/xzl-zu/7402180190/", full: "https://sz.sydc.anjuke.com/xzl-zu/7402180190/" },
+  { id: 9, short: "sz.sydc.anjuke.com/xzl-zu/6640591710/", full: "https://sz.sydc.anjuke.com/xzl-zu/6640591710/" },
+  { id: 10, short: "sz.sydc.anjuke.com/xzl-zu/7447185214/", full: "https://sz.sydc.anjuke.com/xzl-zu/7447185214/" },
+  { id: 11, short: "sz.sydc.anjuke.com/xzl-zu/7463515899/", full: "https://sz.sydc.anjuke.com/xzl-zu/7463515899/" },
+  { id: 12, short: "sz.sydc.anjuke.com/xzl-zu/7463514578/", full: "https://sz.sydc.anjuke.com/xzl-zu/7463514578/" },
+  { id: 13, short: "sz.sydc.anjuke.com/xzl-zu/7300212925/", full: "https://sz.sydc.anjuke.com/xzl-zu/7300212925/" },
+  { id: 14, short: "sz.sydc.anjuke.com/xzl-zu/7441025543/", full: "https://sz.sydc.anjuke.com/xzl-zu/7441025543/" },
+  { id: 15, short: "sz.sydc.anjuke.com/xzl-zu/7223912338/", full: "https://sz.sydc.anjuke.com/xzl-zu/7223912338/" },
+  { id: 16, short: "sz.sydc.anjuke.com/xzl-zu/6862358786/", full: "https://sz.sydc.anjuke.com/xzl-zu/6862358786/" },
+  { id: 17, short: "sz.sydc.anjuke.com/xzl-zu/6818882484/", full: "https://sz.sydc.anjuke.com/xzl-zu/6818882484/" },
+  { id: 18, short: "sz.sydc.anjuke.com/xzl-zu/7467094230/", full: "https://sz.sydc.anjuke.com/xzl-zu/7467094230/" },
+  { id: 19, short: "sz.sydc.anjuke.com/xzl-zu/7415010226/", full: "https://sz.sydc.anjuke.com/xzl-zu/7415010226/" },
+  { id: 20, short: "sz.sydc.anjuke.com/xzl-zu/7393516934/", full: "https://sz.sydc.anjuke.com/xzl-zu/7393516934/" },
+  { id: 21, short: "sz.sydc.anjuke.com/xzl-zu/7448962098/", full: "https://sz.sydc.anjuke.com/xzl-zu/7448962098/" },
+  { id: 22, short: "sz.sydc.anjuke.com/xzl-zu/7453150400/", full: "https://sz.sydc.anjuke.com/xzl-zu/7453150400/" },
+  { id: 23, short: "sz.sydc.anjuke.com/xzl-zu/7422420411/", full: "https://sz.sydc.anjuke.com/xzl-zu/7422420411/" },
+  { id: 24, short: "sz.sydc.anjuke.com/xzl-zu/7396261804/", full: "https://sz.sydc.anjuke.com/xzl-zu/7396261804/" },
+  { id: 25, short: "sz.sydc.anjuke.com/xzl-zu/6886824948/", full: "https://sz.sydc.anjuke.com/xzl-zu/6886824948/" },
+  { id: 26, short: "sz.sydc.anjuke.com/xzl-zu/7459493842/", full: "https://sz.sydc.anjuke.com/xzl-zu/7459493842/" },
+  { id: 27, short: "sz.sydc.anjuke.com/xzl-zu/7286915427/", full: "https://sz.sydc.anjuke.com/xzl-zu/7286915427/" },
+  { id: 28, short: "sz.sydc.anjuke.com/xzl-zu/6578384108/", full: "https://sz.sydc.anjuke.com/xzl-zu/6578384108/" },
+  { id: 29, short: "sz.sydc.anjuke.com/xzl-zu/7316274068/", full: "https://sz.sydc.anjuke.com/xzl-zu/7316274068/" },
+  { id: 30, short: "sz.sydc.anjuke.com/xzl-zu/7407625162/", full: "https://sz.sydc.anjuke.com/xzl-zu/7407625162/" },
+  { id: 31, short: "sz.sydc.anjuke.com/xzl-zu/7453412042/", full: "https://sz.sydc.anjuke.com/xzl-zu/7453412042/" }
+];
+
+// === 状态管理 ===
+let entries = [];
+let skippedUrls = new Set();
+
+function saveState() {
+  localStorage.setItem('entry_tool_entries', JSON.stringify(entries));
+  localStorage.setItem('entry_tool_skipped', JSON.stringify([...skippedUrls]));
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('entry_tool_entries');
+    if (saved) entries = JSON.parse(saved);
+    const savedSkip = localStorage.getItem('entry_tool_skipped');
+    if (savedSkip) skippedUrls = new Set(JSON.parse(savedSkip));
+  } catch(e) {}
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  t.style.animation = 'none';
+  t.offsetHeight;
+  t.style.animation = 'fadeInOut 2s ease';
+  setTimeout(() => { t.style.display = 'none'; }, 2000);
+}
+
+// === 渲染URL列表 ===
+function renderUrlList() {
+  const container = document.getElementById('urlList');
+  document.getElementById('urlCount').textContent = URLS.length;
+  container.innerHTML = URLS.map(u => `
+    <div class="url-item" id="url-${u.id}">
+      <span class="idx">#${u.id}</span>
+      <a class="link" href="${u.full}" target="_blank" title="${u.full}">${u.short}</a>
+      <span class="done${skippedUrls.has(u.id) ? ' show' : ''}">已跳过</span>
+      <button class="btn-skip" onclick="skipUrl(${u.id})">跳过</button>
+    </div>
+  `).join('');
+}
+
+function skipUrl(id) {
+  skippedUrls.add(id);
+  const done = document.querySelector(`#url-${id} .done`);
+  if (done) done.classList.add('show');
+  saveState();
+}
+
+// === 渲染表格 ===
+function renderTable() {
+  const tbody = document.getElementById('entryTbody');
+  document.getElementById('totalCount').textContent = `已录入: ${entries.length} 条`;
+  if (entries.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty">暂无数据，开始录入吧 📝</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = entries.map((e, i) => `
+    <tr>
+      <td>${esc(e.name)}</td>
+      <td>${esc(e.area)}</td>
+      <td>${esc(e.size)}</td>
+      <td>${esc(e.price)}</td>
+      <td>${esc(e.decoration)}</td>
+      <td>${esc(e.floor)}</td>
+      <td>${esc(e.location)}</td>
+      <td>${esc((e.features||[]).join(', '))}</td>
+      <td class="actions">
+        <button class="edit" onclick="editEntry(${i})">编辑</button>
+        <button class="del" onclick="deleteEntry(${i})">删除</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function esc(s) { return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// === CRUD ===
+function addEntry() {
+  const name = document.getElementById('inputName').value.trim();
+  const area = document.getElementById('inputArea').value;
+  const size = document.getElementById('inputSize').value.trim();
+  const price = document.getElementById('inputPrice').value.trim();
+  if (!name || !area || !size || !price) { toast('❌ 请填写必填项：项目名称、区域、面积、价格'); return; }
+  const decoration = document.getElementById('inputDeco').value;
+  const floor = document.getElementById('inputFloor').value.trim();
+  const location = document.getElementById('inputLocation').value.trim();
+  const featuresStr = document.getElementById('inputFeatures').value.trim();
+  const features = featuresStr ? featuresStr.split(/[,，]/).map(f=>f.trim()).filter(f=>f) : [];
+  
+  const entry = {
+    name, area, size, price, decoration, floor, location,
+    features,
+    image: "",
+    date: new Date().toISOString().slice(0,10)
+  };
+
+  const editIdx = document.getElementById('formCard').dataset.editIdx;
+  if (editIdx !== undefined && editIdx !== '') {
+    entries[parseInt(editIdx)] = entry;
+    delete document.getElementById('formCard').dataset.editIdx;
+    toast('✅ 已更新！');
+  } else {
+    entries.push(entry);
+    toast('✅ 已添加！');
+  }
+  saveState();
+  renderTable();
+  clearForm();
+}
+
+function clearForm() {
+  document.getElementById('inputName').value = '';
+  document.getElementById('inputArea').value = '';
+  document.getElementById('inputSize').value = '';
+  document.getElementById('inputPrice').value = '';
+  document.getElementById('inputDeco').value = '精装修';
+  document.getElementById('inputFloor').value = '';
+  document.getElementById('inputLocation').value = '';
+  document.getElementById('inputFeatures').value = '';
+  delete document.getElementById('formCard').dataset.editIdx;
+}
+
+function editEntry(idx) {
+  const e = entries[idx];
+  document.getElementById('inputName').value = e.name;
+  document.getElementById('inputArea').value = e.area;
+  document.getElementById('inputSize').value = e.size;
+  document.getElementById('inputPrice').value = e.price;
+  document.getElementById('inputDeco').value = e.decoration;
+  document.getElementById('inputFloor').value = e.floor || '';
+  document.getElementById('inputLocation').value = e.location || '';
+  document.getElementById('inputFeatures').value = (e.features||[]).join(', ');
+  document.getElementById('formCard').dataset.editIdx = idx;
+  document.getElementById('inputName').focus();
+}
+
+function deleteEntry(idx) {
+  if (!confirm(`确定删除「${entries[idx].name}」？`)) return;
+  entries.splice(idx, 1);
+  saveState();
+  renderTable();
+  toast('🗑 已删除');
+}
+
+function clearAll() {
+  if (!confirm(`确定清空全部 ${entries.length} 条数据？此操作不可恢复！`)) return;
+  entries = [];
+  saveState();
+  renderTable();
+  toast('🗑 已清空全部');
+}
+
+// === 导出 ===
+function exportJSON() {
+  if (entries.length === 0) { toast('❌ 没有数据可导出'); return; }
+  const json = JSON.stringify(entries, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'scraped_new.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`📥 已导出 ${entries.length} 条！`);
+}
+
+// === 快捷键 ===
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); addEntry(); }
+  if (e.ctrlKey && e.key === 's') { e.preventDefault(); exportJSON(); }
+});
+
+// === 初始化 ===
+loadState();
+renderUrlList();
+renderTable();
+</script>
+
+</body>
+</html>
