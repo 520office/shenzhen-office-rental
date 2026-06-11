@@ -360,10 +360,12 @@ def parse_58(title, text, html, url):
 def parse_beike(title, text, html, url):
     """解析贝壳页面 - Title包含结构化数据"""
     # Title: 【金环宇862平中楼层近地铁精装朝东/面积862m²/价格6.04万元/月/精装/】-深圳贝壳商业地产
+    # Or: 【信义领御研发中心（稻兴环球科创中心）2004.中楼层近地铁/面积2004m²/...】
     
-    # Extract name from start
+    # ===== Extract name from start =====
+    # Fix: handle both "XXX平" and "XXX." delimiters after area number
     name = ""
-    m = re.search(r'【(.+?)(?:\d+平|$)', title)
+    m = re.search(r'【(.+?)\d+[平.]', title)
     if m:
         name = m.group(1).strip()
         # Remove floor/direction suffixes
@@ -376,17 +378,19 @@ def parse_beike(title, text, html, url):
     if not name:
         name = parse_name_from_text(text, title)
     
-    # Size from title
+    # ===== Size from title =====
+    # Fix: support decimal sizes like "面积2004.24m²"
     size = ""
-    m = re.search(r'面积\s*(\d+)\s*[mM㎡²]', title)
+    m = re.search(r'面积\s*([\d.]+)\s*[mM㎡²]', title)
     if m:
-        size = m.group(1) + "㎡"
+        size = m.group(1).rstrip('.') + "㎡"
     if not size:
-        m = re.search(r'(\d+)\s*平', title)
+        # Second try: "XXX平" - but prioritize larger numbers (avoid catching decimal parts)
+        m = re.search(r'(?<!\d)(\d+)\s*平', title)
         if m:
             size = m.group(1) + "㎡"
     
-    # Price from title
+    # ===== Price from title =====
     price = ""
     m = re.search(r'价格\s*([\d.]+)\s*万?\s*元?\s*/\s*月', title)
     if m:
@@ -402,27 +406,66 @@ def parse_beike(title, text, html, url):
     if not price:
         price = parse_price_from_text(text, html, title)
     
-    # Decoration from title
+    # ===== Decoration from title =====
     decoration = parse_decoration_from_text(text, title)
     if "精装" in title:
         decoration = "精装修"
     
-    # Area
-    area = parse_area_from_text(text, title)
+    # ===== Area: extract from breadcrumb or dedicated location element =====
+    area = ""
+    # Try beike breadcrumb: 深圳 > 宝安 > 新安
+    m = re.search(r'深圳\s*[>＞]\s*(\S+?)\s*[>＞]\s*(\S+?)\s*[>＞]', text)
+    if m:
+        district = m.group(1).strip()
+        sub = m.group(2).strip()
+        # Clean sub-area (remove numbers, extra chars)
+        sub = re.sub(r'[\d\s/【】]', '', sub)
+        if sub in AREAS:
+            area = sub
+    # Try HTML breadcrumb links
+    if not area:
+        crumbs = re.findall(r'(?:breadcrumb|crumbs|crumbs-item)[^>]*>([^<]+)<', html)
+        for crumb in reversed(crumbs):
+            crumb = crumb.strip()
+            if crumb in AREAS and crumb not in ('深圳', '宝安', '南山'):
+                area = crumb
+                break
+    # Try text in specific "location" pattern near "新安" or similar
+    if not area:
+        m = re.search(r'(新安|西乡|福永|沙井|翻身|兴东|坪洲|固戍|碧海湾)', text)
+        if m:
+            area = m.group(1)
+    # Fallback to general parsing (but reverse-prioritize sub-areas)
+    if not area:
+        area = parse_area_from_text(text, title)
     
-    # Floor from title
+    # ===== Floor from title =====
     floor = ""
     m = re.search(r'([低中高]楼层)', title)
     if m:
         floor = m.group(1)
     
-    # Location from HTML
+    # ===== Location: derive from area or extract from HTML =====
     location = ""
-    loc_m = re.search(r'class="[^"]*address[^"]*"[^>]*>([^<]+)', html)
-    if not loc_m:
-        loc_m = re.search(r'>([\u4e00-\u9fff]{2,20}(?:区|路|街道)[\u4e00-\u9fff\d]{2,20}(?:号)?)<', html)
-    if loc_m:
-        location = loc_m.group(1).strip()
+    # Try breadcrumb in HTML for full "district-sub" format
+    crumbs = re.findall(r'(?:breadcrumb|crumbs|crumbs-item)[^>]*>([^<]+)<', html)
+    if len(crumbs) >= 3:
+        # Filter for meaningful crumbs
+        meaningful = [c.strip() for c in crumbs if c.strip() and len(c.strip()) <= 8 and '深圳' not in c and '首页' not in c]
+        if len(meaningful) >= 2:
+            location = '-'.join(meaningful[-2:])
+    # If area is a sub-area, derive location from district
+    if not location and area in ('新安', '西乡', '福永', '沙井', '翻身', '兴东', '坪洲', '固戍', '碧海湾'):
+        location = f"宝安-{area}"
+    if not location and area:
+        location = area
+    # Last resort: extract address from HTML
+    if not location:
+        loc_m = re.search(r'class="[^"]*address[^"]*"[^>]*>([^<]+)', html)
+        if loc_m:
+            loc = loc_m.group(1).strip()
+            if loc and len(loc) >= 4 and '写字楼' not in loc:
+                location = loc
     
     return {
         "name": name or "未知项目",
