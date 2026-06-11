@@ -2585,12 +2585,16 @@ var _DEFAULT_DATA = [
             var a = _allProjects[i].area || '';
             if (a) counts[a] = (counts[a] || 0) + 1;
         }
-        // 合并 area 变体（如"宝安中心"+"宝安-宝安中心区" → 统一显示）
+        // 合并 area 变体：剥离"南山-"/"宝安-"前缀，统一到卡片标题
         var merged = {};
         for (var key in counts) {
             if (!counts.hasOwnProperty(key)) continue;
             var display = key;
+            // 特殊映射
             if (key === '宝安-宝安中心区') display = '宝安中心';
+            // 通用前缀剥离：宝安-西乡→西乡, 南山-前海→前海, 宝安-福永→福永 等
+            else if (key.slice(0, 3) === '宝安-') display = key.slice(3);
+            else if (key.slice(0, 3) === '南山-') display = key.slice(3);
             merged[display] = (merged[display] || 0) + counts[key];
         }
         // 更新每个 area-card 的 badge-count
