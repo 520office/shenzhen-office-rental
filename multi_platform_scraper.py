@@ -301,6 +301,20 @@ def parse_fang(title, text, html, url):
         if loc not in ("找小区", "核心区域", "商业区", "附近"):
             location = loc
     
+    # Extract house images from Fang.com page
+    # Fang.com images use protocol-relative URLs like:
+    # //cdnsfb.soufunimg.com/viewimage/sfb/houseverfiy/.../1000x637c.jpg
+    image = ""
+    img_patterns = [
+        r'<img[^>]*src="(//cdnsfb\.soufunimg\.com/viewimage/sfb/houseverfiy/[^"]*1000x[^"]*\.jpg(?:\?[^"]*)?)"',
+        r'<img[^>]*src="(//cdnsfb\.soufunimg\.com/viewimage/sfb/houseverfiy/[^"]*\.jpg(?:\?[^"]*)?)"',
+    ]
+    for pat in img_patterns:
+        matches = re.findall(pat, html)
+        if matches:
+            image = "https:" + matches[0]
+            break
+    
     return {
         "name": name or "未知项目",
         "area": area,
@@ -310,7 +324,7 @@ def parse_fang(title, text, html, url):
         "decoration": parse_decoration_from_text(text, title),
         "floor": parse_floor_from_text(text, title),
         "features": parse_features_from_text(text, title),
-        "image": "",
+        "image": image,
         "date": datetime.date.today().isoformat(),
     }
 
@@ -559,9 +573,11 @@ def scrape_page(page, url, platform):
         title = page.title()
         text = strip_html(html)
 
-        # 检测验证码
-        if "验证" in title or "安全验证" in title or "频繁" in title:
-            print(f"  ⚠️ 触发验证码!")
+        # 检测验证码（检查title和html内容）
+        cv_keywords = ["验证", "安全验证", "频繁", "滑块", "请完成下列验证"]
+        cv_triggered = any(kw in title for kw in cv_keywords) or any(kw in html[:2000] for kw in cv_keywords)
+        if cv_triggered:
+            print(f"  ⚠️ 触发验证码! title={title}")
             return None
 
         # 贝壳：从截获的API响应中提取房源数据

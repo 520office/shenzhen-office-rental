@@ -466,7 +466,7 @@
     <!-- Listings -->
     <section class="projects-section">
         <h2 class="section-title">坪洲在租房源</h2>
-        <p class="section-subtitle">宝安·坪洲区域共 <strong id="areaCount" style="color:var(--primary);">0</strong> 套办公室出租，更新时间：2026年6月8日</p>
+        <p class="section-subtitle">宝安·坪洲区域共 <strong id="areaCount" style="color:var(--primary);">0</strong> 套办公室出租，更新时间：<span id="updateTime">2026年6月8日</span></p>
         <div class="projects-grid" id="projectsGrid"></div>
         <p class="search-no-result" id="searchNoResult">😕 未找到匹配的房源，试试换个关键词吧！<br>📞 联系谢经理 15914050727 获取更多房源</p>
     </section>
@@ -579,6 +579,18 @@
             _totalCards = proj.length;
             var cnt = document.getElementById('areaCount');
             if (cnt) cnt.textContent = proj.length;
+        
+            var maxDate = '';
+            for (var i = 0; i < proj.length; i++) {
+                var d = proj[i].date || '';
+                if (d && d > maxDate) maxDate = d;
+            }
+            if (maxDate) {
+                var parts = maxDate.split('-');
+                var dateStr = parts[0] + '年' + parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日';
+                var utEl = document.getElementById('updateTime');
+                if (utEl) utEl.textContent = dateStr;
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
