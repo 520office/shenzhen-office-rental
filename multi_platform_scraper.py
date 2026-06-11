@@ -71,7 +71,7 @@ def detect_platform(url):
         return "fang"
     if "58.com" in url:
         return "58"
-    if "ke.com" in url or "beike" in url:
+    if "ke.com" in url or "beike" in url or "shangye.ke.com" in url:
         return "beike"
     if "anjuke.com" in url:
         return "anjuke"
@@ -357,8 +357,8 @@ def parse_58(title, text, html, url):
     }
 
 
-def parse_beike(title, text, html, url):
-    """解析贝壳页面 - Title包含结构化数据"""
+def parse_beike(title, text, html, url, api_data=None):
+    """解析贝壳页面 - Title包含结构化数据，API数据提供图片"""
     # Title: 【金环宇862平中楼层近地铁精装朝东/面积862m²/价格6.04万元/月/精装/】-深圳贝壳商业地产
     # Or: 【信义领御研发中心（稻兴环球科创中心）2004.中楼层近地铁/面积2004m²/...】
     
@@ -467,6 +467,30 @@ def parse_beike(title, text, html, url):
             if loc and len(loc) >= 4 and '写字楼' not in loc:
                 location = loc
     
+    # ===== Image: from API data (primary) or HTML (fallback) =====
+    image = ""
+    image_list = []
+    if api_data:
+        # From captured API response (shangye.ke.com list/detail page)
+        img = api_data.get("image", "")
+        img_list = api_data.get("image_list", [])
+        if img and not img.startswith("http"):
+            img = "https:" + img
+        image = img
+        for im in img_list:
+            src = im.get("src", "") if isinstance(im, dict) else str(im)
+            if src and not src.startswith("http"):
+                src = "https:" + src
+            image_list.append(src)
+    # Fallback: try DOM images
+    if not image:
+        imgs = re.findall(r'<img[^>]*src\s*=\s*["\']([^"\']*p\.ke\.com[^"\']+\.(?:jpg|png|jpeg|webp)[^"\']*)["\']', html, re.I)
+        if not imgs:
+            imgs = re.findall(r'<img[^>]*src\s*=\s*["\']([^"\']*ljcdn[^"\']+\.(?:jpg|png|jpeg|webp)[^"\']*)["\']', html, re.I)
+        if imgs:
+            image = "https:" + imgs[0] if imgs[0].startswith("//") else imgs[0]
+            image_list = ["https:" + u if u.startswith("//") else u for u in imgs[:5]]
+
     return {
         "name": name or "未知项目",
         "area": area,
@@ -476,7 +500,8 @@ def parse_beike(title, text, html, url):
         "decoration": decoration,
         "floor": floor,
         "features": parse_features_from_text(text, title),
-        "image": "",
+        "image": image,
+        "image_list": image_list,
         "date": datetime.date.today().isoformat(),
     }
 
@@ -513,23 +538,50 @@ def parse_anjuke(html, url):
 def scrape_page(page, url, platform):
     """采集单个页面，根据平台类型分发"""
     try:
+        # 贝壳平台：拦截API响应获取房源数据（含图片）
+        beike_api_data = None
+        if platform == "beike":
+            captured_responses = []
+            def on_response(response):
+                try:
+                    resp_url = response.url
+                    if 'shangye.ke.com/api/c/house/' in resp_url and response.status == 200:
+                        body = response.text()
+                        if body and len(body) < 200000:
+                            captured_responses.append(body)
+                except Exception:
+                    pass
+            page.on('response', on_response)
+
         page.goto(url, timeout=PAGE_TIMEOUT, wait_until="domcontentloaded")
-        page.wait_for_timeout(2500)
+        page.wait_for_timeout(3500 if platform == "beike" else 2500)
         html = page.content()
         title = page.title()
         text = strip_html(html)
-        
+
         # 检测验证码
         if "验证" in title or "安全验证" in title or "频繁" in title:
             print(f"  ⚠️ 触发验证码!")
             return None
-        
+
+        # 贝壳：从截获的API响应中提取房源数据
+        if platform == "beike" and captured_responses:
+            for body in captured_responses:
+                try:
+                    data = json.loads(body)
+                    docs = data.get("data", {}).get("docs", [])
+                    if docs:
+                        beike_api_data = docs[0]
+                        break
+                except json.JSONDecodeError:
+                    continue
+
         if platform == "fang":
             result = parse_fang(title, text, html, url)
         elif platform == "58":
             result = parse_58(title, text, html, url)
         elif platform == "beike":
-            result = parse_beike(title, text, html, url)
+            result = parse_beike(title, text, html, url, beike_api_data)
         elif platform == "anjuke":
             result = parse_anjuke(html, url)
         else:
