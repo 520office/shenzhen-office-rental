@@ -466,44 +466,8 @@
     <!-- Listings -->
     <section class="projects-section">
         <h2 class="section-title">会展新城在租房源</h2>
-        <p class="section-subtitle">宝安·会展新城区域共 <strong style="color:var(--primary);">1</strong> 套办公室出租，更新时间：2026年6月8日</p>
-        <div class="projects-grid">
-
-            <div class="project-card">
-                <div style="position:relative;">
-                    <img class="card-image" src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop" alt="会展新城地标写字楼" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
-                    <span class="card-badge">会展新城</span>
-                </div>
-                <div class="card-body">
-                    <div class="card-title">会展新城地标写字楼</div>
-                    <div class="card-location">📍 深圳市宝安区会展新城</div>
-                    <div style="font-size:12px;color:#94a3b8;margin-top:-6px;margin-bottom:12px;">📅 更新于 2026/06/08</div>
-                    <div class="card-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">面积</span>
-                            <span class="meta-value">250-1500㎡</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">价格</span>
-                            <span class="meta-value price">68元/㎡/月</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">装修</span>
-                            <span class="meta-value" style="font-size:14px;color:#64748b;">豪华装修</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">楼层</span>
-                            <span class="meta-value" style="font-size:14px;color:#64748b;">高区全景</span>
-                        </div>
-                    </div>
-                    <div class="card-tags"><span class="card-tag">会展中心旁</span><span class="card-tag">地标建筑</span><span class="card-tag">形象好</span><span class="card-tag">配套顶级</span></div>
-                    <div class="card-footer">
-                        <span style="font-size:13px;color:#94a3b8;">☎️ 谢经理 15914050727</span>
-                        <a href="tel:15914050727" class="card-contact-btn">马上咨询</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <p class="section-subtitle">宝安·会展新城区域共 <strong id="areaCount" style="color:var(--primary);">0</strong> 套办公室出租，更新时间：2026年6月8日</p>
+        <div class="projects-grid" id="projectsGrid"></div>
         <p class="search-no-result" id="searchNoResult">😕 未找到匹配的房源，试试换个关键词吧！<br>📞 联系谢经理 15914050727 获取更多房源</p>
     </section>
 
@@ -536,122 +500,137 @@
         </p>
     </footer>
 
+            var _DEFAULT_DATA = [{"name":"会展新城地标写字楼","area":"会展新城","location":"深圳市宝安区会展新城","size":"250-1500㎡","price":"68元/㎡/月","decoration":"豪华装修","floor":"高区全景","features":["会展中心旁","地标建筑","形象好","配套顶级"],"image":"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop","date":"2026-06-08","id":13}];
+
     <script>
         var _totalCards = 0;
         var _timer = null;
+        var STORAGE_KEY = "office_projects_data";
+        var AREA_NAMES = ["会展新城"];
+
+        function _loadProjects() {
+            var stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    var data = JSON.parse(stored);
+                    if (Array.isArray(data) && data.length > 0) {
+                        var matched = [];
+                        for (var i = 0; i < data.length; i++) {
+                            if (AREA_NAMES.indexOf(data[i].area || '') !== -1) {
+                                matched.push(data[i]);
+                            }
+                        }
+                        return matched;
+                    }
+                } catch(e) {}
+            }
+            return JSON.parse(JSON.stringify(_DEFAULT_DATA));
+        }
+
+        function _renderCard(p) {
+            var n = p.name || '';
+            var img = p.image || '';
+            var area = p.area || '会展新城';
+            var loc = p.location || '';
+            var sz = p.size || '';
+            var pr = p.price || '';
+            var deco = p.decoration || '';
+            var fl = p.floor || '';
+            var ft = Array.isArray(p.features) ? p.features : [];
+            var d = p.date || '';
+            var dd = d ? d.replace(/-/g, '/') : '';
+
+            var imgHtml = img
+                ? '<img class="card-image" src="' + img.replace(/"/g,'&quot;') + '" alt="' + n.replace(/"/g,'&quot;') + '" loading="lazy" onerror="this.onerror=null;this.style.display=\'none\';var x=document.createElement(\'div\');x.className=\'card-image-placeholder\';x.innerHTML=\'<span style=font-size:48px>\ud83c\udfe2</span>\';this.parentElement.appendChild(x)">'
+                : '<div class="card-image-placeholder"><span style="font-size:48px">\ud83c\udfe2</span></div>';
+
+            var t = '';
+            for (var j = 0; j < ft.length; j++) t += '<span class="card-tag">' + ft[j] + '</span>';
+
+            var dh = dd ? '<div style="font-size:12px;color:#94a3b8;margin-top:-6px;margin-bottom:12px;">\ud83d\udcc5 \u66f4\u65b0\u4e8e ' + dd + '</div>' : '';
+
+            return '<div class="project-card">'
+                + '<div style="position:relative;">'
+                + imgHtml
+                + '<span class="card-badge">' + area + '</span>'
+                + '</div>'
+                + '<div class="card-body">'
+                + '<div class="card-title">' + n + '</div>'
+                + '<div class="card-location">\ud83d\udccd ' + loc + '</div>'
+                + dh
+                + '<div class="card-meta">'
+                + '<div class="meta-item"><span class="meta-label">\u9762\u79ef</span><span class="meta-value">' + sz + '</span></div>'
+                + '<div class="meta-item"><span class="meta-label">\u4ef7\u683c</span><span class="meta-value price">' + pr + '</span></div>'
+                + '<div class="meta-item"><span class="meta-label">\u88c5\u4fee</span><span class="meta-value" style="font-size:14px;color:#64748b;">' + deco + '</span></div>'
+                + '<div class="meta-item"><span class="meta-label">\u697c\u5c42</span><span class="meta-value" style="font-size:14px;color:#64748b;">' + fl + '</span></div>'
+                + '</div>'
+                + '<div class="card-tags">' + t + '</div>'
+                + '<div class="card-footer">'
+                + '<span style="font-size:13px;color:#94a3b8;">\u260e\ufe0f \u8c22\u7ecf\u7406 15914050727</span>'
+                + '<a href="tel:15914050727" class="card-contact-btn">\u9a6c\u4e0a\u54a8\u8be2</a>'
+                + '</div></div></div>';
+        }
+
+        function _renderAll() {
+            var proj = _loadProjects();
+            var grid = document.getElementById('projectsGrid');
+            if (!grid) return;
+            var h = '';
+            for (var i = 0; i < proj.length; i++) h += _renderCard(proj[i]);
+            grid.innerHTML = h;
+            _totalCards = proj.length;
+            var cnt = document.getElementById('areaCount');
+            if (cnt) cnt.textContent = proj.length;
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
-            var input = document.getElementById('searchInput');
-            var clearBtn = document.getElementById('searchClear');
-            if (!input) return;
-
-            _totalCards = document.querySelectorAll('.project-card').length;
-
-            // 输入防抖
-            input.addEventListener('input', function() {
+            _renderAll();
+            var inp = document.getElementById('searchInput');
+            if (!inp) return;
+            inp.addEventListener('input', function() {
                 if (_timer) clearTimeout(_timer);
                 _timer = setTimeout(doSearch, 250);
                 updateClearBtn();
             });
-
-            // 回车立即搜索
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    if (_timer) clearTimeout(_timer);
-                    doSearch();
-                }
-                if (e.key === 'Escape') {
-                    input.value = '';
-                    doSearch();
-                    updateClearBtn();
-                }
+            inp.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { if (_timer) clearTimeout(_timer); doSearch(); }
+                if (e.key === 'Escape') { inp.value = ''; doSearch(); updateClearBtn(); }
             });
         });
 
         function updateClearBtn() {
-            var input = document.getElementById('searchInput');
-            var btn = document.getElementById('searchClear');
-            if (input && btn) {
-                if (input.value.length > 0) btn.classList.add('visible');
-                else btn.classList.remove('visible');
-            }
+            var i = document.getElementById('searchInput');
+            var b = document.getElementById('searchClear');
+            if (i && b) b.classList.toggle('visible', i.value.length > 0);
         }
-
         function clearSearch() {
-            var input = document.getElementById('searchInput');
-            if (input) { input.value = ''; updateClearBtn(); }
-            doSearch();
-            var inputEl = document.getElementById('searchInput');
-            if (inputEl) inputEl.focus();
+            var i = document.getElementById('searchInput');
+            if (i) { i.value = ''; updateClearBtn(); }
+            doSearch(); document.getElementById('searchInput').focus();
         }
-
         function doSearch() {
-            var input = document.getElementById('searchInput');
-            var query = (input ? input.value.trim().toLowerCase() : '');
+            var inp = document.getElementById('searchInput');
+            var q = (inp ? inp.value.trim().toLowerCase() : '');
             var cards = document.querySelectorAll('.project-card');
-            var countEl = document.getElementById('searchCount');
-            var noResultEl = document.getElementById('searchNoResult');
-            var gridEl = document.querySelector('.projects-grid');
-            var visibleCount = 0;
-
-            cards.forEach(function(card) {
-                // 清除之前的高亮
-                var prev = card.querySelectorAll('.highlight');
-                prev.forEach(function(h) {
-                    h.outerHTML = h.textContent;
-                });
-
-                if (!query) {
-                    card.style.display = '';
-                    visibleCount++;
-                    return;
-                }
-
-                // 搜索文本内容
-                var text = (card.textContent || '').toLowerCase();
-                if (text.indexOf(query) !== -1) {
-                    card.style.display = '';
-                    visibleCount++;
-                    // 高亮匹配文字
-                    highlightText(card.querySelector('.card-title'), query);
-                    highlightText(card.querySelector('.card-location'), query);
-                } else {
-                    card.style.display = 'none';
-                }
+            var cntEl = document.getElementById('searchCount');
+            var noEl = document.getElementById('searchNoResult');
+            var vc = 0;
+            cards.forEach(function(c) {
+                c.querySelectorAll('.highlight').forEach(function(h) { h.outerHTML = h.textContent; });
+                if (!q) { c.style.display = ''; vc++; return; }
+                if ((c.textContent||'').toLowerCase().indexOf(q) !== -1) {
+                    c.style.display = ''; vc++;
+                    [c.querySelector('.card-title'), c.querySelector('.card-location')].forEach(function(el) {
+                        if (el && el.innerHTML.indexOf('highlight') === -1 && q) {
+                            var rx = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                            el.innerHTML = el.innerHTML.replace(rx, '<span class="highlight">$1</span>');
+                        }
+                    });
+                } else { c.style.display = 'none'; }
             });
-
-            // 更新计数
-            if (countEl) {
-                if (query) {
-                    countEl.textContent = visibleCount + '/' + _totalCards + ' 条';
-                } else {
-                    countEl.textContent = '';
-                }
-            }
-
-            // 无结果提示
-            if (noResultEl) {
-                if (query && visibleCount === 0) {
-                    noResultEl.classList.add('visible');
-                } else {
-                    noResultEl.classList.remove('visible');
-                }
-            }
+            if (cntEl) cntEl.textContent = q ? vc + '/' + _totalCards + ' \u6761' : '';
+            if (noEl) noEl.classList.toggle('visible', q && vc === 0);
         }
-
-        function highlightText(el, query) {
-            if (!el || !query) return;
-            var html = el.innerHTML;
-            // 避免重复高亮已高亮的内容
-            if (html.indexOf('highlight') !== -1) return;
-            var regex = new RegExp('(' + escapeRegExp(query) + ')', 'gi');
-            el.innerHTML = html.replace(regex, '<span class="highlight">$1</span>');
-        }
-
-        function escapeRegExp(s) {
-            return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
     </script>
 </body>
 </html>
