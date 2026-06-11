@@ -2576,6 +2576,33 @@ var _DEFAULT_DATA = [
             + '</div>';
     }
 
+    function _updateAreaCounts() {
+        // 按 area 字段统计每条数据
+        var counts = {};
+        for (var i = 0; i < _allProjects.length; i++) {
+            var a = _allProjects[i].area || '';
+            if (a) counts[a] = (counts[a] || 0) + 1;
+        }
+        // 合并 area 变体（如"宝安中心"+"宝安-宝安中心区" → 统一显示）
+        var merged = {};
+        for (var key in counts) {
+            if (!counts.hasOwnProperty(key)) continue;
+            var display = key;
+            if (key === '宝安-宝安中心区') display = '宝安中心';
+            merged[display] = (merged[display] || 0) + counts[key];
+        }
+        // 更新每个 area-card 的 badge-count
+        var cards = document.querySelectorAll('.area-card');
+        for (var j = 0; j < cards.length; j++) {
+            var title = cards[j].querySelector('.area-card-title');
+            var badge = cards[j].querySelector('.badge-count');
+            if (!title || !badge) continue;
+            var name = title.textContent.trim();
+            var cnt = merged[name] || 0;
+            badge.textContent = cnt + '\u5957\u623f\u6e90';
+        }
+    }
+
     function _renderAll() {
         _loadProjects();
         var grid = document.getElementById('projectsGrid');
@@ -2590,6 +2617,7 @@ var _DEFAULT_DATA = [
         if (ct) ct.textContent = _allProjects.length;
 
         _totalCards = _allProjects.length;
+        _updateAreaCounts();
     }
 
     document.addEventListener('DOMContentLoaded', _renderAll);
