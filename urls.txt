@@ -1,27 +1,17 @@
 #  办公室房源URL列表
 # 每行一个URL，支持#号注释
 # 保存后运行: python batch_scraper.py
-
-# 在这里继续添加更多URL...
 # 格式: 直接复制浏览器地址栏的完整URL即可，脚本会自动精简
-#新安
-https://shangye.ke.com/sz/xzl_rent/105124468878.html
-https://shangye.ke.com/sz/xzl_rent/105124468885.html
-https://shangye.ke.com/sz/xzl_rent/105123594524.html
-https://shangye.ke.com/sz/xzl_rent/105124471694.html
-https://shangye.ke.com/sz/xzl_rent/105123277287.html
-https://shangye.ke.com/sz/xzl_rent/105123813007.html
-https://shangye.ke.com/sz/xzl_rent/105122935120.html
-https://shangye.ke.com/sz/xzl_rent/105123813468.html
-https://shangye.ke.com/sz/xzl_rent/105124467392.html
-https://shangye.ke.com/sz/xzl_rent/105124524849.html
-https://shangye.ke.com/sz/xzl_rent/105123814386.html
-https://shangye.ke.com/sz/xzl_rent/105123813398.html
-https://shangye.ke.com/sz/xzl_rent/105123812902.html
-https://shangye.ke.com/sz/xzl_rent/105124376184.html
-https://shangye.ke.com/sz/xzl_rent/105124532361.html
-https://shangye.ke.com/sz/xzl_rent/105124014955.html
-https://shangye.ke.com/sz/xzl_rent/105124014796.html
-https://shangye.ke.com/sz/xzl_rent/105123813023.html
-https://shangye.ke.com/sz/xzl_rent/105121676975.html
-https://shangye.ke.com/sz/xzl_rent/105124375006.html
+# 房天下 - 新安
+# 在这里继续添加更多URL...
+https://sz.office.fang.com/zu/3_246511867.html?channel=2,32
+https://sz.office.fang.com/zu/3_246508996.html?channel=2,32
+https://sz.office.fang.com/zu/3_246508994.html?channel=2,32
+https://sz.office.fang.com/zu/3_246239382.html?channel=2,32
+https://sz.office.fang.com/zu/3_247252892.html?channel=2,32
+https://sz.office.fang.com/zu/3_247004306.html?channel=2,32
+https://sz.office.fang.com/zu/3_247592370.html?channel=2,32
+https://sz.office.fang.com/zu/3_246239357.html?channel=2,32
+https://sz.office.fang.com/zu/3_246879765.html?channel=2,32
+https://sz.office.fang.com/zu/3_247269001.html?channel=2,32
+https://sz.office.fang.com/zu/3_247608492.html?channel=2,32
