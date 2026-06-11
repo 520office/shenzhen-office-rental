@@ -4,12 +4,24 @@
 
 # 在这里继续添加更多URL...
 # 格式: 直接复制浏览器地址栏的完整URL即可，脚本会自动精简
-# 房天下
-https://sz.office.fang.com/zu/3_247674724.html?channel=2,32
-https://sz.office.fang.com/zu/3_247674879.html?channel=2,32
-
-#58
-https://sz.58.com/zhaozu/85360413585629x.shtml?prd=ZKXIpnLvJbLU0HgktMsZJzIz9%2Bif0HHo3uwFNQeb8UifhmNb7TAeVe96YaOykgp%2F&houseId=4326290294906886&urlParamsMap=4A8A8D3BF5EA4292C79B328A8A4E91AC618732AF0A92D2541731FD4A4ACF9E4736B851208D416BC820DD6390A7C654DF8441C74D51B08E40A1CC4569E89BFB9CAE0C3483E48A59682013CFF106ADB5BD04380FB5B64DD8653E69417614CC3FFC6EFABECC7CDF40CD4118134C46C431C7193EA16D65677C2AFDB4491BE1D64298E268497D184C4A2BA47E737C3918C64701CE3F8FF0031A8AD1A5009700A0A458E9268A660611A757E953975FBB00CB85&gpos=14&legotopurl=%2F%2Flegoclick.58.com%2Fjump%3Ftarget%3Dszq1XB3draOWUvYfXh66ULGds19dn1mkPjD1PH9dPWcOXaO1pZwVUT7bsyDLnhD3nHNYsHDknHcVPAP-mzY3nHuhsH7hnAmYnAuhrjn3nkDOn1bvP1NLrHm1njm1nTDKPjnzPWcOnjcOPjbkPW93P9DkTHDknTDQsjDYTHEKnH03nHD1rjDQrHD3PkDLTHN3syQG0LwluaL--mUb8Fo-Msjb8J0KnEDQTEDVnEDVTHckPWc3njb1nW01rHbYPWT3PWEKP97kmgF6UgnQnW0lnaQG0duG0jCQTHDKuWNznHN1mhcVuhNOuiYYmHcksH6bnhmVn1czmHP6mywhPyEOTHckPWc3njb1nW0dnWbYrjEzrHDKnWTvnW9krHnzP1NknjTznH0vn9DKTEDKTiYKTEDKIRwkiMnzUL7K0ytOy-w7RbPfNyGKu1YqTHcYnjblrADdPHC1nvcQrWnOnjCvry7hrWFBnHNlrjb3n1GbujEYTHTKnTDKnikQPT7exEDQnjTKnHTknWbknTD3PWDkPW7Buid6rAmdsHEkn1bVrymvriYdnvcknyD3nyFbuWmKTHTKTEDkTHE_nH9QnBk1n1cLn9DQTyOdUAkKmhEvnjT1P1ckn1mvP1EkP9&referinfo=false&utm_source=&spm=&positionType=legotophouse&lgtid_shangyetie=861061be-a8f5-4039-9f69-53b01a81bdf6&cocoTestType=coco_area_expand_test&legoCocoTestType=coco_area_expand_test&filterJson=e30&jx_abtest=eHpsX2hhbmd5ZV9BLGNvY29fYXJlYV9leHBhbmRfdGVzdCxlaWNfc3lkY19wY19yZWNvbW1lbmRfYmFzZQ&list_type=main&PGTID=0d000000-0000-089c-beed-c3543795a149&ClickID=26
-#贝壳
-https://shangye.ke.com/sz/xzl_rent/105124851066.html
-https://shangye.ke.com/sz/xzl_rent/105124794012.html
+#新安
+https://shangye.ke.com/sz/xzl_rent/105124468878.html
+https://shangye.ke.com/sz/xzl_rent/105124468885.html
+https://shangye.ke.com/sz/xzl_rent/105123594524.html
+https://shangye.ke.com/sz/xzl_rent/105124471694.html
+https://shangye.ke.com/sz/xzl_rent/105123277287.html
+https://shangye.ke.com/sz/xzl_rent/105123813007.html
+https://shangye.ke.com/sz/xzl_rent/105122935120.html
+https://shangye.ke.com/sz/xzl_rent/105123813468.html
+https://shangye.ke.com/sz/xzl_rent/105124467392.html
+https://shangye.ke.com/sz/xzl_rent/105124524849.html
+https://shangye.ke.com/sz/xzl_rent/105123814386.html
+https://shangye.ke.com/sz/xzl_rent/105123813398.html
+https://shangye.ke.com/sz/xzl_rent/105123812902.html
+https://shangye.ke.com/sz/xzl_rent/105124376184.html
+https://shangye.ke.com/sz/xzl_rent/105124532361.html
+https://shangye.ke.com/sz/xzl_rent/105124014955.html
+https://shangye.ke.com/sz/xzl_rent/105124014796.html
+https://shangye.ke.com/sz/xzl_rent/105123813023.html
+https://shangye.ke.com/sz/xzl_rent/105121676975.html
+https://shangye.ke.com/sz/xzl_rent/105124375006.html
