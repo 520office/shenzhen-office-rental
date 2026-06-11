@@ -3719,14 +3719,116 @@ const DEFAULT_DATA = [
     "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop",
     "date": "2026-06-10",
     "id": 131
-  }
+  },
+  {
+  "name": "前海人寿金融中心",
+  "area": "宝安中心",
+  "location": "",
+  "size": "3000㎡",
+  "price": "8元/㎡/月",
+  "decoration": "豪华装修",
+  "floor": "共1层",
+  "features": [
+    "配套食堂",
+    "采光好",
+    "户型方正",
+    "交通便捷"
+  ],
+  "image": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop",
+  "date": "2026-06-11",
+  "id": 132
+},
+  {
+  "name": "弘毅大厦",
+  "area": "前海",
+  "location": "",
+  "size": "2000㎡",
+  "price": "90元/㎡/月",
+  "decoration": "精装修",
+  "floor": "共1层",
+  "features": [
+    "近地铁",
+    "配套食堂",
+    "停车位",
+    "24小时空调",
+    "交通便捷"
+  ],
+  "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
+  "date": "2026-06-11",
+  "id": 133
+},
+  {
+  "name": "一手开发商700平园",
+  "area": "南山科技园",
+  "location": "",
+  "size": "700㎡",
+  "price": "35元/㎡/月",
+  "decoration": "豪华装修",
+  "floor": "高楼",
+  "features": [
+    "近地铁",
+    "配套食堂",
+    "停车位",
+    "可注册",
+    "红本",
+    "24小时空调",
+    "拎包入驻",
+    "配家私",
+    "采光好",
+    "5A甲级",
+    "中央空调",
+    "交通便捷",
+    "露台"
+  ],
+  "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop",
+  "date": "2026-06-11",
+  "id": 134
+},
+  {
+  "name": "金环宇",
+  "area": "宝安中心",
+  "location": "",
+  "size": "862㎡",
+  "price": "70元/㎡/月",
+  "decoration": "精装修",
+  "floor": "中楼层",
+  "features": [
+    "近地铁",
+    "配套食堂",
+    "可注册",
+    "交通便捷"
+  ],
+  "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop",
+  "date": "2026-06-11",
+  "id": 135
+},
+  {
+  "name": "碧桂园凤凰国际智谷",
+  "area": "宝安中心",
+  "location": "",
+  "size": "113㎡",
+  "price": "60元/㎡/月",
+  "decoration": "精装修",
+  "floor": "低楼层",
+  "features": [
+    "近地铁",
+    "配套食堂",
+    "可注册",
+    "交通便捷"
+  ],
+  "image": "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&h=400&fit=crop",
+  "date": "2026-06-11",
+  "id": 136
+},
+
 ];
 
 const STORAGE_KEY = "office_projects_data";
 const DATA_VERSION_KEY = "office_data_version";
+const DEFAULT_SYNC_KEY = "office_default_sync_ver";
 let nextId = 14;
 
-// 计算默认数据的简单哈希（用于检测内容变更）
+// 计算数据的简单哈希（用于检测内容变更）
 function hashData(data) {
     let hash = 0;
     const str = JSON.stringify(data);
@@ -3746,29 +3848,39 @@ function loadData() {
         try {
             const data = JSON.parse(stored);
             if (Array.isArray(data) && data.length > 0) {
-                // 检测版本或数量不一致时自动同步
-                if (storedVersion !== DEFAULT_HASH || data.length < DEFAULT_DATA.length) {
-                    console.warn('[admin] 检测到默认数据已更新，自动同步...');
-                    const newData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                    nextId = DEFAULT_DATA.length + 1;
-                    saveData(newData);
-                    localStorage.setItem(DATA_VERSION_KEY, DEFAULT_HASH);
-                    return newData;
+                // 数据完整性校验：存储的哈希与数据实际哈希一致 → 信任用户编辑
+                if (storedVersion === hashData(data)) {
+                    // 检测 DEFAULT_DATA 是否有新增房源（向后合并，不覆盖用户删除）
+                    const lastSyncVer = localStorage.getItem(DEFAULT_SYNC_KEY);
+                    if (lastSyncVer !== DEFAULT_HASH) {
+                        const existingIds = new Set(data.map(p => p.id));
+                        const newItems = DEFAULT_DATA.filter(p => !existingIds.has(p.id));
+                        if (newItems.length > 0) {
+                            console.warn('[admin] 检测到默认数据有 ' + newItems.length + ' 条新增，自动合并...');
+                            data.push(...newItems);
+                            nextId = Math.max(...data.map(p => p.id||0), 0) + 1;
+                            saveData(data);
+                        }
+                        localStorage.setItem(DEFAULT_SYNC_KEY, DEFAULT_HASH);
+                    }
+                    return data;
                 }
-                return data;
+                // 哈希不匹配 → 数据可能损坏，静默回退到默认
+                console.warn('[admin] 检测到数据校验失败，使用默认数据');
             }
-        } catch(e) {}
+        } catch(e) { console.error('[admin] 数据解析失败', e); }
     }
+    // 首次加载或数据损坏 → 使用默认数据
     const data = JSON.parse(JSON.stringify(DEFAULT_DATA));
     nextId = DEFAULT_DATA.length + 1;
     saveData(data);
-    localStorage.setItem(DATA_VERSION_KEY, DEFAULT_HASH);
+    localStorage.setItem(DEFAULT_SYNC_KEY, DEFAULT_HASH);
     return data;
 }
 
 function saveData(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    localStorage.setItem(DATA_VERSION_KEY, DEFAULT_HASH);
+    localStorage.setItem(DATA_VERSION_KEY, hashData(data));  // 保存实际数据的哈希
 }
 
 let projects = loadData();
@@ -3915,7 +4027,7 @@ function resetToDefault() {
     projects = JSON.parse(JSON.stringify(DEFAULT_DATA));
     nextId = DEFAULT_DATA.length + 1;
     saveData(projects);
-    localStorage.setItem(DATA_VERSION_KEY, DEFAULT_HASH);
+    localStorage.setItem(DEFAULT_SYNC_KEY, DEFAULT_HASH);
     renderTable();
     toast("🔄 已恢复默认数据");
 }
