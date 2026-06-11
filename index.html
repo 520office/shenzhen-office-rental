@@ -2534,6 +2534,8 @@ var _DEFAULT_DATA = [
             try { var data = JSON.parse(stored); if (Array.isArray(data) && data.length > 0) { _allProjects = data; return; } } catch(e) {}
         }
         _allProjects = JSON.parse(JSON.stringify(_DEFAULT_DATA));
+        // 首次访问时写入localStorage，供子页面共享完整数据
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_allProjects)); } catch(e) {}
     }
 
     function _renderCard(p) {

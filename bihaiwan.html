@@ -499,10 +499,8 @@
             <a href="index.html">返回首页</a> | <a href="sitemap.xml">站点地图</a>
         </p>
     </footer>
-
-            var _DEFAULT_DATA = [{"name":"碧海湾景观办公室","area":"碧海湾","location":"深圳市宝安区碧海湾片区","size":"150-500㎡","price":"60元/㎡/月","decoration":"精装修","floor":"中高区","features":["海景视野","环境优美","空气清新","低密度"],"image":"https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop","date":"2026-06-08","id":9}];
-
-    <script>
+<script>
+        var _DEFAULT_DATA = [{"name":"碧海湾景观办公室","area":"碧海湾","location":"深圳市宝安区碧海湾片区","size":"150-500㎡","price":"60元/㎡/月","decoration":"精装修","floor":"中高区","features":["海景视野","环境优美","空气清新","低密度"],"image":"https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop","date":"2026-06-08","id":9}];
         var _totalCards = 0;
         var _timer = null;
         var STORAGE_KEY = "office_projects_data";
@@ -510,21 +508,21 @@
 
         function _loadProjects() {
             var stored = localStorage.getItem(STORAGE_KEY);
+            var src = [];
             if (stored) {
                 try {
                     var data = JSON.parse(stored);
-                    if (Array.isArray(data) && data.length > 0) {
-                        var matched = [];
-                        for (var i = 0; i < data.length; i++) {
-                            if (AREA_NAMES.indexOf(data[i].area || '') !== -1) {
-                                matched.push(data[i]);
-                            }
-                        }
-                        return matched;
-                    }
+                    if (Array.isArray(data) && data.length > 0) src = data;
                 } catch(e) {}
             }
-            return JSON.parse(JSON.stringify(_DEFAULT_DATA));
+            if (src.length === 0) src = JSON.parse(JSON.stringify(_DEFAULT_DATA));
+            var matched = [];
+            for (var i = 0; i < src.length; i++) {
+                if (AREA_NAMES.indexOf(src[i].area || '') !== -1) {
+                    matched.push(src[i]);
+                }
+            }
+            return matched;
         }
 
         function _renderCard(p) {

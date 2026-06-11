@@ -499,10 +499,8 @@
             <a href="index.html">返回首页</a> | <a href="sitemap.xml">站点地图</a>
         </p>
     </footer>
-
-            var _DEFAULT_DATA = [{"name":"沙井制造产业园办公室","area":"沙井","location":"深圳市宝安区沙井街道","size":"300-2000㎡","price":"35元/㎡/月","decoration":"简装/毛坯","floor":"整层/整栋","features":["大面积","价格最低","产业配套","可分租"],"image":"https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&h=400&fit=crop","date":"2026-06-08","id":12}];
-
-    <script>
+<script>
+        var _DEFAULT_DATA = [{"name":"沙井制造产业园办公室","area":"沙井","location":"深圳市宝安区沙井街道","size":"300-2000㎡","price":"35元/㎡/月","decoration":"简装/毛坯","floor":"整层/整栋","features":["大面积","价格最低","产业配套","可分租"],"image":"https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&h=400&fit=crop","date":"2026-06-08","id":12}];
         var _totalCards = 0;
         var _timer = null;
         var STORAGE_KEY = "office_projects_data";
@@ -510,21 +508,21 @@
 
         function _loadProjects() {
             var stored = localStorage.getItem(STORAGE_KEY);
+            var src = [];
             if (stored) {
                 try {
                     var data = JSON.parse(stored);
-                    if (Array.isArray(data) && data.length > 0) {
-                        var matched = [];
-                        for (var i = 0; i < data.length; i++) {
-                            if (AREA_NAMES.indexOf(data[i].area || '') !== -1) {
-                                matched.push(data[i]);
-                            }
-                        }
-                        return matched;
-                    }
+                    if (Array.isArray(data) && data.length > 0) src = data;
                 } catch(e) {}
             }
-            return JSON.parse(JSON.stringify(_DEFAULT_DATA));
+            if (src.length === 0) src = JSON.parse(JSON.stringify(_DEFAULT_DATA));
+            var matched = [];
+            for (var i = 0; i < src.length; i++) {
+                if (AREA_NAMES.indexOf(src[i].area || '') !== -1) {
+                    matched.push(src[i]);
+                }
+            }
+            return matched;
         }
 
         function _renderCard(p) {
