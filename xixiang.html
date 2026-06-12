@@ -943,13 +943,17 @@
         function _loadProjects() {
             var stored = localStorage.getItem(STORAGE_KEY);
             var src = [];
+            var defaultLen = _DEFAULT_DATA.length;
             if (stored) {
                 try {
                     var data = JSON.parse(stored);
-                    if (Array.isArray(data) && data.length > 0) src = data;
+                    if (Array.isArray(data) && data.length > 0 && data.length >= defaultLen) src = data;
                 } catch(e) {}
             }
-            if (src.length === 0) src = JSON.parse(JSON.stringify(_DEFAULT_DATA));
+            if (src.length < defaultLen) {
+                src = JSON.parse(JSON.stringify(_DEFAULT_DATA));
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(src)); } catch(e) {}
+            }
             var matched = [];
             for (var i = 0; i < src.length; i++) {
                 if (AREA_NAMES.indexOf(src[i].area || '') !== -1) {
