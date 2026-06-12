@@ -1,8 +1,0 @@
-fix: 子页面更新时间动态化 + 房天下采集图片修复
-
-1. 13个子页面的「更新时间」改为动态显示（取该片区最新房源日期）
-   - HTML: 日期包在 <span id="updateTime">
-   - JS: _renderAll() 计算 max(date) 并更新 DOM
-2. multi_platform_scraper.py: parse_fang() 修复图片提取正则
-   - 原正则要求 .jpg)" 紧接引号，实际URL有 ?t=1 参数导致匹配失败
-   - 修复后正则支持查询参数
