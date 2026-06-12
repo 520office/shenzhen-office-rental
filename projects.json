@@ -3917,5 +3917,59 @@
     "image": "",
     "date": "2026-06-11",
     "id": 182
+  },
+  {
+    "name": "精装独栋写字楼出租 免费定制隔间 配家具空调 送车位 红本",
+    "area": "宝安-沙井",
+    "location": "",
+    "size": "142",
+    "price": "1.4元/㎡/天",
+    "decoration": "豪华装修",
+    "floor": "独栋/共30层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积60m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/c1c10b53bd6e9802963c31ffdcca65bb/1600x1200.jpg",
+    "date": "2026-06-12",
+    "id": 183
+  },
+  {
+    "name": "特价沙井地铁口甲级写字楼，带家私空调24小时独立控制",
+    "area": "宝安-沙井",
+    "location": "",
+    "size": "188",
+    "price": "1.5元/㎡/天",
+    "decoration": "豪华装修",
+    "floor": "独栋/共28层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/79a1126f12f2d5b3e7225e2d095a001c/1600x1200.jpg",
+    "date": "2026-06-12",
+    "id": 184
+  },
+  {
+    "name": "物业直租！云展广场 整层2478平 最小91平起租 可定制",
+    "area": "宝安-沙井",
+    "location": "",
+    "size": "2478",
+    "price": "1.5元/㎡/天",
+    "decoration": "精装修",
+    "floor": "独栋/共20层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积91m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/947df893af5276bb661ec46b0c508eb6/1600x1200.jpg",
+    "date": "2026-06-12",
+    "id": 185
   }
 ]
