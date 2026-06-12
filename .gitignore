@@ -15,3 +15,11 @@ Thumbs.db
 # temp
 *.tmp
 *.log
+___commit_msg.txt
+*beifen*
+*backup*
+
+# sensitive
+*cookies*.txt
+*_cookies*
+*urls_*.txt
