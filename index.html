@@ -2455,6 +2455,7 @@ var _DEFAULT_DATA = [{"name":"南山科技园甲级写字楼","area":"南山科�
 
     function _renderAll() {
         _loadProjects();
+        _allProjects.sort(function(a,b){ return (b.date||"").localeCompare(a.date||""); });
         var grid = document.getElementById('projectsGrid');
         if (!grid) return;
         var html = '';

@@ -701,6 +701,7 @@
 
         function _renderAll() {
             var proj = _loadProjects();
+            proj.sort(function(a,b){ return (b.date||"").localeCompare(a.date||""); });
             var grid = document.getElementById('projectsGrid');
             if (!grid) return;
             var h = '';
