@@ -95,25 +95,46 @@ def parse_anjuke(html):
         name = re.sub(r"-深圳.*$", "", name)
         result["name"] = name.strip()
 
-    # 3. 区域 (从地址提取)
+    # 3. 区域和位置 (从地址提取)
     if "地址" in item_dict:
         addr = item_dict["地址"]
-        # "罗湖-东门 深南东路3018号"
-        area_parts = addr.split()
+        # "宝安-沙井 沙井路XX号"
+        area_parts = addr.split(None, 1)  # 按空白分两部分
         if area_parts:
-            full_area = area_parts[0]  # "罗湖-东门"
+            full_area = area_parts[0]  # "宝安-沙井"
             result["area"] = full_area
+        # 设置完整地址
+        addr_clean = addr.strip()
+        if addr_clean:
+            result["location"] = "深圳市" + addr_clean
 
     # 4. 面积
     if "面积" in item_dict:
         size_str = item_dict["面积"]  # "1200m²" or "100~500m²"
         result["size"] = re.sub(r"[mM²]", "", size_str)
 
-    # 5. 价格 (优先日租)
+    # 5. 价格 (统一转换为月租单价，元/㎡/月)
+    # 安居客日租是单价(元/㎡/天)，月租是总额(元/月)，所以优先用日租换算
     if "日租" in item_dict:
-        result["price"] = item_dict["日租"]  # "2元/㎡/天"
+        daily = item_dict["日租"]  # "1.4元/㎡/天"
+        m = re.search(r"([\d.]+)", daily)
+        if m:
+            monthly = float(m.group(1)) * 30
+            result["price"] = f"{monthly:.0f}元/㎡/月"
     elif "月租" in item_dict:
-        result["price"] = item_dict["月租"]  # "7.2万/月"
+        monthly_price = item_dict["月租"]  # "68元/㎡/月" 或总额 "5964元/月"
+        if "㎡" in monthly_price:
+            result["price"] = monthly_price  # 已经是单价
+        elif result["size"]:
+            # 总额月租，除以面积换算单价
+            m = re.search(r"([\d.]+)", monthly_price)
+            size_m = re.search(r"([\d.]+)", result["size"])
+            if m and size_m:
+                total = float(m.group(1))
+                sz = float(size_m.group(1))
+                result["price"] = f"{total/sz:.0f}元/㎡/月"
+            else:
+                result["price"] = monthly_price
 
     # 6. 装修
     if "装修" in item_dict:
@@ -147,9 +168,13 @@ def parse_anjuke(html):
             result["image"] = matches[0]
             break
 
-    # 如果标题不理想，用楼盘名
-    if "楼盘" in item_dict and len(result["name"]) < 5:
-        result["name"] = item_dict["楼盘"]
+    # 名字优先用楼盘项目名（符合网站卡片展示习惯）
+    # 楼盘名如"云展广场"比广告标题更简洁专业
+    if "楼盘" in item_dict and item_dict["楼盘"].strip():
+        result["name"] = item_dict["楼盘"].strip()
+    elif "楼盘" not in item_dict and len(result["name"]) < 5:
+        # 标题太短，可能不完整
+        pass
 
     return result
 
@@ -182,7 +207,7 @@ async def scrape_url(url, cookies, delay_range=None):
             url_actual = page.url
             html = await page.content()
 
-            cv_keywords = ["验证码", "安全验证", "antibot", "滑块", "频繁"]
+            cv_keywords = ["验证码", "安全验证", "antibot", "滑块", "频繁", "captcha", "verify", "请输入验证码"]
             cv_triggered = any(kw in title for kw in cv_keywords) or any(
                 kw in html[:2000] for kw in cv_keywords
             )
