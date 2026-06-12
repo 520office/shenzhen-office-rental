@@ -3971,5 +3971,95 @@
     "image": "https://pic1.ajkimg.com/display/hj/947df893af5276bb661ec46b0c508eb6/1600x1200.jpg",
     "date": "2026-06-12",
     "id": 185
+  },
+  {
+    "name": "前海科兴科学园",
+    "area": "宝安-碧海湾",
+    "location": "深圳市宝安-碧海湾 银田路49号",
+    "size": "128",
+    "price": "50元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共20层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积50m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/7c75f38e437a0ba70ae6b14f5af4f2b8/1600x1200.jpg",
+    "date": "2026-06-12",
+    "id": 186
+  },
+  {
+    "name": "旭生融和中心",
+    "area": "宝安-碧海湾",
+    "location": "深圳市宝安-碧海湾 盐田街",
+    "size": "200",
+    "price": "40元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共38层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积80m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/875156d3130427b663f7c521ceaf219d/1600x1200.jpg",
+    "date": "2026-06-12",
+    "id": 187
+  },
+  {
+    "name": "万庭大厦",
+    "area": "宝安-碧海湾",
+    "location": "深圳市宝安-碧海湾 悦和路",
+    "size": "198",
+    "price": "50元/㎡/月",
+    "decoration": "精装修",
+    "floor": "低区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/9cdd51ef0f8f5a8ff4e36a4ee8cc8308/1600x1200.jpg",
+    "date": "2026-06-12",
+    "id": 188
+  },
+  {
+    "name": "前海科兴科学园",
+    "area": "宝安-碧海湾",
+    "location": "深圳市宝安-碧海湾 银田路49号",
+    "size": "175",
+    "price": "59元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共26层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/7efd5100ae08723d37ceb6d3be5b7de6/1600x1200.jpg",
+    "date": "2026-06-12",
+    "id": 189
+  },
+  {
+    "name": "汇潮科技大厦",
+    "area": "宝安-碧海湾",
+    "location": "深圳市宝安-碧海湾 金海路12号",
+    "size": "170",
+    "price": "38元/㎡/月",
+    "decoration": "简装",
+    "floor": "中区/共30层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/ea0aa9e9d0e50b5183a6b7b4cc8dfef4/1600x1200.jpg",
+    "date": "2026-06-12",
+    "id": 190
   }
 ]
