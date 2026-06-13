@@ -171,6 +171,7 @@ td.img-cell img { width: 50px; height: 35px; object-fit: cover; border-radius: 4
         <input type="text" id="searchInput" placeholder="🔍 搜索名称或地址..." oninput="renderTable()">
         <button class="btn btn-outline" onclick="showImportModal()">📥 导入JSON</button>
         <button class="btn btn-outline" onclick="showBatchAddModal()">⚡ 批量添加</button>
+        <button class="btn btn-outline" onclick="showAreaModal()">🗑 管理区域</button>
         <button class="btn btn-outline" onclick="reloadFromServer()">🔄 从服务器刷新</button>
     </div>
 
@@ -235,6 +236,24 @@ td.img-cell img { width: 50px; height: 35px; object-fit: cover; border-radius: 4
     <div class="modal-actions">
         <button class="btn btn-outline" onclick="closeBatchModal()">取消</button>
         <button class="btn btn-success" onclick="batchAdd()">⚡ 批量添加</button>
+    </div>
+</div></div>
+
+<div class="modal-overlay" id="areaModal"><div class="modal wide">
+    <h2>🗑 管理区域</h2>
+    <p style="color:var(--muted);margin-bottom:16px;font-size:13px;">删除区域将移除该区域下所有房源。建议确认该区域确实无法再增加房源后再删除。</p>
+    <div style="max-height:50vh;overflow-y:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:#f8fafc;">
+                <th style="padding:10px 14px;text-align:left;font-size:13px;border-bottom:2px solid var(--border);">区域名称</th>
+                <th style="padding:10px 14px;text-align:center;font-size:13px;border-bottom:2px solid var(--border);">房源数</th>
+                <th style="padding:10px 14px;text-align:center;font-size:13px;border-bottom:2px solid var(--border);">操作</th>
+            </tr></thead>
+            <tbody id="areaTableBody"></tbody>
+        </table>
+    </div>
+    <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeAreaModal()">关闭</button>
     </div>
 </div></div>
 
@@ -461,11 +480,51 @@ function deleteProject(id) {
     toast('🗑️ 已删除（可撤销）');
 }
 
+// ============================================================
+// AREA MANAGEMENT
+// ============================================================
+function showAreaModal() {
+    var areaCount = {};
+    projects.forEach(function(p) { areaCount[p.area] = (areaCount[p.area] || 0) + 1; });
+    var areas = Object.keys(areaCount).sort();
+    var rows = areas.map(function(a) {
+        return '<tr>' +
+            '<td style="padding:10px 14px;font-size:14px;border-bottom:1px solid var(--border);"><strong>' + a + '</strong></td>' +
+            '<td style="padding:10px 14px;text-align:center;font-size:14px;border-bottom:1px solid var(--border);">' + areaCount[a] + ' 套</td>' +
+            '<td style="padding:10px 14px;text-align:center;border-bottom:1px solid var(--border);">' +
+                '<button class="btn btn-sm btn-danger" onclick="deleteArea(\'' + a.replace(/'/g, "\\'") + '\', ' + areaCount[a] + ')" style="font-size:12px;padding:4px 10px;">🗑 删除区域</button>' +
+            '</td></tr>';
+    }).join('');
+    document.getElementById('areaTableBody').innerHTML = rows;
+    document.getElementById('areaModal').classList.add('show');
+}
+function closeAreaModal() { document.getElementById('areaModal').classList.remove('show'); }
+function deleteArea(areaName, count) {
+    if (!confirm('⚠️ 确定删除整个【' + areaName + '】区域吗？\n\n将删除该区域下全部 ' + count + ' 套房源。\n此操作可撤销（导出前）。')) return;
+    var removed = [];
+    var keep = [];
+    projects.forEach(function(p) {
+        if (p.area === areaName) { removed.push(JSON.parse(JSON.stringify(p))); }
+        else { keep.push(p); }
+    });
+    if (removed.length === 0) { toast('未找到该区域的房源', ''); return; }
+    undoStack.push({ action: 'deleteArea', area: areaName, data: removed });
+    projects = keep;
+    closeAreaModal();
+    renderTable();
+    toast('🗑 已删除【' + areaName + '】区域共 ' + removed.length + ' 套房源（可撤销）');
+}
+
 function undoLast() {
     if (undoStack.length === 0) return;
     var last = undoStack.pop();
     if (last.action === 'add') { projects = projects.filter(function(p) { return p.id !== last.id; }); toast('↩ 已撤销添加'); }
     else if (last.action === 'delete') { projects.push(last.data); projects.sort(function(a,b) { return (a.id||0)-(b.id||0); }); toast('↩ 已恢复删除'); }
+    else if (last.action === 'deleteArea') {
+        Array.prototype.push.apply(projects, last.data);
+        projects.sort(function(a,b) { return (a.id||0)-(b.id||0); });
+        toast('↩ 已恢复【' + last.area + '】区域共 ' + last.data.length + ' 套房源');
+    }
     else if (last.action === 'edit') {
         var idx = projects.findIndex(function(p) { return p.id === last.data.id; });
         if (idx >= 0) projects[idx] = last.data; toast('↩ 已撤销编辑');
