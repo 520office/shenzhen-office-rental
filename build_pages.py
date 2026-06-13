@@ -20,7 +20,30 @@ CONTACT_PHONE = "15914050727"
 SITE_URL = os.environ.get("SITE_URL", "https://example.com")  # 部署后替换为实际域名
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 13个区域的完整定义
+# 深圳常见区域 → 拼音 slug 映射（用于自动生成新区页面）
+PINYIN_SLUG = {
+    "南山科技园": "nanshan-kejiyuan", "科技园": "nanshan-kejiyuan",
+    "前海": "qianhai",
+    "宝安中心": "baoan-zhongxin", "宝安中心区": "baoan-zhongxin",
+    "西乡": "xixiang", "翻身": "fanshen", "新安": "xinan",
+    "兴东": "xingdong", "坪洲": "pingzhou", "碧海湾": "bihaiwan",
+    "固戍": "gushu", "福永": "fuyong", "沙井": "shajing",
+    "会展新城": "huizhan-xincheng",
+    "龙华": "longhua", "龙岗": "longgang", "光明": "guangming",
+    "罗湖": "luohu", "福田": "futian", "盐田": "yantian",
+    "坪山": "pingshan", "大鹏": "dapeng", "布吉": "buji",
+    "坂田": "bantian", "横岗": "henggang", "观澜": "guanlan",
+    "民治": "minzhi", "平湖": "pinghu", "南头": "nantou",
+    "蛇口": "shekou", "后海": "houhai", "白石洲": "baishizhou",
+    "西丽": "xili", "笋岗": "sungang", "石岩": "shiyan",
+    "松岗": "songgang", "燕罗": "yanluo", "公明": "gongming",
+    "葵涌": "kuichong", "南澳": "nanao", "南山": "nanshan-qu",
+    "蔡屋围": "caiwuwei", "车公庙": "chegongmiao", "华强北": "huaqiangbei",
+    "香蜜湖": "xiangmihu", "梅林": "meilin", "上梅林": "shangmeilin",
+    "皇岗": "huanggang", "保税区": "baoshuiqu",
+}
+
+# 13个已知区域的完整定义（手写元数据，SEO 最优）
 AREAS = [
     {"name": "南山科技园", "slug": "nanshan-kejiyuan",  "full_name": "南山·科技园",
      "seo_kw": "南山科技园办公室出租,科技园写字楼租赁,南山科技园写字楼招商",
@@ -62,6 +85,97 @@ AREAS = [
      "seo_kw": "会展新城办公室出租,会展新城写字楼租赁,深圳国际会展中心附近办公室",
      "desc": "会展新城片区办公室出租，紧邻深圳国际会展中心，配套完善，全新写字楼。"},
 ]
+
+
+# ===== 动态区域支持 =====
+
+def make_slug(name):
+    """根据区域中文名生成 URL slug（优先查表，找不到用作 hash fallback）"""
+    if name in PINYIN_SLUG:
+        return PINYIN_SLUG[name]
+    # fallback: 用 hash 保证唯一且稳定
+    return "area-" + str(abs(hash(name)) % 10000).zfill(4)
+
+
+def extract_area_name(raw_area):
+    """从原始 area 字段提取纯区域名（如 '宝安-龙华' → '龙华'）"""
+    # 去掉前缀如 "宝安-" "南山-" "福田-" 等
+    for prefix in ["宝安-", "南山-", "福田-", "罗湖-", "龙华-", "龙岗-", "光明-", "盐田-", "坪山-"]:
+        if raw_area.startswith(prefix):
+            return raw_area[len(prefix):]
+    return raw_area.strip()
+
+
+def auto_generate_area_info(name):
+    """为新区自动生成 area_info 字典"""
+    slug = make_slug(name)
+    return {
+        "name": name,
+        "slug": slug,
+        "full_name": f"深圳·{name}",
+        "seo_kw": f"{name}办公室出租,{name}写字楼租赁,{name}写字楼招商",
+        "desc": f"{name}片区办公室出租，交通便利，多种面积可选，精装修拎包入驻。",
+        "auto": True,  # 标记为自动生成
+    }
+
+
+def resolve_dynamic_areas(projects):
+    """
+    核心：动态解析所有区域。
+    1. 先用已知 AREAS 匹配
+    2. 未匹配的自动生成新区
+    3. 返回 (all_areas, grouped) — all_areas 包含已知+自动，grouped 按 slug 分组
+    """
+    # 已知区域 slug → area_info
+    known_by_slug = {a["slug"]: a for a in AREAS}
+    known_by_name = {a["name"]: a for a in AREAS}
+
+    # 初始化分组（已知区域）
+    grouped = {a["slug"]: [] for a in AREAS}
+
+    # 收集未匹配房源的原始区域名
+    unmatched_raw = set()
+
+    for proj in projects:
+        raw = proj.get("area", "")
+        found = False
+        for a in AREAS:
+            if match_area(raw, a):
+                grouped[a["slug"]].append(proj)
+                found = True
+                break
+        if not found:
+            # 提取纯区域名
+            name = extract_area_name(raw)
+            if name not in known_by_name:
+                unmatched_raw.add(name)
+            # 暂存，等新区创建后再分配
+            proj["_auto_area"] = name
+
+    # 为未匹配区域自动生成 area_info
+    auto_areas = []
+    for name in sorted(unmatched_raw):
+        info = auto_generate_area_info(name)
+        auto_areas.append(info)
+        grouped[info["slug"]] = []
+        print(f"  🆕 自动创建区域: {name} → {info['slug']}.html")
+
+    # 把暂存的房源分配到新区
+    for proj in projects:
+        auto_name = proj.pop("_auto_area", None)
+        if auto_name:
+            for a in auto_areas:
+                if a["name"] == auto_name:
+                    grouped[a["slug"]].append(proj)
+                    break
+
+    # 构建完整的区域列表（已知 + 自动），已知排在前面
+    all_areas = list(AREAS) + auto_areas
+
+    # 删除空的新区（不该出现但安全起见）
+    all_areas = [a for a in all_areas if grouped.get(a["slug"])]
+
+    return all_areas, grouped
 
 
 def load_projects():
@@ -199,19 +313,19 @@ def make_html_head(area_info=None):
     <title>{title}</title>"""
 
 
-def area_nav_html(current_slug=None):
+def area_nav_html(all_areas, current_slug=None):
     """生成区域导航标签"""
     tags = []
-    for a in AREAS:
+    for a in all_areas:
         active = ' active' if a["slug"] == current_slug else ''
         tags.append(f'                <a href="{a["slug"]}.html" class="filter-tag{active}">{a["name"]}</a>')
     return "\n".join(tags)
 
 
-def area_directory_html(grouped):
+def area_directory_html(all_areas, grouped):
     """生成主门户页面 - 区域目录"""
     rows = []
-    for a in AREAS:
+    for a in all_areas:
         count = len(grouped.get(a["slug"], []))
         badge = f'<span class="badge-count">{count}套房源</span>' if count > 0 else '<span class="badge-empty">暂无房源</span>'
         rows.append(f"""                <a href="{a['slug']}.html" class="area-card">
@@ -225,10 +339,10 @@ def area_directory_html(grouped):
     return "\n".join(rows)
 
 
-def area_schema_json(grouped):
+def area_schema_json(all_areas, grouped):
     """生成首页的 Schema.org 结构化数据"""
     items = []
-    for a in AREAS:
+    for a in all_areas:
         for proj in grouped.get(a["slug"], []):
             items.append({
                 "@type": "Product",
@@ -770,24 +884,34 @@ def search_script_tag():
     return f"    <script>{SEARCH_JS}\n    </script>"
 
 
-def build_index(grouped):
+def build_index(all_areas, grouped):
     """生成主门户页面"""
     total = sum(len(v) for v in grouped.values())
+    area_count = len(all_areas)
 
     # 区域卡片
-    area_cards = area_directory_html(grouped)
+    area_cards = area_directory_html(all_areas, grouped)
 
     # 精选推荐：每个有房源的区域取一条最新房源
     featured_cards = []
-    for a in AREAS:
+    for a in all_areas:
         items = grouped.get(a["slug"], [])
         if items:
+            # 取最新的一条（已排序）
+            items.sort(key=lambda p: p.get("date", "2000-01-01"), reverse=True)
             featured_cards.append(card_html(items[0]))
 
     featured_html = "\n".join(featured_cards) if featured_cards else '<p style="text-align:center;color:#94a3b8;padding:40px;">暂无房源，请联系谢经理获取最新信息</p>'
 
     # 底部各区域链接
-    footer_links = " | ".join(f'<a href="{a["slug"]}.html">{a["name"]}办公室出租</a>' for a in AREAS)
+    footer_links = " | ".join(f'<a href="{a["slug"]}.html">{a["name"]}办公室出租</a>' for a in all_areas)
+
+    # 动态区域名词列表（前8个+等）
+    area_names = [a["name"] for a in all_areas]
+    if len(area_names) > 8:
+        area_summary = "、".join(area_names[:8]) + f"等{area_count}大核心商务区域"
+    else:
+        area_summary = "、".join(area_names) + "核心商务区域"
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -805,7 +929,7 @@ def build_index(grouped):
         "@type": "City",
         "name": "深圳"
       }},
-      "makesOffer": {area_schema_json(grouped)}
+      "makesOffer": {area_schema_json(all_areas, grouped)}
     }}
     </script>
     <style>{SHARED_CSS}
@@ -824,14 +948,14 @@ def build_index(grouped):
     <!-- Hero -->
     <section class="hero">
         <h1>深圳<em>办公室出租</em></h1>
-        <p>南山科技园 · 前海 · 宝安 | 13大区域覆盖 | 精装修拎包入驻 | 多面积可选</p>
+        <p>南山科技园 · 前海 · 宝安 | {area_count}大区域覆盖 | 精装修拎包入驻 | 多面积可选</p>
         <a href="tel:{CONTACT_PHONE}" class="hero-cta">📞 立即咨询 {CONTACT_NAME} {CONTACT_PHONE}</a>
     </section>
 
     <!-- Area Directory -->
     <section class="projects-section">
         <h2 class="section-title">📍 选择区域</h2>
-        <p class="section-subtitle">覆盖深圳13大核心商务区域，共 <strong style="color:var(--primary);">{total}</strong> 套房源任您挑选</p>
+        <p class="section-subtitle">覆盖深圳{area_count}大核心商务区域，共 <strong style="color:var(--primary);">{total}</strong> 套房源任您挑选</p>
 {search_box_html()}
         <div class="area-cards">
 {area_cards}
@@ -855,8 +979,8 @@ def build_index(grouped):
         <h2 class="section-title" style="margin-bottom:24px;">💼 服务优势</h2>
         <div class="info-grid">
             <div class="info-card">
-                <h3>🏢 13大区域覆盖</h3>
-                <p>南山科技园、前海、宝安中心、西乡、翻身、新安、兴东、坪洲、碧海湾、固戍、福永、沙井、会展新城，全深圳核心商务区房源一网打尽。</p>
+                <h3>🏢 {area_count}大区域覆盖</h3>
+                <p>{area_summary}，全深圳核心商务区房源一网打尽。</p>
             </div>
             <div class="info-card">
                 <h3>📐 面积灵活</h3>
@@ -927,7 +1051,7 @@ def fmt_date(iso):
         return iso
 
 
-def build_area_page(area_info, projects):
+def build_area_page(all_areas, area_info, projects):
     """生成一个区域独立页面"""
     slug = area_info["slug"]
 
@@ -937,7 +1061,7 @@ def build_area_page(area_info, projects):
     cards = "\n".join(card_html(p) for p in projects) if projects else '<p style="text-align:center;color:#94a3b8;padding:60px;font-size:18px;">该区域暂无房源<br>📞 联系{CONTACT_NAME}获取最新信息 {CONTACT_PHONE}</p>'
 
     # 底部各区域链接
-    footer_links = " | ".join(f'<a href="{a["slug"]}.html">{a["name"]}办公室出租</a>' for a in AREAS)
+    footer_links = " | ".join(f'<a href="{a["slug"]}.html">{a["name"]}办公室出租</a>' for a in all_areas)
 
     # 页面更新时间 = 房源中最新的日期
     ld = latest_date(projects)
@@ -991,7 +1115,7 @@ def build_area_page(area_info, projects):
     <div class="nav-section">
         <div class="nav-bar">
             <span class="nav-label">📍 区域切换</span>
-{area_nav_html(slug)}
+{area_nav_html(all_areas, slug)}
         </div>
     </div>
 
@@ -1047,7 +1171,7 @@ def build_area_page(area_info, projects):
     print(f"  ✅ 生成 {filename}（{area_info['name']}，{len(projects)} 套房源）")
 
 
-def build_sitemap(grouped):
+def build_sitemap(all_areas, grouped):
     """生成 sitemap.xml — lastmod 使用真实最新日期"""
     # 首页：所有房源中最新的日期
     all_projects = []
@@ -1062,7 +1186,7 @@ def build_sitemap(grouped):
     <priority>1.0</priority>
   </url>"""]
 
-    for a in AREAS:
+    for a in all_areas:
         projects = grouped.get(a["slug"], [])
         lastmod = latest_date(projects) if projects else datetime.now().strftime("%Y-%m-%d")
         urls.append(f"""  <url>
@@ -1090,36 +1214,41 @@ def main():
     print("=" * 60)
 
     projects = load_projects()
-    grouped = group_by_area(projects)
+
+    # 动态区域解析（已知区域 + 自动发现新区）
+    print("\n🔍 解析区域...")
+    all_areas, grouped = resolve_dynamic_areas(projects)
 
     # 统计
     total_matched = sum(len(v) for v in grouped.values())
-    area_counts = [(a["name"], len(grouped[a["slug"]])) for a in AREAS]
 
-    print(f"\n📊 房源分布:")
-    for name, count in area_counts:
+    print(f"\n📊 房源分布（{len(all_areas)} 个区域）:")
+    for a in all_areas:
+        count = len(grouped[a["slug"]])
         bar = "█" * min(count, 20)
-        print(f"  {name:6s} {count:3d}套 {bar}")
+        tag = " 🆕" if a.get("auto") else ""
+        print(f"  {a['name']:6s} {count:3d}套 {bar}{tag}")
 
     print(f"\n🔨 开始生成页面...\n")
 
     # 1. 生成主门户
-    build_index(grouped)
+    build_index(all_areas, grouped)
 
     # 2. 生成每个区域页面
     print()
-    for a in AREAS:
-        build_area_page(a, grouped[a["slug"]])
+    for a in all_areas:
+        build_area_page(all_areas, a, grouped[a["slug"]])
 
     # 3. 生成 sitemap
     print()
-    build_sitemap(grouped)
+    build_sitemap(all_areas, grouped)
 
     print(f"\n{'=' * 60}")
-    print(f"🎉 全部完成！共生成 {1 + len(AREAS)} 个 HTML 页面 + 1 个 sitemap.xml")
+    print(f"🎉 全部完成！共生成 {1 + len(all_areas)} 个 HTML 页面 + 1 个 sitemap.xml")
     print(f"   主门户: index.html")
-    for a in AREAS:
-        print(f"   区域页: {a['slug']}.html")
+    for a in all_areas:
+        tag = " 🆕(自动)" if a.get("auto") else ""
+        print(f"   区域页: {a['slug']}.html ({a['name']}{tag})")
     print(f"   站点地图: sitemap.xml")
     print(f"{'=' * 60}")
 
