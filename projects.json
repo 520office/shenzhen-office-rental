@@ -2926,5 +2926,131 @@
     "image": "https://pic1.ajkimg.com/display/hj/ea0aa9e9d0e50b5183a6b7b4cc8dfef4/1600x1200.jpg",
     "date": "2026-06-12",
     "id": 190
+  },
+  {
+    "name": "森业创达大厦",
+    "area": "宝安-固戍",
+    "location": "深圳市宝安-固戍 固戍二路39号",
+    "size": "145",
+    "price": "34元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共26层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积80m²",
+      "押2付1",
+      "12个月起租/免租期30个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/8c339a51b52838f3463b53101322b80b/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 191
+  },
+  {
+    "name": "梧桐岛",
+    "area": "宝安-固戍",
+    "location": "深圳市宝安-固戍 航空路",
+    "size": "790",
+    "price": "57元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共13层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/03d76d04f81688d0099a3803dcdb6bc5/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 192
+  },
+  {
+    "name": "梧桐岛",
+    "area": "宝安-固戍",
+    "location": "深圳市宝安-固戍 航空路",
+    "size": "358",
+    "price": "44元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共15层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积50m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/83fab78887a9295d0e642209edf8105a/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 193
+  },
+  {
+    "name": "梧桐岛",
+    "area": "宝安-固戍",
+    "location": "深圳市宝安-固戍 航空路",
+    "size": "700",
+    "price": "56元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共8层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/cb04ac937c63757389e95381b6950ec4/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 194
+  },
+  {
+    "name": "梧桐岛",
+    "area": "宝安-固戍",
+    "location": "深圳市宝安-固戍 航空路",
+    "size": "450",
+    "price": "48元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共11层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/e2078d31905b379899b5ea7f26579ef5/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 195
+  },
+  {
+    "name": "梧桐岛",
+    "area": "宝安-固戍",
+    "location": "深圳市宝安-固戍 航空路",
+    "size": "787",
+    "price": "50元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共7层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积180m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/ed5738e6629be2eb5edff67a58abbe87/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 196
+  },
+  {
+    "name": "航城智谷中城未来产业园",
+    "area": "宝安-固戍",
+    "location": "深圳市宝安-固戍 航城大道",
+    "size": "150",
+    "price": "36元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共9层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/1b7abf9b6efa69c8f6a630d1ce008772/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 197
   }
 ]
