@@ -312,7 +312,7 @@ function renderTable() {
     var search = document.getElementById('searchInput').value.toLowerCase();
     var filtered = projects.slice();
 
-    if (filterArea !== 'all') filtered = filtered.filter(function(p) { return p.area === filterArea; });
+    if (filterArea !== 'all') filtered = filtered.filter(function(p) { return p.area.indexOf(filterArea) !== -1; });
     if (search) filtered = filtered.filter(function(p) { return (p.name + (p.location||'')).toLowerCase().indexOf(search) >= 0; });
     if (filterQuality !== 'all') filtered = filtered.filter(function(p) { return checkQuality(p) === filterQuality; });
 
