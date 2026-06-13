@@ -3052,5 +3052,311 @@
     "image": "https://pic1.ajkimg.com/display/hj/1b7abf9b6efa69c8f6a630d1ce008772/1600x1200.jpg",
     "date": "2026-06-13",
     "id": 197
+  },
+  {
+    "name": "雪花科创城",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 创业二路388号",
+    "size": "2000",
+    "price": "44元/㎡/月",
+    "decoration": "毛坯",
+    "floor": "独栋/共32层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "36个月起租/免租期9个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/c98912d67a76f845c385532154962988/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 198
+  },
+  {
+    "name": "玺玥大厦",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 创业二路111号",
+    "size": "200",
+    "price": "60元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共36层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/3c4ccfbea7c4ba847b51fed07522b52f/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 199
+  },
+  {
+    "name": "稻兴环球科创中心",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 洪浪北二路",
+    "size": "139",
+    "price": "60元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共32层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/b935ca7cbf5640c9cbc1ec8a1a68ebe0/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 200
+  },
+  {
+    "name": "金宝科创中心",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 安乐三街宝安43区兴华一路89号",
+    "size": "150",
+    "price": "39元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共30层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积68m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/5fbe5f7bdafbc692a09fafc234cd41ff/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 201
+  },
+  {
+    "name": "中粮大悦城(办公)",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 创业二路",
+    "size": "500",
+    "price": "70元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共48层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积80m²",
+      "押2付1",
+      "12个月起租/免租期8个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/9bc3fb6efc8fb6c0871f790d5927adc7/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 202
+  },
+  {
+    "name": "恒明珠金融中心",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 建安一路9号",
+    "size": "720.32",
+    "price": "59元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共22层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积129m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/a41cda2692c15692315c5831f9cff291/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 203
+  },
+  {
+    "name": "玺玥大厦",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 创业二路111号",
+    "size": "300",
+    "price": "57元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共45层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积80m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/4aa108296ef6d0c3fc0b98943fda2520/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 204
+  },
+  {
+    "name": "玺玥大厦",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 创业二路111号",
+    "size": "150",
+    "price": "45元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共33层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/ce6151f880c758ee2f47dd41ec5086a9/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 205
+  },
+  {
+    "name": "恒明珠金融中心",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 建安一路9号",
+    "size": "465",
+    "price": "52元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共58层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/180fed83440604a997b985eb8aaed7a0/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 206
+  },
+  {
+    "name": "雪花科创城",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 创业二路388号",
+    "size": "2000",
+    "price": "60元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共45层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积600m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/2d5091489b028d86100d08010675fa33/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 207
+  },
+  {
+    "name": "玖悦雅轩(办公)",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 前进一路92号",
+    "size": "70",
+    "price": "43元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共10层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积10m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/65d789ed55e607cc76175295ffa7b8a7/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 208
+  },
+  {
+    "name": "稻兴环球科创中心",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 洪浪北二路",
+    "size": "2004.2",
+    "price": "50元/㎡/月",
+    "decoration": "毛坯",
+    "floor": "独栋/共29层",
+    "features": [
+      "暂无数据",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/d8f3e1bad97dfbb6bac5d4931b3d4246/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 209
+  },
+  {
+    "name": "恒明珠金融中心",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 建安一路9号",
+    "size": "950",
+    "price": "55元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共68层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "24个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/0db1ed07ab5e529d4a68d81137bfcf2d/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 210
+  },
+  {
+    "name": "玺玥大厦",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 创业二路111号",
+    "size": "118",
+    "price": "55元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共43层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积90m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/7d3324ea7fd5d5f85cd00019837d9fd7/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 211
+  },
+  {
+    "name": "雪花科创城",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 创业二路388号",
+    "size": "2000",
+    "price": "60元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共32层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积50m²",
+      "押2付1",
+      "36个月起租/免租期9个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/34823886b3027cf4598af2218c3c4e0a/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 212
+  },
+  {
+    "name": "中粮创芯公园",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 留仙一路8号",
+    "size": "500",
+    "price": "66元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共30层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/917131c29d433953b20132c84830cb31/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 213
+  },
+  {
+    "name": "恒明珠金融中心",
+    "area": "宝安-新安",
+    "location": "深圳市宝安-新安 建安一路9号",
+    "size": "1000",
+    "price": "60元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共55层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "24个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/1cb1096102e3f215093706d07fbc8455/1600x1200.jpg",
+    "date": "2026-06-13",
+    "id": 214
   }
 ]
