@@ -27,7 +27,7 @@ PINYIN_SLUG = {
     "宝安中心": "baoan-zhongxin", "宝安中心区": "baoan-zhongxin",
     "西乡": "xixiang", "翻身": "fanshen", "新安": "xinan",
     "兴东": "xingdong", "坪洲": "pingzhou", "碧海湾": "bihaiwan",
-    "固戍": "gushu", "福永": "fuyong", "沙井": "shajing",
+    "固戍": "gushu", "福永": "fuyong", "沙井": "shajing", "塘尾": "tangwei",
     "会展新城": "huizhan-xincheng",
     "龙华": "longhua", "龙岗": "longgang", "光明": "guangming",
     "罗湖": "luohu", "福田": "futian", "盐田": "yantian",
