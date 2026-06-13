@@ -1,788 +1,640 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>房源数据管理后台</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --primary: #2563eb;
-            --danger: #ef4444;
-            --success: #10b981;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
-            --radius: 10px;
-            --shadow: 0 2px 12px rgba(0,0,0,0.06);
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-        }
-        .topbar {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 0 24px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .topbar h1 { font-size: 18px; font-weight: 700; }
-        .topbar-actions { display: flex; gap: 8px; }
-        .container { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>房源数据管理后台 | 520office</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --primary: #2563eb; --danger: #ef4444; --warn: #f59e0b;
+    --success: #10b981; --bg: #f1f5f9; --card: #fff;
+    --text: #1e293b; --muted: #94a3b8; --border: #e2e8f0;
+    --radius: 10px; --shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+}
 
-        /* 统计卡片 */
-        .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-        .stat-card .num { font-size: 32px; font-weight: 800; color: var(--primary); }
-        .stat-card .lbl { font-size: 13px; color: #64748b; margin-top: 4px; }
+/* Password Lock */
+.pw-overlay { position: fixed; inset: 0; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+.pw-overlay.hidden { display: none; }
+.pw-box { background: #fff; border-radius: 16px; padding: 48px 40px; text-align: center; box-shadow: 0 25px 80px rgba(0,0,0,.4); max-width: 400px; width: 90%; }
+.pw-box h2 { font-size: 22px; margin: 8px 0; color: #1e293b; }
+.pw-box p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+.pw-box input { width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; text-align: center; }
+.pw-box input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(37,99,235,.1); }
+.pw-box button { width: 100%; margin-top: 16px; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; }
+.pw-box button:hover { background: #1d4ed8; }
+.pw-error { color: var(--danger); font-size: 13px; margin-top: 12px; display: none; }
+.pw-error.show { display: block; }
+.pw-shake { animation: shake .4s ease; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
 
-        /* 操作栏 */
-        .toolbar {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 16px 20px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+/* Topbar */
+.topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.topbar h1 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.dirty-badge { display: none; background: var(--warn); color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 50px; font-weight: 600; }
+.dirty-badge.show { display: inline-flex; align-items: center; gap: 4px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.container { max-width: 1500px; margin: 24px auto; padding: 0 24px; }
 
-        /* 按钮 */
-        .btn {
-            padding: 9px 20px;
-            border-radius: 8px;
-            border: none;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: #059669; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-outline { border: 1.5px solid var(--border); background: white; color: var(--text); }
-        .btn-outline:hover { background: #f8fafc; }
-        .btn-sm { padding: 4px 12px; font-size: 12px; border-radius: 6px; }
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow); }
+.stat-card .num { font-size: 30px; font-weight: 800; color: var(--primary); }
+.stat-card.alert .num { color: var(--danger); }
+.stat-card .lbl { font-size: 13px; color: #64748b; margin-top: 4px; }
 
-        /* 房源表格 */
-        .table-wrap {
-            background: var(--card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-        .table-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #64748b; background: #f8fafc; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
-        tr:hover td { background: #f8fafc; }
-        .td-actions { display: flex; gap: 6px; }
+/* Toolbar */
+.toolbar { background: var(--card); border-radius: var(--radius); padding: 14px 20px; box-shadow: var(--shadow); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.toolbar select, .toolbar input { padding: 8px 12px; border-radius: 8px; border: 1.5px solid var(--border); font-size: 14px; }
+.toolbar select:focus, .toolbar input:focus { outline: none; border-color: var(--primary); }
+.toolbar input[type=text] { flex: 1; min-width: 150px; }
 
-        /* 模态框 */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .modal {
-            background: white; border-radius: 14px; padding: 32px;
-            width: 560px; max-height: 85vh; overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        }
-        .modal h2 { font-size: 20px; margin-bottom: 24px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
-            border-radius: 8px; font-size: 14px; font-family: inherit;
-            transition: border-color 0.2s;
-        }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .form-group textarea { resize: vertical; min-height: 60px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+/* Buttons */
+.btn { padding: 9px 18px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; text-decoration: none; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #059669; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #dc2626; }
+.btn-outline { border: 1.5px solid var(--border); background: #fff; color: var(--text); }
+.btn-outline:hover { background: #f8fafc; }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+.btn-lg { padding: 12px 28px; font-size: 16px; }
 
-        /* JSON 编辑器 */
-        .json-editor {
-            width: 100%; min-height: 240px; font-family: "SF Mono", "Fira Code", "Consolas", monospace;
-            font-size: 13px; padding: 14px; border: 1.5px solid var(--border);
-            border-radius: 8px; resize: vertical; line-height: 1.5;
-        }
-        .json-editor:focus { outline: none; border-color: var(--primary); }
+/* Table */
+.table-wrap { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.table-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600; color: #64748b; background: #f8fafc; border-bottom: 1px solid var(--border); white-space: nowrap; position: sticky; top: 0; }
+td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:hover td { background: #f8fafc; }
+tr.row-warn td { background: #fffbeb; }
+tr.row-danger td { background: #fef2f2; }
+tr.row-warn:hover td { background: #fef3c7; }
+tr.row-danger:hover td { background: #fee2e2; }
+.td-actions { display: flex; gap: 5px; }
+.quality-badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.quality-badge.ok { background: #d1fae5; color: #065f46; }
+.quality-badge.warn { background: #fef3c7; color: #92400e; }
+.quality-badge.danger { background: #fee2e2; color: #991b1b; }
 
-        /* Toast */
-        .toast {
-            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-            background: #1e293b; color: white; padding: 12px 24px;
-            border-radius: 8px; font-size: 14px; z-index: 300;
-            animation: toastIn 0.3s ease;
-        }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } }
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: #fff; border-radius: 14px; padding: 32px; width: 600px; max-width: 95vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+.modal.wide { width: 700px; }
+.modal h2 { font-size: 20px; margin-bottom: 20px; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #475569; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.form-group textarea { resize: vertical; min-height: 60px; font-family: "SF Mono", "Fira Code", monospace; font-size: 13px; }
+.form-group small { color: var(--muted); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
 
-        .tag-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-        .tag-preview span {
-            padding: 4px 12px; background: #f1f5f9; border-radius: 50px;
-            font-size: 12px; display: flex; align-items: center; gap: 4px;
-            cursor: pointer;
-        }
-        .tag-preview span:hover { background: #fee2e2; color: var(--danger); }
+/* Tag preview */
+.tag-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.tag-preview span { padding: 3px 10px; background: #f1f5f9; border-radius: 50px; font-size: 12px; cursor: pointer; transition: all .15s; }
+.tag-preview span:hover { background: #fee2e2; color: var(--danger); }
 
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .modal { width: 95%; padding: 20px; }
-            td { font-size: 12px; padding: 8px; }
-        }
+/* Toast */
+.toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 999; animation: toastIn .3s ease; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } }
+.toast.success { background: #065f46; }
 
-        /* ===== Password Lock ===== */
-        .pw-overlay {
-            position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            z-index: 9999; display: flex; align-items: center; justify-content: center;
-        }
-        .pw-overlay.hidden { display: none; }
-        .pw-box {
-            background: white; border-radius: 16px; padding: 48px 40px;
-            text-align: center; box-shadow: 0 25px 80px rgba(0,0,0,0.4);
-            max-width: 400px; width: 90%;
-        }
-        .pw-box .pw-icon { font-size: 48px; margin-bottom: 16px; }
-        .pw-box h2 { font-size: 22px; margin-bottom: 8px; color: #1e293b; }
-        .pw-box p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
-        .pw-box input {
-            width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0;
-            border-radius: 10px; font-size: 16px; text-align: center;
-            transition: border-color 0.2s; outline: none;
-        }
-        .pw-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
-        .pw-box .pw-btn {
-            width: 100%; margin-top: 16px; padding: 14px; background: var(--primary);
-            color: white; border: none; border-radius: 10px; font-size: 16px;
-            font-weight: 700; cursor: pointer; transition: background 0.2s;
-        }
-        .pw-box .pw-btn:hover { background: #1d4ed8; }
-        .pw-box .pw-error {
-            color: var(--danger); font-size: 13px; margin-top: 12px; display: none;
-        }
-        .pw-box .pw-error.show { display: block; }
-        .pw-shake { animation: pwShake 0.4s ease; }
-        @keyframes pwShake {
-            0%,100% { transform: translateX(0); }
-            20% { transform: translateX(-8px); }
-            40% { transform: translateX(8px); }
-            60% { transform: translateX(-6px); }
-            80% { transform: translateX(6px); }
-        }
-    </style>
+/* Table img cell */
+td.img-cell { max-width: 60px; }
+td.img-cell img { width: 50px; height: 35px; object-fit: cover; border-radius: 4px; }
+
+@media (max-width: 768px) {
+    .form-row { grid-template-columns: 1fr; }
+    .container { padding: 0 12px; }
+    td { font-size: 11px; padding: 6px 8px; }
+    .topbar-actions { flex-wrap: wrap; }
+}
+</style>
 </head>
 <body>
 
-<!-- ===== Password Lock ===== -->
+<!-- Password Lock -->
 <div class="pw-overlay" id="pwOverlay">
     <div class="pw-box" id="pwBox">
-        <div class="pw-icon">🔐</div>
+        <div style="font-size:40px;margin-bottom:12px;">🔐</div>
         <h2>数据管理后台</h2>
         <p>请输入管理密码以继续</p>
         <input type="password" id="pwInput" placeholder="请输入密码" autocomplete="off" maxlength="20">
-        <button class="pw-btn" onclick="checkPassword()">验证进入</button>
-        <p class="pw-error" id="pwError">❌ 密码错误，请重试</p>
+        <button onclick="checkPassword()">验证进入</button>
+        <p class="pw-error" id="pwError">密码错误，请重试</p>
     </div>
 </div>
 
-<!-- ===== Main Content Wrapper ===== -->
-
+<!-- Topbar -->
 <div class="topbar">
-    <h1>🏢 办公室房源数据管理后台</h1>
+    <h1>
+        🏢 房源数据管理后台
+        <span class="dirty-badge" id="dirtyBadge">⚠️ 有未保存修改</span>
+    </h1>
     <div class="topbar-actions">
-        <button class="btn btn-success" onclick="exportJSON()">📦 导出JSON</button>
-        <button class="btn btn-outline" onclick="showImportModal()">📥 导入JSON</button>
-        <button class="btn btn-outline" onclick="showBatchAddModal()">⚡ 批量添加</button>
-        <a href="quick-entry.html" class="btn btn-outline" target="_blank">⚡ 快速录入</a>
-                <a href="index.html" class="btn btn-outline" target="_blank">🌐 查看前台</a>
+        <button class="btn btn-success btn-lg" onclick="exportJSON()" id="btnExport">📦 导出 projects.json</button>
+        <button class="btn btn-outline" onclick="undoLast()" id="btnUndo" disabled>↩ 撤销</button>
+        <a href="index.html" class="btn btn-outline" target="_blank">🌐 查看前台</a>
     </div>
 </div>
 
 <div class="container">
-    <!-- 统计 -->
+    <!-- Stats -->
     <div class="stats">
         <div class="stat-card"><div class="num" id="statTotal">0</div><div class="lbl">总房源</div></div>
         <div class="stat-card"><div class="num" id="statAreas">0</div><div class="lbl">覆盖区域</div></div>
-        <div class="stat-card"><div class="num" id="statMinPrice">0</div><div class="lbl">最低价（元/㎡/月）</div></div>
+        <div class="stat-card" id="statImgCard"><div class="num" id="statNoImg">0</div><div class="lbl">缺图片</div></div>
+        <div class="stat-card" id="statPriceCard"><div class="num" id="statNoPrice">0</div><div class="lbl">缺价格</div></div>
+        <div class="stat-card"><div class="num" id="statMinPrice">0</div><div class="lbl">最低价 (元/m²/月)</div></div>
         <div class="stat-card"><div class="num" id="statMaxSize">0</div><div class="lbl">最大面积</div></div>
     </div>
 
-    <!-- 工具栏 -->
+    <!-- Toolbar -->
     <div class="toolbar">
         <button class="btn btn-primary" onclick="showAddModal()">➕ 添加房源</button>
-        <select id="filterArea" style="padding:8px 12px;border-radius:8px;border:1.5px solid #e2e8f0;" onchange="renderTable()">
-            <option value="all">全部区域</option>
+        <select id="filterArea" onchange="renderTable()"><option value="all">全部区域</option></select>
+        <select id="filterQuality" onchange="renderTable()">
+            <option value="all">全部质量</option>
+            <option value="ok">✅ 完善</option>
+            <option value="warn">⚠️ 待完善</option>
+            <option value="danger">🔴 严重缺失</option>
         </select>
-        <input type="text" id="searchInput" placeholder="🔍 搜索项目名称或地址..." style="flex:1;min-width:180px;padding:8px 12px;border-radius:8px;border:1.5px solid #e2e8f0;" oninput="renderTable()">
+        <input type="text" id="searchInput" placeholder="🔍 搜索名称或地址..." oninput="renderTable()">
+        <button class="btn btn-outline" onclick="showImportModal()">📥 导入JSON</button>
+        <button class="btn btn-outline" onclick="showBatchAddModal()">⚡ 批量添加</button>
+        <button class="btn btn-outline" onclick="reloadFromServer()">🔄 从服务器刷新</button>
     </div>
 
-    <!-- 表格 -->
+    <!-- Table -->
     <div class="table-wrap">
         <div class="table-header">
-            <span style="font-weight:600;">📋 房源列表（共 <span id="listCount">0</span> 条）</span>
-            <button class="btn btn-sm btn-outline" onclick="resetToDefault()">🔄 恢复默认数据</button>
+            <span style="font-weight:600;">📋 房源列表（当前 <span id="listCount">0</span> 条 | <span style="color:#059669;">已保存 <span id="savedCount">0</span> 条</span>）</span>
         </div>
         <div style="overflow-x:auto;">
             <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>项目名称</th>
-                        <th>区域</th>
-                        <th>面积</th>
-                        <th>价格</th>
-                        <th>装修</th>
-                        <th>楼层</th>
-                        <th>标签</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
+                <thead><tr>
+                    <th>ID</th><th>缩略图</th><th>项目名称</th><th>区域</th><th>面积</th><th>价格</th><th>装修</th><th>状态</th><th>操作</th>
+                </tr></thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- ===== 添加/编辑模态框 ===== -->
-<div class="modal-overlay" id="editModal" style="display:none;">
-    <div class="modal">
-        <h2 id="modalTitle">添加房源</h2>
-        <input type="hidden" id="editId" value="">
-        <div class="form-row">
-            <div class="form-group">
-                <label>项目名称 *</label>
-                <input type="text" id="editName" placeholder="如：南山科技园甲级写字楼">
-            </div>
-            <div class="form-group">
-                <label>所属区域 *</label>
-                <input type="text" id="editArea" list="areaSuggestions" placeholder="选择或手动输入区域名">
-                <datalist id="areaSuggestions">
-                    <option>南山科技园</option><option>前海</option><option>宝安中心</option>
-                    <option>西乡</option><option>翻身</option><option>新安</option>
-                    <option>兴东</option><option>坪洲</option><option>碧海湾</option>
-                    <option>固戍</option><option>福永</option><option>沙井</option>
-                    <option>会展新城</option><option>南山</option><option>福田</option>
-                    <option>罗湖</option><option>龙华</option><option>龙岗</option>
-                    <option>盐田</option><option>光明</option><option>坪山</option>
-                    <option>大鹏</option><option>宝安</option><option>其他</option>
-                </datalist>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>详细地址 *</label>
-            <input type="text" id="editLocation" placeholder="如：深圳市南山区科技园科苑路XX号">
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>面积</label>
-                <input type="text" id="editSize" placeholder="如：150-800㎡">
-            </div>
-            <div class="form-group">
-                <label>价格</label>
-                <input type="text" id="editPrice" placeholder="如：95元/㎡/月">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>装修情况</label>
-                <select id="editDecoration">
-                    <option>精装修</option><option>豪华装修</option><option>简装</option>
-                    <option>简装/毛坯</option><option>毛坯</option><option>简装/精装可选</option>
-                    <option>简装/毛坯可选</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>楼层</label>
-                <input type="text" id="editFloor" placeholder="如：高区/中区">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>特色标签（逗号分隔）</label>
-            <input type="text" id="editFeatures" placeholder="如：近地铁,配套食堂,会议室,停车位" oninput="previewTags()">
-            <div class="tag-preview" id="tagsPreview"></div>
-        </div>
-        <div class="form-group">
-            <label>图片链接</label>
-            <input type="text" id="editImage" placeholder="留空则显示占位图">
-            <small style="color:#94a3b8;">可填写URL网络图片，或 images/xxx.jpg 引用本地图片</small>
-        </div>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeEditModal()">取消</button>
-            <button class="btn btn-primary" onclick="saveProject()">💾 保存</button>
-        </div>
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal"><div class="modal">
+    <h2 id="modalTitle">✏️ 添加房源</h2>
+    <input type="hidden" id="editId" value="">
+    <div class="form-row">
+        <div class="form-group"><label>项目名称 *</label><input type="text" id="editName" placeholder="如: 前海科兴科学园"></div>
+        <div class="form-group"><label>所属区域 *</label><input type="text" id="editArea" list="areaSuggestions" placeholder="选择或输入区域名"><datalist id="areaSuggestions"></datalist></div>
     </div>
-</div>
+    <div class="form-group"><label>详细地址 *</label><input type="text" id="editLocation" placeholder="如: 深圳市南山区科技园科苑路XX号"></div>
+    <div class="form-row">
+        <div class="form-group"><label>面积</label><input type="text" id="editSize" placeholder="如: 150-800m²"></div>
+        <div class="form-group"><label>价格 (元/m²/月) *</label><input type="text" id="editPrice" placeholder="如: 95元/m²/月"></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>装修情况</label><select id="editDecoration"><option>精装修</option><option>豪华装修</option><option>简装</option><option>简装/毛坯</option><option>毛坯</option><option>简装/精装可选</option></select></div>
+        <div class="form-group"><label>楼层</label><input type="text" id="editFloor" placeholder="如: 高区/中区"></div>
+    </div>
+    <div class="form-group"><label>特色标签 (逗号分隔)</label><input type="text" id="editFeatures" placeholder="近地铁,配套食堂,会议室,停车位" oninput="previewTags()"><div class="tag-preview" id="tagsPreview"></div></div>
+    <div class="form-group"><label>图片链接 *</label><input type="text" id="editImage" placeholder="留空将标记为缺失"><small style="display:block;margin-top:4px;">支持URL网络图片或 images/xxx.jpg 本地图片</small></div>
+    <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeEditModal()">取消</button>
+        <button class="btn btn-primary" onclick="saveProject()">💾 保存修改</button>
+    </div>
+</div></div>
 
-<!-- ===== 导入JSON模态框 ===== -->
-<div class="modal-overlay" id="importModal" style="display:none;">
-    <div class="modal" style="width:640px;">
-        <h2>📥 导入JSON数据</h2>
-        <p style="color:#64748b;margin-bottom:16px;font-size:14px;">将JSON格式的房源数据粘贴到下方，<strong style="color:#16a34a;">新数据将追加到现有列表中</strong>（不会删除已有房源）。</p>
-        <textarea class="json-editor" id="importJson" placeholder='粘贴JSON数组，格式如:
-[
-  {
-    "name": "项目名称",
-    "area": "区域",
-    "location": "地址",
-    "size": "150-800㎡",
-    "price": "95元/㎡/月",
-    "decoration": "精装修",
-    "floor": "高区",
-    "features": ["近地铁","配套食堂"],
-    "image": ""
-  }
-]'></textarea>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeImportModal()">取消</button>
-            <button class="btn btn-primary" onclick="importJSON()">📥 追加导入</button>
-        </div>
+<!-- Import Modal -->
+<div class="modal-overlay" id="importModal"><div class="modal wide">
+    <h2>📥 导入JSON数据</h2>
+    <p style="color:#64748b;margin-bottom:12px;font-size:14px;">粘贴JSON数组，<strong style="color:#059669;">新数据将追加到现有列表</strong>（不会删除已有房源）</p>
+    <textarea id="importJson" style="width:100%;min-height:200px;font-family:monospace;font-size:13px;padding:12px;border:1.5px solid var(--border);border-radius:8px;resize:vertical;" placeholder='[{"name":"项目名","area":"区域","location":"地址",...}]'></textarea>
+    <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeImportModal()">取消</button>
+        <button class="btn btn-primary" onclick="importJSON()">📥 追加导入</button>
     </div>
-</div>
+</div></div>
 
-<!-- ===== 批量添加模态框 ===== -->
-<div class="modal-overlay" id="batchModal" style="display:none;">
-    <div class="modal" style="width:640px;">
-        <h2>⚡ 批量添加房源</h2>
-        <p style="color:#64748b;margin-bottom:6px;font-size:14px;">每行一个房源，用 <code>|</code> 分隔字段</p>
-        <p style="color:#94a3b8;margin-bottom:16px;font-size:12px;">格式：项目名称 | 区域 | 地址 | 面积 | 价格 | 装修 | 楼层 | 标签1,标签2 | 图片链接</p>
-        <textarea class="json-editor" id="batchText" placeholder="南山科技园甲级写字楼 | 南山科技园 | 深圳市南山区科技园 | 150-800㎡ | 95元/㎡/月 | 精装修 | 高区 | 近地铁,停车位 |
-前海金融中心 | 前海 | 深圳市前海合作区 | 200-1200㎡ | 110元/㎡/月 | 豪华装修 | 高区 | 海景,5A甲级 |"></textarea>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeBatchModal()">取消</button>
-            <button class="btn btn-success" onclick="batchAdd()">⚡ 批量添加</button>
-        </div>
+<!-- Batch Add Modal -->
+<div class="modal-overlay" id="batchModal"><div class="modal wide">
+    <h2>⚡ 批量添加房源</h2>
+    <p style="color:#64748b;margin-bottom:4px;font-size:14px;">每行一个房源，用 <code>|</code> 分隔字段</p>
+    <p style="color:var(--muted);margin-bottom:14px;font-size:12px;">格式: 项目名称 | 区域 | 地址 | 面积 | 价格 | 装修 | 楼层 | 标签1,标签2 | 图片链接</p>
+    <textarea id="batchText" style="width:100%;min-height:160px;font-family:monospace;font-size:13px;padding:12px;border:1.5px solid var(--border);border-radius:8px;resize:vertical;" placeholder="前海科兴科学园 | 碧海湾 | 深圳市宝安区 | 128m² | 50元/m²/月 | 豪华装修 | 高区 | 近地铁,停车位 | https://..."></textarea>
+    <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeBatchModal()">取消</button>
+        <button class="btn btn-success" onclick="batchAdd()">⚡ 批量添加</button>
     </div>
-</div>
+</div></div>
 
 <script>
 // ============================================================
-// Password Protection
+// PASSWORD
 // ============================================================
 (function() {
-    const PASS = '520office';
-    const SESSION_KEY = '_admin_auth';
-
-    // 已登录则跳过
-    if (sessionStorage.getItem(SESSION_KEY) === '1') {
-        document.getElementById('pwOverlay').classList.add('hidden');
-        return;
-    }
-
+    var PASS = '520office';
+    if (sessionStorage.getItem('_admin_auth') === '1') { document.getElementById('pwOverlay').classList.add('hidden'); return; }
     window.checkPassword = function() {
-        var input = document.getElementById('pwInput');
-        var overlay = document.getElementById('pwOverlay');
-        var box = document.getElementById('pwBox');
-        var error = document.getElementById('pwError');
-
-        if (input.value === PASS) {
-            sessionStorage.setItem(SESSION_KEY, '1');
-            overlay.classList.add('hidden');
-        } else {
-            error.classList.add('show');
-            box.classList.add('pw-shake');
-            input.value = '';
-            input.focus();
-            setTimeout(function() {
-                box.classList.remove('pw-shake');
-                error.classList.remove('show');
-            }, 1500);
-        }
+        var inp = document.getElementById('pwInput'), ov = document.getElementById('pwOverlay');
+        if (inp.value === PASS) { sessionStorage.setItem('_admin_auth', '1'); ov.classList.add('hidden'); return; }
+        var err = document.getElementById('pwError'), box = document.getElementById('pwBox');
+        err.classList.add('show'); box.classList.add('pw-shake'); inp.value = ''; inp.focus();
+        setTimeout(function() { box.classList.remove('pw-shake'); err.classList.remove('show'); }, 1500);
     };
-
-    document.getElementById('pwInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') checkPassword();
-    });
-
-    // Auto-focus
+    document.getElementById('pwInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') checkPassword(); });
     setTimeout(function() { document.getElementById('pwInput').focus(); }, 300);
 })();
 </script>
 
 <script>
 // ============================================================
-// 默认数据
+// EMBEDDED DATA (auto-generated from projects.json)
 // ============================================================
-const DEFAULT_DATA = [{"name":"南山科技园甲级写字楼","area":"南山科技园","location":"深圳市南山区科技园科苑路","size":"150-800㎡","price":"95元/㎡/月","decoration":"精装修","floor":"高区/中区","features":["近地铁","配套食堂","会议室","停车位"],"image":"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop","date":"2026-06-08","id":1},{"name":"前海金融中心办公室","area":"南山-前海","location":"深圳市前海深港合作区","size":"200-1200㎡","price":"110元/㎡/月","decoration":"豪华装修","floor":"高区全景","features":["海景视野","5A甲级","中央空调","VIP电梯"],"image":"https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop","date":"2026-06-08","id":2},{"name":"宝安中心区商务大厦","area":"宝安-宝安中心区","location":"深圳市宝安区宝安中心区","size":"100-500㎡","price":"65元/㎡/月","decoration":"精装修","floor":"中区","features":["地铁上盖","商业配套","光纤入户","24小时空调"],"image":"https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop","date":"2026-06-08","id":3},{"name":"西乡商圈办公楼","area":"宝安-西乡","location":"深圳市宝安区西乡大道","size":"80-300㎡","price":"48元/㎡/月","decoration":"简装/精装可选","floor":"低中高区","features":["性价比高","交通便捷","可分租","即租即用"],"image":"https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=600&h=400&fit=crop","date":"2026-06-08","id":4},{"name":"翻身地铁口写字楼","area":"翻身","location":"深圳市宝安区翻身路","size":"120-600㎡","price":"52元/㎡/月","decoration":"精装修","floor":"中高区","features":["地铁5号线","拎包入驻","户型方正","采光好"],"image":"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop","date":"2026-06-08","id":5},{"name":"新安传统商区办公室","area":"新安","location":"深圳市宝安区新安街道","size":"100-400㎡","price":"55元/㎡/月","decoration":"精装修","floor":"整层/分层","features":["商业成熟","停车方便","可注册","配套齐全"],"image":"https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&h=400&fit=crop","date":"2026-06-08","id":6},{"name":"兴东科创中心","area":"兴东","location":"深圳市宝安区兴东片区","size":"200-1000㎡","price":"58元/㎡/月","decoration":"精装修","floor":"高区","features":["科创氛围","政策优惠","配套食堂","会议室"],"image":"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop","date":"2026-06-08","id":7},{"name":"坪洲地铁口商务楼","area":"坪洲","location":"深圳市宝安区坪洲地铁站旁","size":"80-350㎡","price":"45元/㎡/月","decoration":"简装","floor":"低中区","features":["地铁1号线","低价实惠","小面积多","创业首选"],"image":"https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop","date":"2026-06-08","id":8},{"name":"碧海湾景观办公室","area":"碧海湾","location":"深圳市宝安区碧海湾片区","size":"150-500㎡","price":"60元/㎡/月","decoration":"精装修","floor":"中高区","features":["海景视野","环境优美","空气清新","低密度"],"image":"https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop","date":"2026-06-08","id":9},{"name":"固戍交通枢纽办公楼","area":"固戍","location":"深圳市宝安区固戍片区","size":"100-600㎡","price":"42元/㎡/月","decoration":"简装/毛坯可选","floor":"整栋/分层","features":["价格低廉","面积灵活","适合仓储","交通方便"],"image":"https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=600&h=400&fit=crop","date":"2026-06-08","id":10},{"name":"福永空港商务大厦","area":"宝安-福永","location":"深圳市宝安区福永大道","size":"200-800㎡","price":"50元/㎡/月","decoration":"精装修","floor":"中高区","features":["近机场","物流便利","商务配套","停车充足"],"image":"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop","date":"2026-06-08","id":11},{"name":"沙井制造产业园办公室","area":"沙井","location":"深圳市宝安区沙井街道","size":"300-2000㎡","price":"35元/㎡/月","decoration":"简装/毛坯","floor":"整层/整栋","features":["大面积","价格最低","产业配套","可分租"],"image":"https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&h=400&fit=crop","date":"2026-06-08","id":12},{"name":"会展新城地标写字楼","area":"会展新城","location":"深圳市宝安区会展新城","size":"250-1500㎡","price":"68元/㎡/月","decoration":"豪华装修","floor":"高区全景","features":["会展中心旁","地标建筑","形象好","配套顶级"],"image":"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop","date":"2026-06-08","id":13},{"name":"海峦坊","area":"宝安-西乡","location":"宝安-西乡","size":"98㎡","price":"55元/㎡/月","decoration":"豪华装修","floor":"中区 / 共36层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/343bb0c3e0632fe8f601ac4e25fb3501/800x600c.jpg","date":"2026-06-08","id":14},{"name":"331创意园","area":"宝安-西乡","location":"宝安-西乡","size":"152㎡","price":"30元/㎡/月","decoration":"豪华装修","floor":"低区 / 共6层","features":["地铁口","配套食堂","停车位","可注册","红本","2*4小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/de0d8f4ef670b056548dc3d2e1606b19/800x600c.jpg","date":"2026-06-08","id":15},{"name":"蘅芳科技大厦","area":"宝安-西乡","location":"宝安-西乡","size":"320㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区 / 共20层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/9d50a585dd60126f0a9d6cf0ff126978/800x600c.jpg","date":"2026-06-08","id":16},{"name":"前海科兴科学园","area":"宝安-西乡","location":"宝安-西乡","size":"256㎡","price":"85元/㎡/月","decoration":"豪华装修","floor":"高区 / 共19层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/6f3d15d349c08c96ac3e1eaf7639ceef/800x600c.jpg","date":"2026-06-08","id":17},{"name":"前海卓越宝中时代广场","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"150㎡","price":"65元/㎡/月","decoration":"豪华装修","floor":"高区 / 共32层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/89009e96204e7426bb15864fb3aac934/800x600c.jpg","date":"2026-06-08","id":18},{"name":"壹方中心","area":"宝安-宝安中心区","location":"前海中心创业一路与新湖路交汇处东南角，车位数:5052","size":"800㎡","price":"66元/㎡/月","decoration":"豪华装修","floor":"中区 / 共49层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/c4856f94b31a989efafa49aa34082881/800x600c.jpg","date":"2026-06-08","id":19},{"name":"中央大道","area":"宝安-西乡","location":"宝安-西乡","size":"300㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"高区 / 共30层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/e07d525d365035fe0218d5ba6061ea6a/800x600c.jpg","date":"2026-06-08","id":20},{"name":"凤凰智谷大厦","area":"宝安-西乡","location":"宝安-西乡","size":"100㎡","price":"45元/㎡/月","decoration":"豪华装修","floor":"中区 / 共20层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/f93a4ce28a6fcdb6860b47369bec45d0/800x600c.jpg","date":"2026-06-08","id":21},{"name":"宗泰未来城","area":"宝安-西乡","location":"宝安-西乡","size":"600㎡","price":"33元/㎡/月","decoration":"豪华装修","floor":"高区 / 共8层","features":["近地铁","地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/81fe7e93965353ced7055bdfa37c8b50/800x600c.jpg","date":"2026-06-08","id":22},{"name":"中晟会港湾(办公)","area":"宝安-福永","location":"宝安-福永","size":"240㎡","price":"43元/㎡/月","decoration":"精装修","floor":"中区 / 共22层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/3ff7a7726894ae7c152045c3b82aaa34/800x600c.jpg","date":"2026-06-08","id":23},{"name":"万利商务中心","area":"宝安-福永","location":"宝安-福永","size":"190㎡","price":"50元/㎡/月","decoration":"豪华装修","floor":"中区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/c27279152117dee7077975b35662ce40/800x600c.jpg","date":"2026-06-08","id":24},{"name":"锦城大厦(宝安)","area":"宝安-福永","location":"宝安-福永","size":"260㎡","price":"24元/㎡/月","decoration":"精装修","floor":"共9层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/6f32d975ffc23899eadaffca0a7c8f2e/800x600c.jpg","date":"2026-06-08","id":25},{"name":"怀德国际大厦","area":"宝安-福永","location":"宝安-福永","size":"500㎡","price":"50元/㎡/月","decoration":"豪华装修","floor":"高区 / 共19层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/8084daecf1795b21fa21187623beac10/800x600c.jpg","date":"2026-06-08","id":26},{"name":"万利商务中心","area":"宝安-福永","location":"宝安-福永","size":"105㎡","price":"57元/㎡/月","decoration":"豪华装修","floor":"高区 / 共25层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/e2bde92e717437f8917d370a86c53038/800x600c.jpg","date":"2026-06-08","id":27},{"name":"会展湾南岸","area":"宝安-福永","location":"宝安-福永","size":"200㎡","price":"45元/㎡/月","decoration":"豪华装修","floor":"中区 / 共6层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/ac4dbfc916c88b8e82e5769a0c098b52/800x600c.jpg","date":"2026-06-08","id":28},{"name":"智美park","area":"宝安-福永","location":"宝安-福永","size":"120㎡","price":"35元/㎡/月","decoration":"豪华装修","floor":"低区 / 共6层","features":["地铁口","配套食堂","停车位","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/e7f9c90f4c547fd5d74395961bfe33e8/800x600c.jpg","date":"2026-06-08","id":29},{"name":"合一凤凰智慧港","area":"宝安-福永","location":"宝安-福永","size":"150㎡","price":"39元/㎡/月","decoration":"豪华装修","floor":"共20层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/753ad1b5da8b70ea1ce65dea8d638068/800x600c.jpg","date":"2026-06-08","id":30},{"name":"塘尾股份商务大厦","area":"宝安-福永","location":"宝安-福永","size":"150㎡","price":"47元/㎡/月","decoration":"豪华装修","floor":"共32层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/2846c65fa2445c51048c9855117e8913/800x600c.jpg","date":"2026-06-08","id":31},{"name":"金环宇G-LINK","area":"宝安-西乡","location":"宝安-西乡","size":"862㎡","price":"57元/㎡/月","decoration":"豪华装修","floor":"中区 / 共30层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/eed9f4515aa641d3da0023e6b420030e/800x600c.jpg","date":"2026-06-09","id":32},{"name":"蘅芳科技大厦","area":"宝安-西乡","location":"宝安-西乡","size":"150㎡","price":"51元/㎡/月","decoration":"豪华装修","floor":"高区 / 共10层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/d5cc07df1d892daf375ebec41a556256/800x600c.jpg","date":"2026-06-09","id":33},{"name":"广兴源互联网产业基地A区","area":"宝安-西乡","location":"宝安-西乡","size":"1000㎡","price":"27元/㎡/月","decoration":"豪华装修","floor":"中区 / 共8层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/c160d33afbc5ecae806ba7c249e55bc9/800x600c.jpg","date":"2026-06-09","id":34},{"name":"白鹿广场","area":"宝安-西乡","location":"宝安-西乡","size":"1000㎡","price":"30元/㎡/月","decoration":"豪华装修","floor":"中区 / 共8层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/1a6c2b8eb5ab83483fa5f5708d4acd14/800x600c.jpg","date":"2026-06-09","id":35},{"name":"西部硅谷","area":"宝安-西乡","location":"宝安-西乡","size":"300㎡","price":"30元/㎡/月","decoration":"豪华装修","floor":"中区 / 共10层","features":["地铁口","配套食堂","停车位","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/2784e9b094dd9251086fd1e2701e8f3f/800x600c.jpg","date":"2026-06-09","id":36},{"name":"朗峻广场","area":"宝安-西乡","location":"宝安-西乡","size":"163㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"低区 / 共25层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/0d61f13096e69f40b72a96954f429d91/800x600c.jpg","date":"2026-06-09","id":37},{"name":"定军山电影科技产业园","area":"宝安-西乡","location":"宝安-西乡","size":"138㎡","price":"65元/㎡/月","decoration":"豪华装修","floor":"中区 / 共28层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/910dee75947ee01f58d9d79d48d61e3c/800x600c.jpg","date":"2026-06-09","id":38},{"name":"升业空间","area":"宝安-西乡","location":"宝安-西乡","size":"500㎡","price":"24元/㎡/月","decoration":"豪华装修","floor":"高区 / 共6层","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/b8606e6e5abb5c561870efbfff9ffd15/800x600c.jpg","date":"2026-06-09","id":39},{"name":"331创意园","area":"宝安-西乡","location":"宝安-西乡","size":"1150㎡","price":"26元/㎡/月","decoration":"豪华装修","floor":"低区 / 共6层","features":["地铁口","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级"],"image":"https://pic1.ajkimg.com/display/hj/eea191dbf48181221d647deb44bd032b/800x600c.jpg","date":"2026-06-09","id":40},{"name":"海峦坊","area":"宝安-西乡","location":"宝安-西乡","size":"95㎡","price":"48元/㎡/月","decoration":"豪华装修","floor":"高区","features":["地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/601efd80004f90e3ece927053551ab07/800x600c.jpg","date":"2026-06-09","id":41},{"name":"奋成智谷大厦","area":"宝安-西乡","location":"宝安-西乡","size":"150㎡","price":"39元/㎡/月","decoration":"豪华装修","floor":"中区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/7984050ade3a1248f7ad44c5fbd9f42e/800x600c.jpg","date":"2026-06-09","id":42},{"name":"广兴源互联网创意园","area":"宝安-西乡","location":"宝安-西乡","size":"576㎡","price":"66元/㎡/月","decoration":"豪华装修","floor":"低区 / 共5层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/99ae463540a3226c941c02e476e1a036/800x600c.jpg","date":"2026-06-09","id":43},{"name":"旭生大厦","area":"宝安-西乡","location":"宝安-西乡","size":"850㎡","price":"35元/㎡/月","decoration":"豪华装修","floor":"中区 / 共8层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/1af68a422c5e5dc531d7c4babba63810/800x600c.jpg","date":"2026-06-09","id":44},{"name":"明月花都(办公)","area":"宝安-西乡","location":"宝安-西乡","size":"112㎡","price":"49元/㎡/月","decoration":"豪华装修","floor":"高区 / 共29层","features":["近地铁","地铁口","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/c00fa2940abf92bfaeba93a93bbae06b/800x600c.jpg","date":"2026-06-09","id":45},{"name":"中央大道","area":"宝安-西乡","location":"宝安-西乡","size":"302㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"高区 / 共30层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/3b34471773af4fed120dfce45a13c40a/800x600c.jpg","date":"2026-06-09","id":46},{"name":"金环宇G-LINK","area":"宝安-西乡","location":"宝安-西乡","size":"800㎡","price":"39元/㎡/月","decoration":"豪华装修","floor":"中区 / 共28层","features":["地铁口","配套食堂","停车位","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/78a94c098b7dbffc95c72c43d265de03/800x600c.jpg","date":"2026-06-09","id":47},{"name":"白鹿广场","area":"宝安-西乡","location":"宝安-西乡","size":"1150㎡","price":"33元/㎡/月","decoration":"豪华装修","floor":"中区 / 共11层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/84e86ea108b1dbff54db7a397912b0c7/800x600c.jpg","date":"2026-06-09","id":48},{"name":"蘅芳科技大厦","area":"宝安-西乡","location":"宝安-西乡","size":"178㎡","price":"41元/㎡/月","decoration":"豪华装修","floor":"中区 / 共40层","features":["近地铁","地铁口","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/58168e92cce04d027486acc56fdfb972/800x600c.jpg","date":"2026-06-09","id":49},{"name":"凤凰智谷大厦","area":"宝安-西乡","location":"宝安-西乡","size":"238㎡","price":"50元/㎡/月","decoration":"豪华装修","floor":"共28层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/1aa5b0c3eb2970e11b1279ca3c1228ed/800x600c.jpg","date":"2026-06-09","id":50},{"name":"331创意园","area":"宝安-西乡","location":"宝安-西乡","size":"158㎡","price":"27元/㎡/月","decoration":"豪华装修","floor":"共8层","features":["地铁口","配套食堂","停车位","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/1acadc76e26675d05eb035f3fa0018ed/800x600c.jpg","date":"2026-06-09","id":51},{"name":"蘅芳科技大厦","area":"宝安-西乡","location":"宝安-西乡","size":"168㎡","price":"41元/㎡/月","decoration":"豪华装修","floor":"高区 / 共21层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/45a24849cbc0577f8438e87e3f6f3e01/800x600c.jpg","date":"2026-06-09","id":52},{"name":"331创意园","area":"宝安-西乡","location":"宝安-西乡","size":"150㎡","price":"29元/㎡/月","decoration":"精装修","floor":"中区 / 共12层","features":["地铁口","配套食堂","停车位","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/c1d1b699463447157d4ca2d7d76bb837/800x600c.jpg","date":"2026-06-09","id":53},{"name":"前海科兴科学园","area":"宝安-西乡","location":"宝安-西乡","size":"249㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"中区 / 共15层","features":["近地铁","地铁口","配套食堂","停车位","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/9e73fc3e5d1d7d4b38057f3ea1f0c147/800x600c.jpg","date":"2026-06-09","id":54},{"name":"海峦坊","area":"宝安-西乡","location":"宝安-西乡","size":"120㎡","price":"45元/㎡/月","decoration":"豪华装修","floor":"高区 / 共32层","features":["近地铁","地铁口","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/dda3bc3dd1525f7243d467cbcdb4c2f7/800x600c.jpg","date":"2026-06-09","id":55},{"name":"卓越前海壹号(办公)","area":"南山-前海","location":"南山-前海","size":"500㎡","price":"75元/㎡/月","decoration":"豪华装修","floor":"高区 / 共45层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/91c465b698cfa49b856280cc8485be80/800x600c.jpg","date":"2026-06-09","id":56},{"name":"前海周大福金融大厦","area":"南山-前海","location":"南山-前海","size":"300㎡","price":"65元/㎡/月","decoration":"豪华装修","floor":"中区 / 共36层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/5c8f2482e99daf9394c0712893b27157/800x600c.jpg","date":"2026-06-09","id":57},{"name":"前海周大福金融大厦","area":"南山-前海","location":"南山-前海","size":"500㎡","price":"78元/㎡/月","decoration":"豪华装修","floor":"高区 / 共42层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/ec1ab9835acd1ec271cd0d696783aa45/800x600c.jpg","date":"2026-06-09","id":58},{"name":"立桥金融中心","area":"南山-前海","location":"南山-前海","size":"150㎡","price":"78元/㎡/月","decoration":"豪华装修","floor":"共35层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/8db238920cc85d6f594aabc3badbf5e2/800x600c.jpg","date":"2026-06-09","id":59},{"name":"前海鸿荣源中心","area":"南山-前海","location":"南山-前海","size":"150㎡","price":"70元/㎡/月","decoration":"豪华装修","floor":"低区 / 共54层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/5b1c667ba846f6fbe9c21be983aa5ec8/800x600c.jpg","date":"2026-06-09","id":60},{"name":"前海深港基金小镇","area":"南山-前海","location":"南山-前海","size":"600㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区 / 共4层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/dedf6438159564ec5f583b6bd1fd5439/800x600c.jpg","date":"2026-06-09","id":61},{"name":"前海金融中心","area":"南山-前海","location":"南山-前海","size":"300㎡","price":"57元/㎡/月","decoration":"豪华装修","floor":"高区","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/a5fd3ef75176865dbf87eba4256bc353/800x600c.jpg","date":"2026-06-09","id":62},{"name":"华强金融大厦","area":"南山-前海","location":"南山-前海","size":"98㎡","price":"87元/㎡/月","decoration":"豪华装修","floor":"共45层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/a9e166df0e354c645e4dbf430deea942/800x600c.jpg","date":"2026-06-09","id":63},{"name":"前海嘉里中心","area":"南山-前海","location":"南山-前海","size":"200㎡","price":"75元/㎡/月","decoration":"豪华装修","floor":"中区 / 共31层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/be4fc881a3f45eb0a28494d04a86d0a0/800x600c.jpg","date":"2026-06-09","id":64},{"name":"华润前海中心","area":"南山-前海","location":"南山-前海","size":"300㎡","price":"75元/㎡/月","decoration":"豪华装修","floor":"高区 / 共57层","features":["近地铁","地铁口","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/b679c2a43897c32f07b8e748b9634583/800x600c.jpg","date":"2026-06-09","id":65},{"name":"弘毅大厦","area":"南山-前海","location":"南山-前海","size":"160㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"中区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/a06d9bc3e0b0894c52a6cd40192b089e/800x600c.jpg","date":"2026-06-09","id":66},{"name":"华润前海中心","area":"南山-前海","location":"南山-前海","size":"200㎡","price":"","decoration":"豪华装修","floor":"高区 / 共35层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/e1d6e99abd2b1edfa4e95cd00f1f3fbe/800x600c.jpg","date":"2026-06-09","id":67},{"name":"卓越前海壹号(办公)","area":"南山-前海","location":"南山-前海","size":"700㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区 / 共45层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/a25941f8ebaa50edb49d350c93e4caa5/800x600c.jpg","date":"2026-06-09","id":68},{"name":"前海嘉里中心","area":"南山-前海","location":"南山-前海","size":"120㎡","price":"78元/㎡/月","decoration":"豪华装修","floor":"高区 / 共35层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/e76d2ba765b2095733e8c62a9f18413c/800x600c.jpg","date":"2026-06-09","id":69},{"name":"卓越前海壹号(办公)","area":"南山-前海","location":"南山-前海","size":"1000㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区 / 共63层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/651777a0f45bc606087a071b23062734/800x600c.jpg","date":"2026-06-09","id":70},{"name":"前海嘉里中心","area":"南山-前海","location":"南山-前海","size":"150㎡","price":"87元/㎡/月","decoration":"豪华装修","floor":"高区 / 共35层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/df04101498c1fedf43db517e6b0dc67a/800x600c.jpg","date":"2026-06-09","id":71},{"name":"卓越前海壹号(办公)","area":"南山-前海","location":"南山-前海","size":"200㎡","price":"","decoration":"豪华装修","floor":"高区 / 共48层","features":["地铁口","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/96911004830e165d912f55ee1cc301ae/800x600c.jpg","date":"2026-06-09","id":72},{"name":"前海世茂大厦","area":"南山-前海","location":"南山-前海","size":"200㎡","price":"57元/㎡/月","decoration":"豪华装修","floor":"中区 / 共50层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/3ddee5c947316c1e7735d44a7a2405b7/800x600c.jpg","date":"2026-06-09","id":73},{"name":"卓越前海壹号(办公)","area":"南山-前海","location":"南山-前海","size":"100㎡","price":"57元/㎡/月","decoration":"豪华装修","floor":"低区 / 共50层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/8874a8151d3ebad93e99c18816425607/800x600c.jpg","date":"2026-06-09","id":74},{"name":"前海金融中心","area":"南山-前海","location":"南山-前海","size":"95㎡","price":"75元/㎡/月","decoration":"精装修","floor":"高区 / 共26层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/05977eb1dbb8a5a7c3f5c7e000f86a5f/800x600c.jpg","date":"2026-06-09","id":75},{"name":"香缤国际金融中心","area":"南山-前海","location":"南山-前海","size":"150㎡","price":"","decoration":"豪华装修","floor":"中区 / 共45层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","5A甲级"],"image":"https://pic1.ajkimg.com/display/hj/2f550dc4286d14aa22b7719dc0814458/800x600c.jpg","date":"2026-06-09","id":76},{"name":"前海颐都大厦","area":"南山-前海","location":"南山-前海","size":"707㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"共4层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/f5955264c349d272ffee799320bf17f3/800x600c.jpg","date":"2026-06-09","id":77},{"name":"前海世茂大厦","area":"南山-前海","location":"南山-前海","size":"968㎡","price":"51元/㎡/月","decoration":"豪华装修","floor":"中区 / 共45层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/4e33f94267c51c7ef1c38b23228ad6f2/800x600c.jpg","date":"2026-06-09","id":78},{"name":"华润前海中心","area":"南山-前海","location":"南山-前海","size":"800㎡","price":"90元/㎡/月","decoration":"豪华装修","floor":"高区 / 共65层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/19b55da401140854ad0e8ba0b43b977a/800x600c.jpg","date":"2026-06-09","id":79},{"name":"卓越前海壹号(办公)","area":"南山-前海","location":"南山-前海","size":"288㎡","price":"78元/㎡/月","decoration":"豪华装修","floor":"中区 / 共54层","features":["地铁口","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/55b1f8c591d06df77ffd19d6b686ad1c/800x600c.jpg","date":"2026-06-09","id":80},{"name":"前海恒昌大厦东座","area":"南山-前海","location":"南山-前海","size":"300㎡","price":"87元/㎡/月","decoration":"豪华装修","floor":"中区 / 共40层","features":["地铁口","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/425d83c711a990628b955dfe9ffc7da4/800x600c.jpg","date":"2026-06-09","id":81},{"name":"前海周大福金融大厦","area":"南山-前海","location":"南山-前海","size":"3000㎡","price":"","decoration":"豪华装修","floor":"中区 / 共54层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/27ff431c5e7bd8dced60d7fe02803a1a/800x600c.jpg","date":"2026-06-09","id":82},{"name":"前海卓越宝中时代广场","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"460㎡","price":"80元/㎡/月","decoration":"豪华装修","floor":"中区 / 共29层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/880c3870fc5435b36b309dfe9eace6f6/800x600c.jpg","date":"2026-06-10","id":83},{"name":"前海HOP国际","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"50㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/60e7ae45303ae5b75e5674b375d61225/800x600c.jpg","date":"2026-06-10","id":84},{"name":"海纳科技大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"200㎡","price":"50元/㎡/月","decoration":"豪华装修","floor":"高区 / 共32层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/9ea8af2f165d7bb97bb827cbee72a1cb/800x600c.jpg","date":"2026-06-10","id":85},{"name":"壹方中心","area":"宝安-宝安中心区","location":"前海中心创业一路与新湖路交汇处东南角，车位数:5052","size":"276㎡","price":"46元/㎡/月","decoration":"豪华装修","floor":"中区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/f4937a28ce44f9619e3f89d1194d32b2/800x600c.jpg","date":"2026-06-10","id":86},{"name":"前海卓越宝中时代广场","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"300㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"中区 / 共40层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/34bae95444f75c0a32f803a987cfcabd/800x600c.jpg","date":"2026-06-10","id":87},{"name":"壹方中心","area":"宝安-宝安中心区","location":"前海中心创业一路与新湖路交汇处东南角，车位数:5052","size":"200㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"低区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/124c075093fd5b223a6a1c69cd9f32d3/800x600c.jpg","date":"2026-06-10","id":88},{"name":"海纳科技大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"600㎡","price":"65元/㎡/月","decoration":"豪华装修","floor":"中区 / 共36层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/6d1312d5a3c38278cfa1c0a202d74f53/800x600c.jpg","date":"2026-06-10","id":89},{"name":"壹方中心","area":"宝安-宝安中心区","location":"前海中心创业一路与新湖路交汇处东南角，车位数:5052","size":"300㎡","price":"79元/㎡/月","decoration":"豪华装修","floor":"高区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/061c3628c5c47cc9d6904234a0d3671f/800x600c.jpg","date":"2026-06-10","id":90},{"name":"壹方中心","area":"宝安-宝安中心区","location":"前海中心创业一路与新湖路交汇处东南角，车位数:5052","size":"150㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"高区 / 共60层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/7b26cf94931cddf77c2da50ef3258bba/800x600c.jpg","date":"2026-06-10","id":91},{"name":"国际西岸商务大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"150㎡","price":"87元/㎡/月","decoration":"豪华装修","floor":"高区 / 共60层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/750dab8d161e65607bf2f61b5981f1f0/800x600c.jpg","date":"2026-06-10","id":92},{"name":"壹方中心","area":"宝安-宝安中心区","location":"前海中心创业一路与新湖路交汇处东南角，车位数:5052","size":"500㎡","price":"75元/㎡/月","decoration":"豪华装修","floor":"中区 / 共35层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/57bba5debaa6eddb9f2d2f1d8c8e0ce6/800x600c.jpg","date":"2026-06-10","id":93},{"name":"前海卓越宝中时代广场","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"198㎡","price":"80元/㎡/月","decoration":"豪华装修","floor":"低区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/f5bbbaa7106167658dfddba2da7530e5/800x600c.jpg","date":"2026-06-10","id":94},{"name":"龙光世纪大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"430㎡","price":"64元/㎡/月","decoration":"豪华装修","floor":"高区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/d146976dd1f6ec0bbeb88d9c81a99902/800x600c.jpg","date":"2026-06-10","id":95},{"name":"海纳科技大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"198㎡","price":"57元/㎡/月","decoration":"豪华装修","floor":"高区 / 共32层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/86553336b68b9a550c3594f10a4c3eaf/800x600c.jpg","date":"2026-06-10","id":96},{"name":"前海HOP国际","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"220㎡","price":"80元/㎡/月","decoration":"豪华装修","floor":"高区 / 共39层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/bd27893d6cdfacbfb62c395b9e1f07e6/800x600c.jpg","date":"2026-06-10","id":97},{"name":"龙光世纪大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"152㎡","price":"50元/㎡/月","decoration":"豪华装修","floor":"中区 / 共26层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/aa9ec2a86311822725987ab2934468cf/800x600c.jpg","date":"2026-06-10","id":98},{"name":"前海HOP国际","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"228㎡","price":"59元/㎡/月","decoration":"豪华装修","floor":"中区 / 共38层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/caf679f397e2c584bd9890b14cf821aa/800x600c.jpg","date":"2026-06-10","id":99},{"name":"龙光世纪大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"400㎡","price":"75元/㎡/月","decoration":"豪华装修","floor":"中区 / 共52层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/0339456a2d6761516f2cb0b0165edc34/800x600c.jpg","date":"2026-06-10","id":100},{"name":"壹方中心","area":"宝安-宝安中心区","location":"前海中心创业一路与新湖路交汇处东南角，车位数:5052","size":"2000㎡","price":"80元/㎡/月","decoration":"豪华装修","floor":"高区 / 共46层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/685798bdf83dc702fcf54f43c424011e/800x600c.jpg","date":"2026-06-10","id":101},{"name":"前海卓越宝中时代广场","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"500㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"高区 / 共42层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/80bc8bb4083f4b6809eebd7d3c9d056a/800x600c.jpg","date":"2026-06-10","id":102},{"name":"前海HOP国际","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"200㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/e01beaa27f488ddc3e9eee2a99fc9643/800x600c.jpg","date":"2026-06-10","id":103},{"name":"龙光世纪大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"150㎡","price":"69元/㎡/月","decoration":"豪华装修","floor":"高区 / 共25层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/58728e5f3dca39b05c4ef52a05c1a2b0/800x600c.jpg","date":"2026-06-10","id":104},{"name":"前海HOP国际","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"300㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区 / 共54层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级"],"image":"https://pic1.ajkimg.com/display/hj/7b70242eabeb6310a07d6487fc1d4de4/800x600c.jpg","date":"2026-06-10","id":105},{"name":"龙光世纪大厦","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"128㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区 / 共17层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/a9bb1f164edd25aa67189b5a2c0923b8/800x600c.jpg","date":"2026-06-10","id":106},{"name":"前海HOP国际","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"238㎡","price":"95元/㎡/月","decoration":"豪华装修","floor":"高区 / 共42层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调"],"image":"https://pic1.ajkimg.com/display/hj/cbe692f4f1ae742d36d49d232605e0b0/800x600c.jpg","date":"2026-06-10","id":107},{"name":"前海HOP国际","area":"宝安-宝安中心区","location":"宝安-宝安中心区","size":"130㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"中区 / 共30层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","5A甲级"],"image":"https://pic1.ajkimg.com/display/hj/1c2a25fd879ba145919ee01e8d21f156/800x600c.jpg","date":"2026-06-10","id":108},{"name":"壹方中心","area":"宝安-宝安中心区","location":"前海中心创业一路与新湖路交汇处东南角，车位数:5052","size":"218㎡","price":"68元/㎡/月","decoration":"豪华装修","floor":"高区","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://pic1.ajkimg.com/display/hj/74d929c0700cf655452a81bfc43c1888/800x600c.jpg","date":"2026-06-10","id":109},{"name":"前海鸿荣源中心","area":"南山-前海","location":"南山-前海","size":"1000㎡","price":"","decoration":"豪华装修","floor":"共35层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","户型方正","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop","date":"2026-06-10","id":110},{"name":"前海金融中心","area":"南山-前海","location":"南山-前海","size":"600㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区 / 共4层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop","date":"2026-06-10","id":111},{"name":"前海金融中心","area":"南山-前海","location":"南山-前海","size":"200㎡","price":"","decoration":"豪华装修","floor":"高区 / 共45层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop","date":"2026-06-10","id":112},{"name":"华润前海大厦","area":"南山-前海","location":"南山-前海","size":"300㎡","price":"75元/㎡/月","decoration":"豪华装修","floor":"高区 / 共57层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop","date":"2026-06-10","id":113},{"name":"华润前海金融中心","area":"南山-前海","location":"南山-前海","size":"200㎡","price":"","decoration":"豪华装修","floor":"高区 / 共35层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1497215842964-222b430dc094?w=600&h=400&fit=crop","date":"2026-06-10","id":114},{"name":"前海周大福金融大厦","area":"南山-前海","location":"南山-前海","size":"1000㎡","price":"60元/㎡/月","decoration":"豪华装修","floor":"高区 / 共63层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=600&h=400&fit=crop","date":"2026-06-10","id":115},{"name":"前海壹号","area":"南山-前海","location":"南山-前海","size":"200㎡","price":"","decoration":"豪华装修","floor":"高区 / 共48层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop","date":"2026-06-10","id":116},{"name":"前海世茂大厦","area":"南山-前海","location":"南山-前海","size":"192㎡","price":"","decoration":"豪华装修","floor":"高区 / 共51层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop","date":"2026-06-10","id":117},{"name":"前海香缤国际金融中心","area":"南山-前海","location":"南山-前海","size":"150㎡","price":"","decoration":"豪华装修","floor":"中区 / 共45层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop","date":"2026-06-10","id":118},{"name":"前海世茂大厦","area":"南山-前海","location":"南山-前海","size":"100㎡","price":"","decoration":"豪华装修","floor":"高区 / 共45层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop","date":"2026-06-10","id":119},{"name":"前海嘉里中心","area":"南山-前海","location":"南山-前海","size":"288㎡","price":"","decoration":"豪华装修","floor":"高区 / 共54层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1486718448742-163732cd1544?w=600&h=400&fit=crop","date":"2026-06-10","id":120},{"name":"前海鸿荣源中心","area":"南山-前海","location":"南山-前海","size":"100㎡","price":"75元/㎡/月","decoration":"豪华装修","floor":"高区 / 共32层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop","date":"2026-06-10","id":121},{"name":"华润前海中心","area":"南山-前海","location":"南山-前海","size":"232㎡","price":"","decoration":"豪华装修","floor":"高区 / 共60层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop","date":"2026-06-10","id":122},{"name":"前海金融中心","area":"南山-前海","location":"南山-前海","size":"800㎡","price":"65元/㎡/月","decoration":"豪华装修","floor":"共3层","features":["地铁口","配套食堂","停车位","海景","可注册","红本","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop","date":"2026-06-10","id":123},{"name":"华润前海中心","area":"南山-前海","location":"南山-前海","size":"500㎡","price":"80元/㎡/月","decoration":"豪华装修","floor":"高区 / 共56层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop","date":"2026-06-10","id":124},{"name":"前海鸿荣源中心","area":"南山-前海","location":"南山-前海","size":"300㎡","price":"","decoration":"豪华装修","floor":"高区 / 共60层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop","date":"2026-06-10","id":125},{"name":"华润前海中心","area":"南山-前海","location":"南山-前海","size":"500㎡","price":"","decoration":"豪华装修","floor":"高区 / 共58层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop","date":"2026-06-10","id":126},{"name":"前海嘉里中心","area":"南山-前海","location":"南山-前海","size":"196㎡","price":"","decoration":"豪华装修","floor":"高区 / 共28层","features":["近地铁","地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1486718448742-163732cd1544?w=600&h=400&fit=crop","date":"2026-06-10","id":127},{"name":"前海企业公馆","area":"南山-前海","location":"南山-前海","size":"500㎡","price":"","decoration":"豪华装修","floor":"高区 / 共4层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop","date":"2026-06-10","id":128},{"name":"前海颐都大厦","area":"南山-前海","location":"南山-前海","size":"1000㎡","price":"","decoration":"豪华装修","floor":"中区 / 共4层","features":["地铁口","配套食堂","停车位","海景","可注册","24小时空调","拎包入驻","配家私","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop","date":"2026-06-10","id":129},{"name":"前海金融中心","area":"南山-前海","location":"南山-前海","size":"1000㎡","price":"","decoration":"豪华装修","floor":"高区 / 共60层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop","date":"2026-06-10","id":130},{"name":"前海世贸大厦","area":"南山-前海","location":"南山-前海","size":"200㎡","price":"75元/㎡/月","decoration":"豪华装修","floor":"高区 / 共46层","features":["地铁口","配套食堂","停车位","海景","可注册","拎包入驻","配家私","采光好","户型方正","5A甲级","中央空调","交通便捷"],"image":"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop","date":"2026-06-10","id":131},{"name":"前海人寿金融中心","area":"宝安中心","location":"","size":"3000㎡","price":"8元/㎡/月","decoration":"豪华装修","floor":"共1层","features":["配套食堂","采光好","户型方正","交通便捷"],"image":"","date":"2026-06-11","id":132},{"name":"弘毅大厦","area":"前海","location":"","size":"2000㎡","price":"90元/㎡/月","decoration":"精装修","floor":"共1层","features":["近地铁","配套食堂","停车位","24小时空调","交通便捷"],"image":"","date":"2026-06-11","id":134},{"name":"一手开发商700平园","area":"南山科技园","location":"","size":"700㎡","price":"35元/㎡/月","decoration":"豪华装修","floor":"高楼","features":["近地铁","配套食堂","停车位","可注册","红本","24小时空调","拎包入驻","配家私","采光好","5A甲级","中央空调","交通便捷","露台"],"image":"","date":"2026-06-11","id":136},{"name":"金环宇","area":"宝安中心","location":"宝安中心","size":"862㎡","price":"70元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":138},{"name":"碧桂园凤凰国际智谷","area":"宝安中心","location":"宝安中心","size":"113㎡","price":"60元/㎡/月","decoration":"精装修","floor":"低楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":140},{"name":"雪花科创城","area":"新安","location":"宝安-新安","size":"2600㎡","price":"85元/㎡/月","decoration":"精装修","floor":"","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":137},{"name":"雪花科创城","area":"新安","location":"宝安-新安","size":"2500㎡","price":"83元/㎡/月","decoration":"精装修","floor":"","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":139},{"name":"信义领御研发中心（稻兴环球科创中心）","area":"新安","location":"宝安-新安","size":"2004㎡","price":"90元/㎡/月","decoration":"精装修","floor":"","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":141},{"name":"恒明珠金融大厦","area":"新安","location":"宝安-新安","size":"1778㎡","price":"90元/㎡/月","decoration":"精装修","floor":"","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":143},{"name":"美生慧谷科技产业园","area":"新安","location":"宝安-新安","size":"1757㎡","price":"70元/㎡/月","decoration":"精装修","floor":"","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":145},{"name":"庭威大厦","area":"新安","location":"宝安-新安","size":"1312㎡","price":"86元/㎡/月","decoration":"精装修","floor":"高楼层","features":["近地铁","配套食堂","停车位","可注册","交通便捷"],"image":"","date":"2026-06-11","id":147},{"name":"高新奇产业园二期（高新奇科技园二期）","area":"新安","location":"宝安-新安","size":"1128㎡","price":"84元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":149},{"name":"雪花科创城","area":"新安","location":"宝安-新安","size":"837㎡","price":"85元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","配家私","交通便捷"],"image":"","date":"2026-06-11","id":151},{"name":"玺玥大厦","area":"新安","location":"宝安-新安","size":"829㎡","price":"120元/㎡/月","decoration":"精装修","floor":"高楼层","features":["近地铁","配套食堂","可注册","配家私","交通便捷"],"image":"","date":"2026-06-11","id":153},{"name":"中粮地产集团中心","area":"新安","location":"宝安-新安","size":"599㎡","price":"85元/㎡/月","decoration":"精装修","floor":"高楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":155},{"name":"众里创业社区兴东","area":"新安","location":"宝安-新安","size":"535㎡","price":"38元/㎡/月","decoration":"精装修","floor":"低楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":157},{"name":"嘉盛•智丰荟","area":"新安","location":"宝安-新安","size":"503㎡","price":"53元/㎡/月","decoration":"精装修","floor":"低楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":159},{"name":"美生慧谷科技产业园","area":"新安","location":"宝安-新安","size":"460㎡","price":"75元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":161},{"name":"信义领御研发中心（稻兴环球科创中心）","area":"新安","location":"宝安-新安","size":"419㎡","price":"94元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","配家私","交通便捷"],"image":"","date":"2026-06-11","id":163},{"name":"玺玥大厦","area":"新安","location":"宝安-新安","size":"388㎡","price":"88元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":165},{"name":"玺玥大厦","area":"新安","location":"宝安-新安","size":"387㎡","price":"88元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":167},{"name":"中粮地产集团中心","area":"新安","location":"宝安-新安","size":"303㎡","price":"75元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":169},{"name":"高新奇产业园二期（高新奇科技园二期）","area":"新安","location":"宝安-新安","size":"290㎡","price":"65元/㎡/月","decoration":"精装修","floor":"中楼层","features":["近地铁","配套食堂","可注册","配家私","交通便捷"],"image":"","date":"2026-06-11","id":171},{"name":"勤诚达大厦","area":"新安","location":"宝安-新安","size":"280㎡","price":"78元/㎡/月","decoration":"精装修","floor":"高楼层","features":["近地铁","配套食堂","可注册","交通便捷"],"image":"","date":"2026-06-11","id":173},{"name":"宏发玺玥大厦","area":"新安","location":"宝安-新安","size":"300㎡","price":"","decoration":"豪华装修","floor":"共45层","features":["近地铁","配套食堂","停车位","可注册","24小时空调","配家私","户型方正","交通便捷"],"image":"","date":"2026-06-11","id":174},{"name":"稻兴环球科创中心","area":"新安","location":"宝安-新安","size":"298㎡","price":"","decoration":"豪华装修","floor":"高楼层","features":["近地铁","配套食堂","停车位","可注册","24小时空调","户型方正","交通便捷"],"image":"","date":"2026-06-11","id":175},{"name":"中粮创芯公园","area":"新安","location":"宝安-新安","size":"300㎡","price":"3元/㎡/月","decoration":"精装修","floor":"共35层","features":["近地铁","配套食堂","停车位","可注册","红本","配家私","交通便捷"],"image":"","date":"2026-06-11","id":176},{"name":"中粮大悦城·铂悦","area":"新安","location":"宝安-新安","size":"200㎡","price":"2元/㎡/月","decoration":"豪华装修","floor":"共40层","features":["近地铁","停车位","可注册","红本","配家私","交通便捷"],"image":"","date":"2026-06-11","id":177},{"name":"中粮创芯公园","area":"新安","location":"宝安-新安","size":"150㎡","price":"6元/㎡/月","decoration":"精装修","floor":"共35层","features":["近地铁","可注册","配家私","采光好","交通便捷"],"image":"","date":"2026-06-11","id":178},{"name":"稻兴环球科创中心","area":"新安","location":"宝安-新安","size":"150㎡","price":"","decoration":"精装修","floor":"共26层","features":["近地铁","可注册","24小时空调","拎包入驻","配家私","5A甲级","交通便捷"],"image":"","date":"2026-06-11","id":179},{"name":"宏发玺玥大厦","area":"新安","location":"宝安-新安","size":"130㎡","price":"","decoration":"豪华装修","floor":"共42层","features":["近地铁","可注册","24小时空调","配家私","交通便捷"],"image":"","date":"2026-06-11","id":180},{"name":"恒明珠国际金融大厦","area":"新安","location":"宝安-新安","size":"200㎡","price":"","decoration":"豪华装修","floor":"共63层","features":["停车位","可注册","红本","拎包入驻","配家私","采光好","户型方正","交通便捷"],"image":"","date":"2026-06-11","id":181},{"name":"中粮创芯公园","area":"新安","location":"宝安-新安","size":"1500㎡","price":"1元/㎡/月","decoration":"精装修","floor":"共32层","features":["可注册","24小时空调","配家私","户型方正","交通便捷"],"image":"","date":"2026-06-11","id":182},{"name":"精装独栋写字楼出租 免费定制隔间 配家具空调 送车位 红本","area":"宝安-沙井","location":"","size":"142","price":"1.4元/㎡/天","decoration":"豪华装修","floor":"独栋/共30层","features":["可注册","可分割，最小分割面积60m²","押2付1","12个月起租/免租期1个月"],"image":"https://pic1.ajkimg.com/display/hj/c1c10b53bd6e9802963c31ffdcca65bb/1600x1200.jpg","date":"2026-06-12","id":183},{"name":"特价沙井地铁口甲级写字楼，带家私空调24小时独立控制","area":"宝安-沙井","location":"","size":"188","price":"1.5元/㎡/天","decoration":"豪华装修","floor":"独栋/共28层","features":["可注册","不可分割","押2付1","12个月起租/免租期1个月"],"image":"https://pic1.ajkimg.com/display/hj/79a1126f12f2d5b3e7225e2d095a001c/1600x1200.jpg","date":"2026-06-12","id":184},{"name":"物业直租！云展广场 整层2478平 最小91平起租 可定制","area":"宝安-沙井","location":"","size":"2478","price":"1.5元/㎡/天","decoration":"精装修","floor":"独栋/共20层","features":["可注册","可分割，最小分割面积91m²","押2付1","12个月起租/免租期1个月"],"image":"https://pic1.ajkimg.com/display/hj/947df893af5276bb661ec46b0c508eb6/1600x1200.jpg","date":"2026-06-12","id":185}];
+var EMBEDDED_DATA = [{"name": "南山科技园甲级写字楼", "area": "南山科技园", "location": "深圳市南山区科技园科苑路", "size": "150-800㎡", "price": "95元/㎡/月", "decoration": "精装修", "floor": "高区/中区", "features": ["近地铁", "配套食堂", "会议室", "停车位"], "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 1}, {"name": "前海金融中心办公室", "area": "南山-前海", "location": "深圳市前海深港合作区", "size": "200-1200㎡", "price": "110元/㎡/月", "decoration": "豪华装修", "floor": "高区全景", "features": ["海景视野", "5A甲级", "中央空调", "VIP电梯"], "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 2}, {"name": "宝安中心区商务大厦", "area": "宝安-宝安中心区", "location": "深圳市宝安区宝安中心区", "size": "100-500㎡", "price": "65元/㎡/月", "decoration": "精装修", "floor": "中区", "features": ["地铁上盖", "商业配套", "光纤入户", "24小时空调"], "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 3}, {"name": "西乡商圈办公楼", "area": "宝安-西乡", "location": "深圳市宝安区西乡大道", "size": "80-300㎡", "price": "48元/㎡/月", "decoration": "简装/精装可选", "floor": "低中高区", "features": ["性价比高", "交通便捷", "可分租", "即租即用"], "image": "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 4}, {"name": "翻身地铁口写字楼", "area": "翻身", "location": "深圳市宝安区翻身路", "size": "120-600㎡", "price": "52元/㎡/月", "decoration": "精装修", "floor": "中高区", "features": ["地铁5号线", "拎包入驻", "户型方正", "采光好"], "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 5}, {"name": "新安传统商区办公室", "area": "新安", "location": "深圳市宝安区新安街道", "size": "100-400㎡", "price": "55元/㎡/月", "decoration": "精装修", "floor": "整层/分层", "features": ["商业成熟", "停车方便", "可注册", "配套齐全"], "image": "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 6}, {"name": "兴东科创中心", "area": "兴东", "location": "深圳市宝安区兴东片区", "size": "200-1000㎡", "price": "58元/㎡/月", "decoration": "精装修", "floor": "高区", "features": ["科创氛围", "政策优惠", "配套食堂", "会议室"], "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 7}, {"name": "坪洲地铁口商务楼", "area": "坪洲", "location": "深圳市宝安区坪洲地铁站旁", "size": "80-350㎡", "price": "45元/㎡/月", "decoration": "简装", "floor": "低中区", "features": ["地铁1号线", "低价实惠", "小面积多", "创业首选"], "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 8}, {"name": "碧海湾景观办公室", "area": "碧海湾", "location": "深圳市宝安区碧海湾片区", "size": "150-500㎡", "price": "60元/㎡/月", "decoration": "精装修", "floor": "中高区", "features": ["海景视野", "环境优美", "空气清新", "低密度"], "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 9}, {"name": "固戍交通枢纽办公楼", "area": "固戍", "location": "深圳市宝安区固戍片区", "size": "100-600㎡", "price": "42元/㎡/月", "decoration": "简装/毛坯可选", "floor": "整栋/分层", "features": ["价格低廉", "面积灵活", "适合仓储", "交通方便"], "image": "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 10}, {"name": "福永空港商务大厦", "area": "宝安-福永", "location": "深圳市宝安区福永大道", "size": "200-800㎡", "price": "50元/㎡/月", "decoration": "精装修", "floor": "中高区", "features": ["近机场", "物流便利", "商务配套", "停车充足"], "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 11}, {"name": "沙井制造产业园办公室", "area": "沙井", "location": "深圳市宝安区沙井街道", "size": "300-2000㎡", "price": "35元/㎡/月", "decoration": "简装/毛坯", "floor": "整层/整栋", "features": ["大面积", "价格最低", "产业配套", "可分租"], "image": "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 12}, {"name": "会展新城地标写字楼", "area": "会展新城", "location": "深圳市宝安区会展新城", "size": "250-1500㎡", "price": "68元/㎡/月", "decoration": "豪华装修", "floor": "高区全景", "features": ["会展中心旁", "地标建筑", "形象好", "配套顶级"], "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop", "date": "2026-06-08", "id": 13}, {"name": "海峦坊", "area": "宝安-西乡", "location": "宝安-西乡", "size": "98㎡", "price": "55元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共36层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/343bb0c3e0632fe8f601ac4e25fb3501/800x600c.jpg", "date": "2026-06-08", "id": 14}, {"name": "331创意园", "area": "宝安-西乡", "location": "宝安-西乡", "size": "152㎡", "price": "30元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共6层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "2*4小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/de0d8f4ef670b056548dc3d2e1606b19/800x600c.jpg", "date": "2026-06-08", "id": 15}, {"name": "蘅芳科技大厦", "area": "宝安-西乡", "location": "宝安-西乡", "size": "320㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共20层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/9d50a585dd60126f0a9d6cf0ff126978/800x600c.jpg", "date": "2026-06-08", "id": 16}, {"name": "前海科兴科学园", "area": "宝安-西乡", "location": "宝安-西乡", "size": "256㎡", "price": "85元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共19层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/6f3d15d349c08c96ac3e1eaf7639ceef/800x600c.jpg", "date": "2026-06-08", "id": 17}, {"name": "前海卓越宝中时代广场", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "150㎡", "price": "65元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共32层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/89009e96204e7426bb15864fb3aac934/800x600c.jpg", "date": "2026-06-08", "id": 18}, {"name": "壹方中心", "area": "宝安-宝安中心区", "location": "前海中心创业一路与新湖路交汇处东南角，车位数:5052", "size": "800㎡", "price": "66元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共49层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/c4856f94b31a989efafa49aa34082881/800x600c.jpg", "date": "2026-06-08", "id": 19}, {"name": "中央大道", "area": "宝安-西乡", "location": "宝安-西乡", "size": "300㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共30层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/e07d525d365035fe0218d5ba6061ea6a/800x600c.jpg", "date": "2026-06-08", "id": 20}, {"name": "凤凰智谷大厦", "area": "宝安-西乡", "location": "宝安-西乡", "size": "100㎡", "price": "45元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共20层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/f93a4ce28a6fcdb6860b47369bec45d0/800x600c.jpg", "date": "2026-06-08", "id": 21}, {"name": "宗泰未来城", "area": "宝安-西乡", "location": "宝安-西乡", "size": "600㎡", "price": "33元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共8层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/81fe7e93965353ced7055bdfa37c8b50/800x600c.jpg", "date": "2026-06-08", "id": 22}, {"name": "中晟会港湾(办公)", "area": "宝安-福永", "location": "宝安-福永", "size": "240㎡", "price": "43元/㎡/月", "decoration": "精装修", "floor": "中区 / 共22层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/3ff7a7726894ae7c152045c3b82aaa34/800x600c.jpg", "date": "2026-06-08", "id": 23}, {"name": "万利商务中心", "area": "宝安-福永", "location": "宝安-福永", "size": "190㎡", "price": "50元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/c27279152117dee7077975b35662ce40/800x600c.jpg", "date": "2026-06-08", "id": 24}, {"name": "锦城大厦(宝安)", "area": "宝安-福永", "location": "宝安-福永", "size": "260㎡", "price": "24元/㎡/月", "decoration": "精装修", "floor": "共9层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/6f32d975ffc23899eadaffca0a7c8f2e/800x600c.jpg", "date": "2026-06-08", "id": 25}, {"name": "怀德国际大厦", "area": "宝安-福永", "location": "宝安-福永", "size": "500㎡", "price": "50元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共19层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/8084daecf1795b21fa21187623beac10/800x600c.jpg", "date": "2026-06-08", "id": 26}, {"name": "万利商务中心", "area": "宝安-福永", "location": "宝安-福永", "size": "105㎡", "price": "57元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共25层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/e2bde92e717437f8917d370a86c53038/800x600c.jpg", "date": "2026-06-08", "id": 27}, {"name": "会展湾南岸", "area": "宝安-福永", "location": "宝安-福永", "size": "200㎡", "price": "45元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共6层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/ac4dbfc916c88b8e82e5769a0c098b52/800x600c.jpg", "date": "2026-06-08", "id": 28}, {"name": "智美park", "area": "宝安-福永", "location": "宝安-福永", "size": "120㎡", "price": "35元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共6层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/e7f9c90f4c547fd5d74395961bfe33e8/800x600c.jpg", "date": "2026-06-08", "id": 29}, {"name": "合一凤凰智慧港", "area": "宝安-福永", "location": "宝安-福永", "size": "150㎡", "price": "39元/㎡/月", "decoration": "豪华装修", "floor": "共20层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/753ad1b5da8b70ea1ce65dea8d638068/800x600c.jpg", "date": "2026-06-08", "id": 30}, {"name": "塘尾股份商务大厦", "area": "宝安-福永", "location": "宝安-福永", "size": "150㎡", "price": "47元/㎡/月", "decoration": "豪华装修", "floor": "共32层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/2846c65fa2445c51048c9855117e8913/800x600c.jpg", "date": "2026-06-08", "id": 31}, {"name": "金环宇G-LINK", "area": "宝安-西乡", "location": "宝安-西乡", "size": "862㎡", "price": "57元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共30层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/eed9f4515aa641d3da0023e6b420030e/800x600c.jpg", "date": "2026-06-09", "id": 32}, {"name": "蘅芳科技大厦", "area": "宝安-西乡", "location": "宝安-西乡", "size": "150㎡", "price": "51元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共10层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/d5cc07df1d892daf375ebec41a556256/800x600c.jpg", "date": "2026-06-09", "id": 33}, {"name": "广兴源互联网产业基地A区", "area": "宝安-西乡", "location": "宝安-西乡", "size": "1000㎡", "price": "27元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共8层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/c160d33afbc5ecae806ba7c249e55bc9/800x600c.jpg", "date": "2026-06-09", "id": 34}, {"name": "白鹿广场", "area": "宝安-西乡", "location": "宝安-西乡", "size": "1000㎡", "price": "30元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共8层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/1a6c2b8eb5ab83483fa5f5708d4acd14/800x600c.jpg", "date": "2026-06-09", "id": 35}, {"name": "西部硅谷", "area": "宝安-西乡", "location": "宝安-西乡", "size": "300㎡", "price": "30元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共10层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/2784e9b094dd9251086fd1e2701e8f3f/800x600c.jpg", "date": "2026-06-09", "id": 36}, {"name": "朗峻广场", "area": "宝安-西乡", "location": "宝安-西乡", "size": "163㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共25层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/0d61f13096e69f40b72a96954f429d91/800x600c.jpg", "date": "2026-06-09", "id": 37}, {"name": "定军山电影科技产业园", "area": "宝安-西乡", "location": "宝安-西乡", "size": "138㎡", "price": "65元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共28层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/910dee75947ee01f58d9d79d48d61e3c/800x600c.jpg", "date": "2026-06-09", "id": 38}, {"name": "升业空间", "area": "宝安-西乡", "location": "宝安-西乡", "size": "500㎡", "price": "24元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共6层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/b8606e6e5abb5c561870efbfff9ffd15/800x600c.jpg", "date": "2026-06-09", "id": 39}, {"name": "331创意园", "area": "宝安-西乡", "location": "宝安-西乡", "size": "1150㎡", "price": "26元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共6层", "features": ["地铁口", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级"], "image": "https://pic1.ajkimg.com/display/hj/eea191dbf48181221d647deb44bd032b/800x600c.jpg", "date": "2026-06-09", "id": 40}, {"name": "海峦坊", "area": "宝安-西乡", "location": "宝安-西乡", "size": "95㎡", "price": "48元/㎡/月", "decoration": "豪华装修", "floor": "高区", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/601efd80004f90e3ece927053551ab07/800x600c.jpg", "date": "2026-06-09", "id": 41}, {"name": "奋成智谷大厦", "area": "宝安-西乡", "location": "宝安-西乡", "size": "150㎡", "price": "39元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/7984050ade3a1248f7ad44c5fbd9f42e/800x600c.jpg", "date": "2026-06-09", "id": 42}, {"name": "广兴源互联网创意园", "area": "宝安-西乡", "location": "宝安-西乡", "size": "576㎡", "price": "66元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共5层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/99ae463540a3226c941c02e476e1a036/800x600c.jpg", "date": "2026-06-09", "id": 43}, {"name": "旭生大厦", "area": "宝安-西乡", "location": "宝安-西乡", "size": "850㎡", "price": "35元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共8层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/1af68a422c5e5dc531d7c4babba63810/800x600c.jpg", "date": "2026-06-09", "id": 44}, {"name": "明月花都(办公)", "area": "宝安-西乡", "location": "宝安-西乡", "size": "112㎡", "price": "49元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共29层", "features": ["近地铁", "地铁口", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/c00fa2940abf92bfaeba93a93bbae06b/800x600c.jpg", "date": "2026-06-09", "id": 45}, {"name": "中央大道", "area": "宝安-西乡", "location": "宝安-西乡", "size": "302㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共30层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/3b34471773af4fed120dfce45a13c40a/800x600c.jpg", "date": "2026-06-09", "id": 46}, {"name": "金环宇G-LINK", "area": "宝安-西乡", "location": "宝安-西乡", "size": "800㎡", "price": "39元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共28层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/78a94c098b7dbffc95c72c43d265de03/800x600c.jpg", "date": "2026-06-09", "id": 47}, {"name": "白鹿广场", "area": "宝安-西乡", "location": "宝安-西乡", "size": "1150㎡", "price": "33元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共11层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/84e86ea108b1dbff54db7a397912b0c7/800x600c.jpg", "date": "2026-06-09", "id": 48}, {"name": "蘅芳科技大厦", "area": "宝安-西乡", "location": "宝安-西乡", "size": "178㎡", "price": "41元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共40层", "features": ["近地铁", "地铁口", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/58168e92cce04d027486acc56fdfb972/800x600c.jpg", "date": "2026-06-09", "id": 49}, {"name": "凤凰智谷大厦", "area": "宝安-西乡", "location": "宝安-西乡", "size": "238㎡", "price": "50元/㎡/月", "decoration": "豪华装修", "floor": "共28层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/1aa5b0c3eb2970e11b1279ca3c1228ed/800x600c.jpg", "date": "2026-06-09", "id": 50}, {"name": "331创意园", "area": "宝安-西乡", "location": "宝安-西乡", "size": "158㎡", "price": "27元/㎡/月", "decoration": "豪华装修", "floor": "共8层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/1acadc76e26675d05eb035f3fa0018ed/800x600c.jpg", "date": "2026-06-09", "id": 51}, {"name": "蘅芳科技大厦", "area": "宝安-西乡", "location": "宝安-西乡", "size": "168㎡", "price": "41元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共21层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/45a24849cbc0577f8438e87e3f6f3e01/800x600c.jpg", "date": "2026-06-09", "id": 52}, {"name": "331创意园", "area": "宝安-西乡", "location": "宝安-西乡", "size": "150㎡", "price": "29元/㎡/月", "decoration": "精装修", "floor": "中区 / 共12层", "features": ["地铁口", "配套食堂", "停车位", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/c1d1b699463447157d4ca2d7d76bb837/800x600c.jpg", "date": "2026-06-09", "id": 53}, {"name": "前海科兴科学园", "area": "宝安-西乡", "location": "宝安-西乡", "size": "249㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共15层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/9e73fc3e5d1d7d4b38057f3ea1f0c147/800x600c.jpg", "date": "2026-06-09", "id": 54}, {"name": "海峦坊", "area": "宝安-西乡", "location": "宝安-西乡", "size": "120㎡", "price": "45元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共32层", "features": ["近地铁", "地铁口", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/dda3bc3dd1525f7243d467cbcdb4c2f7/800x600c.jpg", "date": "2026-06-09", "id": 55}, {"name": "卓越前海壹号(办公)", "area": "南山-前海", "location": "南山-前海", "size": "500㎡", "price": "75元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共45层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/91c465b698cfa49b856280cc8485be80/800x600c.jpg", "date": "2026-06-09", "id": 56}, {"name": "前海周大福金融大厦", "area": "南山-前海", "location": "南山-前海", "size": "300㎡", "price": "65元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共36层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/5c8f2482e99daf9394c0712893b27157/800x600c.jpg", "date": "2026-06-09", "id": 57}, {"name": "前海周大福金融大厦", "area": "南山-前海", "location": "南山-前海", "size": "500㎡", "price": "78元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共42层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/ec1ab9835acd1ec271cd0d696783aa45/800x600c.jpg", "date": "2026-06-09", "id": 58}, {"name": "立桥金融中心", "area": "南山-前海", "location": "南山-前海", "size": "150㎡", "price": "78元/㎡/月", "decoration": "豪华装修", "floor": "共35层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/8db238920cc85d6f594aabc3badbf5e2/800x600c.jpg", "date": "2026-06-09", "id": 59}, {"name": "前海鸿荣源中心", "area": "南山-前海", "location": "南山-前海", "size": "150㎡", "price": "70元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共54层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/5b1c667ba846f6fbe9c21be983aa5ec8/800x600c.jpg", "date": "2026-06-09", "id": 60}, {"name": "前海深港基金小镇", "area": "南山-前海", "location": "南山-前海", "size": "600㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共4层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/dedf6438159564ec5f583b6bd1fd5439/800x600c.jpg", "date": "2026-06-09", "id": 61}, {"name": "前海金融中心", "area": "南山-前海", "location": "南山-前海", "size": "300㎡", "price": "57元/㎡/月", "decoration": "豪华装修", "floor": "高区", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/a5fd3ef75176865dbf87eba4256bc353/800x600c.jpg", "date": "2026-06-09", "id": 62}, {"name": "华强金融大厦", "area": "南山-前海", "location": "南山-前海", "size": "98㎡", "price": "87元/㎡/月", "decoration": "豪华装修", "floor": "共45层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/a9e166df0e354c645e4dbf430deea942/800x600c.jpg", "date": "2026-06-09", "id": 63}, {"name": "前海嘉里中心", "area": "南山-前海", "location": "南山-前海", "size": "200㎡", "price": "75元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共31层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/be4fc881a3f45eb0a28494d04a86d0a0/800x600c.jpg", "date": "2026-06-09", "id": 64}, {"name": "华润前海中心", "area": "南山-前海", "location": "南山-前海", "size": "300㎡", "price": "75元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共57层", "features": ["近地铁", "地铁口", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/b679c2a43897c32f07b8e748b9634583/800x600c.jpg", "date": "2026-06-09", "id": 65}, {"name": "弘毅大厦", "area": "南山-前海", "location": "南山-前海", "size": "160㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/a06d9bc3e0b0894c52a6cd40192b089e/800x600c.jpg", "date": "2026-06-09", "id": 66}, {"name": "卓越前海壹号(办公)", "area": "南山-前海", "location": "南山-前海", "size": "700㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共45层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/a25941f8ebaa50edb49d350c93e4caa5/800x600c.jpg", "date": "2026-06-09", "id": 68}, {"name": "前海嘉里中心", "area": "南山-前海", "location": "南山-前海", "size": "120㎡", "price": "78元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共35层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/e76d2ba765b2095733e8c62a9f18413c/800x600c.jpg", "date": "2026-06-09", "id": 69}, {"name": "卓越前海壹号(办公)", "area": "南山-前海", "location": "南山-前海", "size": "1000㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共63层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/651777a0f45bc606087a071b23062734/800x600c.jpg", "date": "2026-06-09", "id": 70}, {"name": "前海嘉里中心", "area": "南山-前海", "location": "南山-前海", "size": "150㎡", "price": "87元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共35层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/df04101498c1fedf43db517e6b0dc67a/800x600c.jpg", "date": "2026-06-09", "id": 71}, {"name": "前海世茂大厦", "area": "南山-前海", "location": "南山-前海", "size": "200㎡", "price": "57元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共50层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/3ddee5c947316c1e7735d44a7a2405b7/800x600c.jpg", "date": "2026-06-09", "id": 73}, {"name": "卓越前海壹号(办公)", "area": "南山-前海", "location": "南山-前海", "size": "100㎡", "price": "57元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共50层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/8874a8151d3ebad93e99c18816425607/800x600c.jpg", "date": "2026-06-09", "id": 74}, {"name": "前海金融中心", "area": "南山-前海", "location": "南山-前海", "size": "95㎡", "price": "75元/㎡/月", "decoration": "精装修", "floor": "高区 / 共26层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/05977eb1dbb8a5a7c3f5c7e000f86a5f/800x600c.jpg", "date": "2026-06-09", "id": 75}, {"name": "前海颐都大厦", "area": "南山-前海", "location": "南山-前海", "size": "707㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "共4层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/f5955264c349d272ffee799320bf17f3/800x600c.jpg", "date": "2026-06-09", "id": 77}, {"name": "前海世茂大厦", "area": "南山-前海", "location": "南山-前海", "size": "968㎡", "price": "51元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共45层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/4e33f94267c51c7ef1c38b23228ad6f2/800x600c.jpg", "date": "2026-06-09", "id": 78}, {"name": "华润前海中心", "area": "南山-前海", "location": "南山-前海", "size": "800㎡", "price": "90元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共65层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/19b55da401140854ad0e8ba0b43b977a/800x600c.jpg", "date": "2026-06-09", "id": 79}, {"name": "卓越前海壹号(办公)", "area": "南山-前海", "location": "南山-前海", "size": "288㎡", "price": "78元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共54层", "features": ["地铁口", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/55b1f8c591d06df77ffd19d6b686ad1c/800x600c.jpg", "date": "2026-06-09", "id": 80}, {"name": "前海恒昌大厦东座", "area": "南山-前海", "location": "南山-前海", "size": "300㎡", "price": "87元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共40层", "features": ["地铁口", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/425d83c711a990628b955dfe9ffc7da4/800x600c.jpg", "date": "2026-06-09", "id": 81}, {"name": "前海卓越宝中时代广场", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "460㎡", "price": "80元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共29层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/880c3870fc5435b36b309dfe9eace6f6/800x600c.jpg", "date": "2026-06-10", "id": 83}, {"name": "前海HOP国际", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "50㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/60e7ae45303ae5b75e5674b375d61225/800x600c.jpg", "date": "2026-06-10", "id": 84}, {"name": "海纳科技大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "200㎡", "price": "50元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共32层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/9ea8af2f165d7bb97bb827cbee72a1cb/800x600c.jpg", "date": "2026-06-10", "id": 85}, {"name": "壹方中心", "area": "宝安-宝安中心区", "location": "前海中心创业一路与新湖路交汇处东南角，车位数:5052", "size": "276㎡", "price": "46元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/f4937a28ce44f9619e3f89d1194d32b2/800x600c.jpg", "date": "2026-06-10", "id": 86}, {"name": "前海卓越宝中时代广场", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "300㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共40层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/34bae95444f75c0a32f803a987cfcabd/800x600c.jpg", "date": "2026-06-10", "id": 87}, {"name": "壹方中心", "area": "宝安-宝安中心区", "location": "前海中心创业一路与新湖路交汇处东南角，车位数:5052", "size": "200㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/124c075093fd5b223a6a1c69cd9f32d3/800x600c.jpg", "date": "2026-06-10", "id": 88}, {"name": "海纳科技大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "600㎡", "price": "65元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共36层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/6d1312d5a3c38278cfa1c0a202d74f53/800x600c.jpg", "date": "2026-06-10", "id": 89}, {"name": "壹方中心", "area": "宝安-宝安中心区", "location": "前海中心创业一路与新湖路交汇处东南角，车位数:5052", "size": "300㎡", "price": "79元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/061c3628c5c47cc9d6904234a0d3671f/800x600c.jpg", "date": "2026-06-10", "id": 90}, {"name": "壹方中心", "area": "宝安-宝安中心区", "location": "前海中心创业一路与新湖路交汇处东南角，车位数:5052", "size": "150㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共60层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/7b26cf94931cddf77c2da50ef3258bba/800x600c.jpg", "date": "2026-06-10", "id": 91}, {"name": "国际西岸商务大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "150㎡", "price": "87元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共60层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/750dab8d161e65607bf2f61b5981f1f0/800x600c.jpg", "date": "2026-06-10", "id": 92}, {"name": "壹方中心", "area": "宝安-宝安中心区", "location": "前海中心创业一路与新湖路交汇处东南角，车位数:5052", "size": "500㎡", "price": "75元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共35层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/57bba5debaa6eddb9f2d2f1d8c8e0ce6/800x600c.jpg", "date": "2026-06-10", "id": 93}, {"name": "前海卓越宝中时代广场", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "198㎡", "price": "80元/㎡/月", "decoration": "豪华装修", "floor": "低区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/f5bbbaa7106167658dfddba2da7530e5/800x600c.jpg", "date": "2026-06-10", "id": 94}, {"name": "龙光世纪大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "430㎡", "price": "64元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/d146976dd1f6ec0bbeb88d9c81a99902/800x600c.jpg", "date": "2026-06-10", "id": 95}, {"name": "海纳科技大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "198㎡", "price": "57元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共32层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/86553336b68b9a550c3594f10a4c3eaf/800x600c.jpg", "date": "2026-06-10", "id": 96}, {"name": "前海HOP国际", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "220㎡", "price": "80元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共39层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/bd27893d6cdfacbfb62c395b9e1f07e6/800x600c.jpg", "date": "2026-06-10", "id": 97}, {"name": "龙光世纪大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "152㎡", "price": "50元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共26层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/aa9ec2a86311822725987ab2934468cf/800x600c.jpg", "date": "2026-06-10", "id": 98}, {"name": "前海HOP国际", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "228㎡", "price": "59元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共38层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/caf679f397e2c584bd9890b14cf821aa/800x600c.jpg", "date": "2026-06-10", "id": 99}, {"name": "龙光世纪大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "400㎡", "price": "75元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共52层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/0339456a2d6761516f2cb0b0165edc34/800x600c.jpg", "date": "2026-06-10", "id": 100}, {"name": "壹方中心", "area": "宝安-宝安中心区", "location": "前海中心创业一路与新湖路交汇处东南角，车位数:5052", "size": "2000㎡", "price": "80元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共46层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/685798bdf83dc702fcf54f43c424011e/800x600c.jpg", "date": "2026-06-10", "id": 101}, {"name": "前海卓越宝中时代广场", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "500㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共42层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/80bc8bb4083f4b6809eebd7d3c9d056a/800x600c.jpg", "date": "2026-06-10", "id": 102}, {"name": "前海HOP国际", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "200㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/e01beaa27f488ddc3e9eee2a99fc9643/800x600c.jpg", "date": "2026-06-10", "id": 103}, {"name": "龙光世纪大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "150㎡", "price": "69元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共25层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/58728e5f3dca39b05c4ef52a05c1a2b0/800x600c.jpg", "date": "2026-06-10", "id": 104}, {"name": "前海HOP国际", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "300㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共54层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级"], "image": "https://pic1.ajkimg.com/display/hj/7b70242eabeb6310a07d6487fc1d4de4/800x600c.jpg", "date": "2026-06-10", "id": 105}, {"name": "龙光世纪大厦", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "128㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共17层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/a9bb1f164edd25aa67189b5a2c0923b8/800x600c.jpg", "date": "2026-06-10", "id": 106}, {"name": "前海HOP国际", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "238㎡", "price": "95元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共42层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调"], "image": "https://pic1.ajkimg.com/display/hj/cbe692f4f1ae742d36d49d232605e0b0/800x600c.jpg", "date": "2026-06-10", "id": 107}, {"name": "前海HOP国际", "area": "宝安-宝安中心区", "location": "宝安-宝安中心区", "size": "130㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "中区 / 共30层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "24小时空调", "拎包入驻", "配家私", "采光好", "5A甲级"], "image": "https://pic1.ajkimg.com/display/hj/1c2a25fd879ba145919ee01e8d21f156/800x600c.jpg", "date": "2026-06-10", "id": 108}, {"name": "壹方中心", "area": "宝安-宝安中心区", "location": "前海中心创业一路与新湖路交汇处东南角，车位数:5052", "size": "218㎡", "price": "68元/㎡/月", "decoration": "豪华装修", "floor": "高区", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://pic1.ajkimg.com/display/hj/74d929c0700cf655452a81bfc43c1888/800x600c.jpg", "date": "2026-06-10", "id": 109}, {"name": "前海金融中心", "area": "南山-前海", "location": "南山-前海", "size": "600㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共4层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop", "date": "2026-06-10", "id": 111}, {"name": "华润前海大厦", "area": "南山-前海", "location": "南山-前海", "size": "300㎡", "price": "75元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共57层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop", "date": "2026-06-10", "id": 113}, {"name": "前海周大福金融大厦", "area": "南山-前海", "location": "南山-前海", "size": "1000㎡", "price": "60元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共63层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "24小时空调", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=600&h=400&fit=crop", "date": "2026-06-10", "id": 115}, {"name": "前海鸿荣源中心", "area": "南山-前海", "location": "南山-前海", "size": "100㎡", "price": "75元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共32层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "5A甲级", "中央空调", "交通便捷"], "image": "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop", "date": "2026-06-10", "id": 121}, {"name": "前海金融中心", "area": "南山-前海", "location": "南山-前海", "size": "800㎡", "price": "65元/㎡/月", "decoration": "豪华装修", "floor": "共3层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "红本", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop", "date": "2026-06-10", "id": 123}, {"name": "华润前海中心", "area": "南山-前海", "location": "南山-前海", "size": "500㎡", "price": "80元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共56层", "features": ["近地铁", "地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop", "date": "2026-06-10", "id": 124}, {"name": "前海世贸大厦", "area": "南山-前海", "location": "南山-前海", "size": "200㎡", "price": "75元/㎡/月", "decoration": "豪华装修", "floor": "高区 / 共46层", "features": ["地铁口", "配套食堂", "停车位", "海景", "可注册", "拎包入驻", "配家私", "采光好", "户型方正", "5A甲级", "中央空调", "交通便捷"], "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop", "date": "2026-06-10", "id": 131}, {"name": "星展广场", "area": "宝安-沙井", "location": "深圳市宝安-沙井 兴塘路2号", "size": "142", "price": "42元/㎡/月", "decoration": "豪华装修", "floor": "独栋/共30层", "features": ["可注册", "可分割，最小分割面积60m²", "押2付1", "12个月起租/免租期1个月"], "image": "https://pic1.ajkimg.com/display/hj/c1c10b53bd6e9802963c31ffdcca65bb/1600x1200.jpg", "date": "2026-06-12", "id": 183}, {"name": "锦胜财富广场", "area": "宝安-沙井", "location": "深圳市宝安区沙井", "size": "188", "price": "45元/㎡/月", "decoration": "豪华装修", "floor": "独栋/共28层", "features": ["可注册", "不可分割", "押2付1", "12个月起租/免租期1个月"], "image": "https://pic1.ajkimg.com/display/hj/79a1126f12f2d5b3e7225e2d095a001c/1600x1200.jpg", "date": "2026-06-12", "id": 184}, {"name": "云展广场", "area": "宝安-沙井", "location": "深圳市宝安区沙井", "size": "2478", "price": "45元/㎡/月", "decoration": "精装修", "floor": "独栋/共20层", "features": ["可注册", "可分割，最小分割面积91m²", "押2付1", "12个月起租/免租期1个月"], "image": "https://pic1.ajkimg.com/display/hj/947df893af5276bb661ec46b0c508eb6/1600x1200.jpg", "date": "2026-06-12", "id": 185}, {"name": "前海科兴科学园", "area": "宝安-碧海湾", "location": "深圳市宝安-碧海湾 银田路49号", "size": "128", "price": "50元/㎡/月", "decoration": "豪华装修", "floor": "中区/共20层", "features": ["可注册", "可分割，最小分割面积50m²", "押2付1", "12个月起租/免租期2个月"], "image": "https://pic1.ajkimg.com/display/hj/7c75f38e437a0ba70ae6b14f5af4f2b8/1600x1200.jpg", "date": "2026-06-12", "id": 186}, {"name": "旭生融和中心", "area": "宝安-碧海湾", "location": "深圳市宝安-碧海湾 盐田街", "size": "200", "price": "40元/㎡/月", "decoration": "豪华装修", "floor": "中区/共38层", "features": ["可注册", "可分割，最小分割面积80m²", "押2付1", "12个月起租/免租期2个月"], "image": "https://pic1.ajkimg.com/display/hj/875156d3130427b663f7c521ceaf219d/1600x1200.jpg", "date": "2026-06-12", "id": 187}, {"name": "万庭大厦", "area": "宝安-碧海湾", "location": "深圳市宝安-碧海湾 悦和路", "size": "198", "price": "50元/㎡/月", "decoration": "精装修", "floor": "低区/共40层", "features": ["可注册", "可分割，最小分割面积100m²", "押2付1", "12个月起租/免租期1个月"], "image": "https://pic1.ajkimg.com/display/hj/9cdd51ef0f8f5a8ff4e36a4ee8cc8308/1600x1200.jpg", "date": "2026-06-12", "id": 188}, {"name": "前海科兴科学园", "area": "宝安-碧海湾", "location": "深圳市宝安-碧海湾 银田路49号", "size": "175", "price": "59元/㎡/月", "decoration": "豪华装修", "floor": "中区/共26层", "features": ["可注册", "可分割，最小分割面积100m²", "押2付1", "12个月起租/免租期1个月"], "image": "https://pic1.ajkimg.com/display/hj/7efd5100ae08723d37ceb6d3be5b7de6/1600x1200.jpg", "date": "2026-06-12", "id": 189}, {"name": "汇潮科技大厦", "area": "宝安-碧海湾", "location": "深圳市宝安-碧海湾 金海路12号", "size": "170", "price": "38元/㎡/月", "decoration": "简装", "floor": "中区/共30层", "features": ["可注册", "不可分割", "押2付1", "12个月起租/免租期1个月"], "image": "https://pic1.ajkimg.com/display/hj/ea0aa9e9d0e50b5183a6b7b4cc8dfef4/1600x1200.jpg", "date": "2026-06-12", "id": 190}];
 
-const STORAGE_KEY = "office_projects_data";
-const DATA_VERSION_KEY = "office_data_version";
-const DEFAULT_SYNC_KEY = "office_default_sync_ver";
-let nextId = 14;
+// ============================================================
+// STATE - All edits are in-memory, NOT localStorage
+// ============================================================
+var projects = JSON.parse(JSON.stringify(EMBEDDED_DATA));
+var savedSnapshot = JSON.stringify(projects);
+var undoStack = [];
+var nextId = Math.max.apply(null, projects.map(function(p) { return p.id || 0; })) + 1;
 
-// 计算数据的简单哈希（用于检测内容变更）
-function hashData(data) {
-    let hash = 0;
-    const str = JSON.stringify(data);
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
+// ============================================================
+// HELPERS
+// ============================================================
+function checkQuality(p) {
+    var hasImg = !!(p.image || '').trim();
+    var hasPrice = !!(p.price || '').trim();
+    if (!hasImg && !hasPrice) return 'danger';
+    if (!hasImg || !hasPrice) return 'warn';
+    return 'ok';
+}
+function isDirty() { return JSON.stringify(projects) !== savedSnapshot; }
+function updateDirtyBadge() {
+    var badge = document.getElementById('dirtyBadge'), btn = document.getElementById('btnExport'), undo = document.getElementById('btnUndo');
+    if (isDirty()) {
+        badge.classList.add('show');
+        btn.style.background = '#dc2626';
+        btn.innerHTML = '📦 导出 projects.json（有未保存修改！）';
+    } else {
+        badge.classList.remove('show');
+        btn.style.background = '#059669';
+        btn.innerHTML = '📦 导出 projects.json';
     }
-    return hash.toString(16);
+    undo.disabled = undoStack.length === 0;
 }
-const DEFAULT_HASH = hashData(DEFAULT_DATA);
-
-function loadData() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const storedVersion = localStorage.getItem(DATA_VERSION_KEY);
-    if (stored && storedVersion) {
-        try {
-            const data = JSON.parse(stored);
-            if (Array.isArray(data) && data.length > 0) {
-                // 数据完整性校验：存储的哈希与数据实际哈希一致 → 信任用户编辑
-                if (storedVersion === hashData(data)) {
-                    // 检测 DEFAULT_DATA 是否有新增房源（向后合并，不覆盖用户删除）
-                    const lastSyncVer = localStorage.getItem(DEFAULT_SYNC_KEY);
-                    if (lastSyncVer !== DEFAULT_HASH) {
-                        const existingIds = new Set(data.map(p => p.id));
-                        const newItems = DEFAULT_DATA.filter(p => !existingIds.has(p.id));
-                        if (newItems.length > 0) {
-                            console.warn('[admin] 检测到默认数据有 ' + newItems.length + ' 条新增，自动合并...');
-                            data.push(...newItems);
-                            nextId = Math.max(...data.map(p => p.id||0), 0) + 1;
-                            saveData(data);
-                        }
-                        localStorage.setItem(DEFAULT_SYNC_KEY, DEFAULT_HASH);
-                    }
-                    return data;
-                }
-                // 哈希不匹配 → 数据可能损坏，静默回退到默认
-                console.warn('[admin] 检测到数据校验失败，使用默认数据');
-            }
-        } catch(e) { console.error('[admin] 数据解析失败', e); }
-    }
-    // 首次加载或数据损坏 → 使用默认数据
-    const data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-    nextId = DEFAULT_DATA.length + 1;
-    saveData(data);
-    localStorage.setItem(DEFAULT_SYNC_KEY, DEFAULT_HASH);
-    return data;
+function toast(msg, type) {
+    var el = document.createElement('div');
+    el.className = 'toast' + (type === 'success' ? ' success' : '');
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(function() { el.remove(); }, 2500);
 }
 
-function saveData(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    localStorage.setItem(DATA_VERSION_KEY, hashData(data));  // 保存实际数据的哈希
-}
-
-let projects = loadData();
-
-// ===== 表格渲染 =====
+// ============================================================
+// RENDER TABLE
+// ============================================================
 function renderTable() {
-    const filter = document.getElementById("filterArea").value;
-    const search = document.getElementById("searchInput").value.toLowerCase();
-    let filtered = projects;
-    if (filter !== "all") filtered = filtered.filter(p => p.area === filter);
-    if (search) filtered = filtered.filter(p => (p.name + p.location).toLowerCase().includes(search));
+    var filterArea = document.getElementById('filterArea').value;
+    var filterQuality = document.getElementById('filterQuality').value;
+    var search = document.getElementById('searchInput').value.toLowerCase();
+    var filtered = projects.slice();
 
-    document.getElementById("listCount").textContent = filtered.length;
+    if (filterArea !== 'all') filtered = filtered.filter(function(p) { return p.area === filterArea; });
+    if (search) filtered = filtered.filter(function(p) { return (p.name + (p.location||'')).toLowerCase().indexOf(search) >= 0; });
+    if (filterQuality !== 'all') filtered = filtered.filter(function(p) { return checkQuality(p) === filterQuality; });
 
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = filtered.map(p => `
-        <tr>
-            <td>${p.id}</td>
-            <td><strong>${p.name}</strong><br><small style="color:#94a3b8;">${p.location}</small></td>
-            <td><span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:50px;font-size:12px;font-weight:600;">${p.area}</span></td>
-            <td>${p.size}</td>
-            <td><strong style="color:#dc2626;">${p.price || '<span style="color:#94a3b8;">—</span>'}</strong></td>
-            <td>${p.decoration}</td>
-            <td>${p.floor}</td>
-            <td>${(p.features||[]).slice(0,3).map(f=>`<span style="background:#f1f5f9;padding:2px 8px;border-radius:4px;font-size:11px;margin:2px;display:inline-block;">${f}</span>`).join("")}${(p.features||[]).length>3?`<span style="color:#94a3b8;font-size:11px;"> +${p.features.length-3}</span>`:""}</td>
-            <td class="td-actions">
-                <button class="btn btn-sm btn-outline" onclick="showEditModal(${p.id})">✏️</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">🗑️</button>
-            </td>
-        </tr>
-    `).join("");
+    document.getElementById('listCount').textContent = filtered.length;
+    document.getElementById('savedCount').textContent = EMBEDDED_DATA.length;
+
+    var tbody = document.getElementById('tableBody');
+    tbody.innerHTML = filtered.map(function(p) {
+        var q = checkQuality(p);
+        var rowClass = q === 'warn' ? ' row-warn' : (q === 'danger' ? ' row-danger' : '');
+        var qBadge = q === 'ok' ? '<span class="quality-badge ok">完善</span>'
+            : (q === 'warn' ? '<span class="quality-badge warn">待完善</span>'
+            : '<span class="quality-badge danger">严重缺失</span>');
+
+        var imgHtml = (p.image||'').trim()
+            ? '<img src="' + p.image + '" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'inline\';" style="width:50px;height:35px;object-fit:cover;border-radius:4px;"><span style="display:none;color:var(--muted);font-size:11px;">N/A</span>'
+            : '<span style="color:var(--muted);font-size:11px;">N/A</span>';
+
+        return '<tr class="' + rowClass + '">'
+            + '<td>' + p.id + '</td>'
+            + '<td class="img-cell">' + imgHtml + '</td>'
+            + '<td><strong>' + p.name + '</strong><br><small style="color:var(--muted);">' + (p.location||'') + '</small></td>'
+            + '<td><span style="background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:50px;font-size:12px;font-weight:600;">' + (p.area||'') + '</span></td>'
+            + '<td>' + (p.size||'') + '</td>'
+            + '<td><strong style="color:#dc2626;">' + (p.price||'<span style="color:var(--muted);">缺失</span>') + '</strong></td>'
+            + '<td>' + (p.decoration||'') + '</td>'
+            + '<td>' + qBadge + '</td>'
+            + '<td class="td-actions">'
+                + '<button class="btn btn-sm btn-outline" onclick="showEditModal(' + p.id + ')">✏️</button>'
+                + '<button class="btn btn-sm btn-danger" onclick="deleteProject(' + p.id + ')">🗑️</button>'
+            + '</td></tr>';
+    }).join('');
 
     updateStats();
     updateFilterOptions();
+    updateDirtyBadge();
 }
 
 function updateStats() {
-    document.getElementById("statTotal").textContent = projects.length;
-    const areas = new Set(projects.map(p => p.area));
-    document.getElementById("statAreas").textContent = areas.size;
-    const prices = projects.map(p => {
-        const pr = p.price || '';
-        const m = pr.match(/\d+/);
-        return m ? parseInt(m[0]) : 0;
-    }).filter(n => n > 0);
-    document.getElementById("statMinPrice").textContent = prices.length ? Math.min(...prices) : 0;
-    const sizes = projects.map(p => {
-        const sz = p.size || '';
-        const m = sz.match(/\d+/);
-        return m ? parseInt(m[0]) : 0;
-    }).filter(n => n > 0);
-    document.getElementById("statMaxSize").textContent = sizes.length ? Math.max(...sizes) + '㎡' : 0;
+    document.getElementById('statTotal').textContent = projects.length;
+    var areas = {}, noImg = 0, noPrice = 0, prices = [], sizes = [];
+    projects.forEach(function(p) {
+        areas[p.area] = true;
+        if (!(p.image||'').trim()) noImg++;
+        if (!(p.price||'').trim()) noPrice++;
+        var pm = (p.price||'').match(/\d+/); if (pm) prices.push(parseInt(pm[0]));
+        var sm = (p.size||'').match(/\d+/); if (sm) sizes.push(parseInt(sm[0]));
+    });
+    document.getElementById('statAreas').textContent = Object.keys(areas).length;
+    document.getElementById('statNoImg').textContent = noImg;
+    document.getElementById('statNoPrice').textContent = noPrice;
+    document.getElementById('statMinPrice').textContent = prices.length ? Math.min.apply(null, prices) : 0;
+    document.getElementById('statMaxSize').textContent = sizes.length ? Math.max.apply(null, sizes) + 'm²' : 0;
+    document.getElementById('statImgCard').className = 'stat-card' + (noImg > 0 ? ' alert' : '');
+    document.getElementById('statPriceCard').className = 'stat-card' + (noPrice > 0 ? ' alert' : '');
 }
 
 function updateFilterOptions() {
-    const sel = document.getElementById("filterArea");
-    const current = sel.value;
-    const areas = [...new Set(projects.map(p => p.area))];
-    sel.innerHTML = '<option value="all">全部区域</option>' + areas.map(a => `<option value="${a}">${a}</option>`).join("");
-    if ([...sel.options].some(o => o.value === current)) sel.value = current;
+    var sel = document.getElementById('filterArea'), cur = sel.value;
+    var areaMap = {};
+    projects.forEach(function(p) { areaMap[p.area] = true; });
+    var areaList = Object.keys(areaMap);
+    sel.innerHTML = '<option value="all">全部区域</option>' + areaList.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
+    if (Array.from(sel.options).some(function(o) { return o.value === cur; })) sel.value = cur;
+    document.getElementById('areaSuggestions').innerHTML = areaList.map(function(a) { return '<option>' + a + '</option>'; }).join('');
 }
 
-// ===== 增删改 =====
+// ============================================================
+// CRUD
+// ============================================================
 function showAddModal() {
-    document.getElementById("modalTitle").textContent = "添加房源";
-    document.getElementById("editId").value = "";
-    document.getElementById("editName").value = "";
-    document.getElementById("editArea").value = "";
-    document.getElementById("editLocation").value = "";
-    document.getElementById("editSize").value = "";
-    document.getElementById("editPrice").value = "";
-    document.getElementById("editDecoration").value = "精装修";
-    document.getElementById("editFloor").value = "";
-    document.getElementById("editFeatures").value = "";
-    document.getElementById("editImage").value = "";
-    document.getElementById("tagsPreview").innerHTML = "";
-    document.getElementById("editModal").style.display = "flex";
+    document.getElementById('modalTitle').textContent = '✏️ 添加房源';
+    document.getElementById('editId').value = '';
+    ['editName','editArea','editLocation','editSize','editPrice','editFloor','editFeatures','editImage'].forEach(function(id) { document.getElementById(id).value = ''; });
+    document.getElementById('editDecoration').value = '精装修';
+    document.getElementById('tagsPreview').innerHTML = '';
+    document.getElementById('editModal').classList.add('show');
+    document.getElementById('editName').focus();
 }
 
 function showEditModal(id) {
-    const p = projects.find(x => x.id === id);
+    var p = projects.find(function(x) { return x.id === id; });
     if (!p) return;
-    document.getElementById("modalTitle").textContent = "编辑房源";
-    document.getElementById("editId").value = p.id || "";
-    document.getElementById("editName").value = p.name || "";
-    document.getElementById("editArea").value = p.area || "";
-    document.getElementById("editLocation").value = p.location || "";
-    document.getElementById("editSize").value = p.size || "";
-    document.getElementById("editPrice").value = p.price || "";
-    document.getElementById("editDecoration").value = p.decoration || "精装修";
-    document.getElementById("editFloor").value = p.floor || "";
-    document.getElementById("editFeatures").value = (p.features || []).join(",");
-    document.getElementById("editImage").value = p.image || "";
+    document.getElementById('modalTitle').textContent = '✏️ 编辑房源 #' + id;
+    document.getElementById('editId').value = p.id || '';
+    document.getElementById('editName').value = p.name || '';
+    document.getElementById('editArea').value = p.area || '';
+    document.getElementById('editLocation').value = p.location || '';
+    document.getElementById('editSize').value = p.size || '';
+    document.getElementById('editPrice').value = p.price || '';
+    document.getElementById('editDecoration').value = p.decoration || '精装修';
+    document.getElementById('editFloor').value = p.floor || '';
+    document.getElementById('editFeatures').value = (p.features || []).join(',');
+    document.getElementById('editImage').value = p.image || '';
     previewTags();
-    document.getElementById("editModal").style.display = "flex";
+    document.getElementById('editModal').classList.add('show');
 }
 
-function closeEditModal() {
-    document.getElementById("editModal").style.display = "none";
-}
+function closeEditModal() { document.getElementById('editModal').classList.remove('show'); }
 
 function saveProject() {
-    const id = document.getElementById("editId").value;
-    const isNew = !id;
-    const data = {
-        id: id ? parseInt(id) : nextId++,
-        name: document.getElementById("editName").value.trim(),
-        area: document.getElementById("editArea").value,
-        location: document.getElementById("editLocation").value.trim(),
-        size: document.getElementById("editSize").value.trim(),
-        price: document.getElementById("editPrice").value.trim(),
-        decoration: document.getElementById("editDecoration").value,
-        floor: document.getElementById("editFloor").value.trim(),
-        features: document.getElementById("editFeatures").value.split(",").map(s => s.trim()).filter(Boolean),
-        image: document.getElementById("editImage").value.trim(),
-        date: isNew ? new Date().toISOString().split('T')[0] : (projects.find(p=>p.id===parseInt(id))?.date || new Date().toISOString().split('T')[0]),
-    };
-    if (!data.name || !data.area || !data.location) {
-        toast("⚠️ 项目名称、区域、地址为必填项");
-        return;
+    var idVal = document.getElementById('editId').value;
+    var isNew = !idVal;
+    var id = idVal ? parseInt(idVal) : nextId++;
+
+    if (!isNew) {
+        var oldIdx = projects.findIndex(function(p) { return p.id === id; });
+        if (oldIdx >= 0) undoStack.push({ action: 'edit', data: JSON.parse(JSON.stringify(projects[oldIdx])) });
     }
-    if (id) {
-        const idx = projects.findIndex(p => p.id === parseInt(id));
+
+    var data = {
+        id: id,
+        name: document.getElementById('editName').value.trim(),
+        area: document.getElementById('editArea').value.trim(),
+        location: document.getElementById('editLocation').value.trim(),
+        size: document.getElementById('editSize').value.trim(),
+        price: document.getElementById('editPrice').value.trim(),
+        decoration: document.getElementById('editDecoration').value,
+        floor: document.getElementById('editFloor').value.trim(),
+        features: document.getElementById('editFeatures').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
+        image: document.getElementById('editImage').value.trim(),
+        date: isNew ? new Date().toISOString().split('T')[0] : ((projects.find(function(p) { return p.id === id; }) || {}).date || new Date().toISOString().split('T')[0])
+    };
+
+    if (!data.name || !data.area || !data.location) { toast('⚠️ 项目名称、区域、地址为必填项'); return; }
+
+    if (idVal) {
+        var idx = projects.findIndex(function(p) { return p.id === id; });
         if (idx >= 0) projects[idx] = data;
     } else {
         projects.push(data);
+        undoStack.push({ action: 'add', id: id });
     }
-    saveData(projects);
     closeEditModal();
     renderTable();
-    toast(id ? "✅ 房源已更新" : "✅ 房源已添加");
+    toast(isNew ? '✅ 房源已添加' : '✅ 房源已更新', 'success');
 }
 
 function deleteProject(id) {
-    if (!confirm(`确定要删除 ID=${id} 的房源吗？此操作不可恢复。`)) return;
-    projects = projects.filter(p => p.id !== id);
-    saveData(projects);
+    var p = projects.find(function(x) { return x.id === id; });
+    if (!p) return;
+    if (!confirm('确定要删除 ID=' + id + ' 吗？\n\n项目: ' + p.name + '\n区域: ' + p.area + '\n\n此操作可撤销（导出前）。')) return;
+    undoStack.push({ action: 'delete', data: JSON.parse(JSON.stringify(p)) });
+    projects = projects.filter(function(x) { return x.id !== id; });
     renderTable();
-    toast("🗑️ 已删除");
+    toast('🗑️ 已删除（可撤销）');
 }
 
-function resetToDefault() {
-    if (!confirm("确定要恢复为默认数据吗？当前修改的数据将丢失。")) return;
-    projects = JSON.parse(JSON.stringify(DEFAULT_DATA));
-    nextId = DEFAULT_DATA.length + 1;
-    saveData(projects);
-    localStorage.setItem(DEFAULT_SYNC_KEY, DEFAULT_HASH);
+function undoLast() {
+    if (undoStack.length === 0) return;
+    var last = undoStack.pop();
+    if (last.action === 'add') { projects = projects.filter(function(p) { return p.id !== last.id; }); toast('↩ 已撤销添加'); }
+    else if (last.action === 'delete') { projects.push(last.data); projects.sort(function(a,b) { return (a.id||0)-(b.id||0); }); toast('↩ 已恢复删除'); }
+    else if (last.action === 'edit') {
+        var idx = projects.findIndex(function(p) { return p.id === last.data.id; });
+        if (idx >= 0) projects[idx] = last.data; toast('↩ 已撤销编辑');
+    }
     renderTable();
-    toast("🔄 已恢复默认数据");
 }
 
-// ===== 标签预览 =====
-function previewTags() {
-    const val = document.getElementById("editFeatures").value;
-    const tags = val.split(",").map(s => s.trim()).filter(Boolean);
-    document.getElementById("tagsPreview").innerHTML = tags.map((t, i) =>
-        `<span onclick="removeTag(${i})">${t} ✕</span>`
-    ).join("");
-}
-function removeTag(idx) {
-    const el = document.getElementById("editFeatures");
-    const tags = el.value.split(",").map(s => s.trim()).filter(Boolean);
-    tags.splice(idx, 1);
-    el.value = tags.join(",");
-    previewTags();
-}
-
-// ===== JSON 导出/导入 =====
+// ============================================================
+// EXPORT - Download projects.json
+// ============================================================
 function exportJSON() {
-    const data = projects.map(({id, ...rest}) => rest); // 去掉id，index.html会自己生成
-    const json = JSON.stringify(data, null, 2);
-    navigator.clipboard.writeText(json).then(() => {
-        toast("📋 已复制到剪贴板！请粘贴到 index.html 的 PROJECTS 变量中替换原数据");
-    }).catch(() => {
-        // fallback: create a temp textarea
-        const ta = document.createElement("textarea");
-        ta.value = json;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        toast("📋 JSON已复制");
+    var dirty = isDirty();
+    if (dirty && !confirm('⚠️ 当前有未保存的修改！\n\n导出后将包含所有修改。\n下载后请替换 projects.json 并运行 build_pages.py。\n\n确定要导出吗？')) return;
+    if (!dirty) toast('📦 正在导出...');
+
+    var data = projects.map(function(p) {
+        var obj = {};
+        Object.keys(p).forEach(function(k) { if (k !== 'id') obj[k] = p[k]; });
+        return obj;
     });
-    // 同时下载为文件
-    const blob = new Blob([json], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "office-projects.json";
-    a.click();
+    var json = JSON.stringify(data, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'projects.json'; a.click();
     URL.revokeObjectURL(url);
-    toast("📦 JSON已复制到剪贴板并下载");
+
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(json).then(function() {
+            toast('📦 projects.json 已下载并复制到剪贴板！共 ' + data.length + ' 条', 'success');
+        }).catch(function() {
+            toast('📦 projects.json 已下载！共 ' + data.length + ' 条', 'success');
+        });
+    } else {
+        toast('📦 projects.json 已下载！共 ' + data.length + ' 条', 'success');
+    }
+
+    savedSnapshot = JSON.stringify(projects);
+    EMBEDDED_DATA.length = 0;
+    Array.prototype.push.apply(EMBEDDED_DATA, JSON.parse(JSON.stringify(projects)));
+    updateDirtyBadge();
 }
 
-function showImportModal() {
-    document.getElementById("importJson").value = "";
-    document.getElementById("importModal").style.display = "flex";
-}
-function closeImportModal() {
-    document.getElementById("importModal").style.display = "none";
-}
+// ============================================================
+// IMPORT
+// ============================================================
+function showImportModal() { document.getElementById('importJson').value = ''; document.getElementById('importModal').classList.add('show'); }
+function closeImportModal() { document.getElementById('importModal').classList.remove('show'); }
 function importJSON() {
+    var raw = document.getElementById('importJson').value.trim();
+    if (!raw) { toast('⚠️ 请粘贴JSON数据'); return; }
     try {
-        const raw = document.getElementById("importJson").value.trim();
-        if (!raw) { toast("⚠️ 请粘贴JSON数据"); return; }
-        const imported = JSON.parse(raw);
-        if (!Array.isArray(imported)) { toast("⚠️ 数据格式错误，需要一个数组"); return; }
-        const prevCount = projects.length;
-        imported.forEach(item => {
-            projects.push({id: nextId++, ...item});
+        var imported = JSON.parse(raw);
+        if (!Array.isArray(imported)) { toast('⚠️ 数据格式错误，需要一个数组'); return; }
+        imported.forEach(function(item) {
+            projects.push({
+                id: nextId++, date: new Date().toISOString().split('T')[0],
+                features: [], image: '', floor: '', decoration: '精装修',
+                price: '', size: '', location: '', area: '', name: ''
+            });
+            Object.keys(item).forEach(function(k) {
+                var idx = projects.length - 1;
+                projects[idx][k] = item[k];
+            });
         });
-        saveData(projects);
         closeImportModal();
         renderTable();
-        toast(`✅ 成功追加 ${imported.length} 条房源（共 ${projects.length} 条）`);
-    } catch(e) {
-        toast("⚠️ JSON解析失败，请检查格式: " + e.message);
-    }
+        toast('✅ 成功追加 ' + imported.length + ' 条（共 ' + projects.length + ' 条）', 'success');
+    } catch(e) { toast('⚠️ JSON解析失败: ' + e.message); }
 }
 
-// ===== 批量添加 =====
-function showBatchAddModal() {
-    document.getElementById("batchText").value = "";
-    document.getElementById("batchModal").style.display = "flex";
-}
-function closeBatchModal() {
-    document.getElementById("batchModal").style.display = "none";
-}
+// ============================================================
+// BATCH ADD
+// ============================================================
+function showBatchAddModal() { document.getElementById('batchText').value = ''; document.getElementById('batchModal').classList.add('show'); }
+function closeBatchModal() { document.getElementById('batchModal').classList.remove('show'); }
 function batchAdd() {
-    const text = document.getElementById("batchText").value.trim();
-    if (!text) { toast("⚠️ 请输入数据"); return; }
-    const lines = text.split("\n").filter(l => l.trim());
-    let added = 0;
-    lines.forEach(line => {
-        const parts = line.split("|").map(s => s.trim());
+    var text = document.getElementById('batchText').value.trim();
+    if (!text) { toast('⚠️ 请输入数据'); return; }
+    var lines = text.split('\n').filter(function(l) { return l.trim(); });
+    var added = 0;
+    lines.forEach(function(line) {
+        var parts = line.split('|').map(function(s) { return s.trim(); });
         if (parts.length < 5) return;
         projects.push({
-            id: nextId++,
-            name: parts[0],
-            area: parts[1],
-            location: parts[2],
-            size: parts[3],
-            price: parts[4],
-            decoration: parts[5] || "精装修",
-            floor: parts[6] || "",
-            features: parts[7] ? parts[7].split(",").map(s => s.trim()).filter(Boolean) : [],
-            image: parts[8] || "",
+            id: nextId++, name: parts[0], area: parts[1], location: parts[2],
+            size: parts[3], price: parts[4], decoration: parts[5] || '精装修',
+            floor: parts[6] || '',
+            features: parts[7] ? parts[7].split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [],
+            image: parts[8] || '', date: new Date().toISOString().split('T')[0]
         });
         added++;
     });
-    saveData(projects);
     closeBatchModal();
     renderTable();
-    toast(`✅ 批量添加成功，共 ${added} 条`);
+    toast('✅ 批量添加 ' + added + ' 条', 'success');
 }
 
-// ===== Modal点击遮罩关闭 =====
-document.getElementById("editModal").addEventListener("click", function(e) {
-    if (e.target === this) closeEditModal();
-});
-document.getElementById("importModal").addEventListener("click", function(e) {
-    if (e.target === this) closeImportModal();
-});
-document.getElementById("batchModal").addEventListener("click", function(e) {
-    if (e.target === this) closeBatchModal();
-});
-
-// ===== Toast =====
-function toast(msg) {
-    const el = document.createElement("div");
-    el.className = "toast";
-    el.textContent = msg;
-    document.body.appendChild(el);
-    setTimeout(() => { el.remove(); }, 2500);
+// ============================================================
+// RELOAD FROM SERVER
+// ============================================================
+function reloadFromServer() {
+    if (isDirty() && !confirm('当前有未保存的修改！\n加载服务器数据将覆盖所有修改。\n确定要继续吗？')) return;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'projects.json?_=' + Date.now(), true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            try {
+                var data = JSON.parse(xhr.responseText);
+                projects = data;
+                nextId = Math.max.apply(null, data.map(function(p) { return p.id || 0; })) + 1;
+                savedSnapshot = JSON.stringify(projects);
+                EMBEDDED_DATA.length = 0;
+                Array.prototype.push.apply(EMBEDDED_DATA, JSON.parse(JSON.stringify(projects)));
+                undoStack = [];
+                renderTable();
+                toast('🔄 已加载 ' + data.length + ' 条', 'success');
+            } catch(e) { toast('⚠️ JSON解析失败'); }
+        } else { toast('⚠️ 加载失败 (HTTP ' + xhr.status + ')'); }
+    };
+    xhr.onerror = function() { toast('⚠️ 网络错误'); };
+    xhr.send();
 }
 
-// ===== 键盘快捷键 =====
-document.addEventListener("keydown", function(e) {
-    if (e.key === "Escape") {
-        closeEditModal();
-        closeImportModal();
-        closeBatchModal();
-    }
-    if (e.ctrlKey && e.key === "n") {
-        e.preventDefault();
-        showAddModal();
-    }
+// ============================================================
+// TAG PREVIEW
+// ============================================================
+function previewTags() {
+    var val = document.getElementById('editFeatures').value;
+    var tags = val.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    document.getElementById('tagsPreview').innerHTML = tags.map(function(t, i) {
+        return '<span onclick="removeTag(' + i + ')">' + t + ' ✕</span>';
+    }).join('');
+}
+function removeTag(idx) {
+    var el = document.getElementById('editFeatures');
+    var tags = el.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    tags.splice(idx, 1);
+    el.value = tags.join(',');
+    previewTags();
+}
+
+// ============================================================
+// MODAL CLOSE
+// ============================================================
+['editModal','importModal','batchModal'].forEach(function(id) {
+    document.getElementById(id).addEventListener('click', function(e) {
+        if (e.target === this) {
+            if (id === 'editModal') closeEditModal();
+            else if (id === 'importModal') closeImportModal();
+            else closeBatchModal();
+        }
+    });
 });
 
-// ===== 初始化 =====
+// ============================================================
+// KEYBOARD
+// ============================================================
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeEditModal(); closeImportModal(); closeBatchModal(); }
+    if (e.ctrlKey && e.key === 'n') { e.preventDefault(); showAddModal(); }
+    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undoLast(); }
+    if (e.ctrlKey && e.key === 's') { e.preventDefault(); exportJSON(); }
+});
+
+// ============================================================
+// INIT
+// ============================================================
 renderTable();
 </script>
-
 </body>
 </html>
