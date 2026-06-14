@@ -4042,5 +4042,203 @@
     "image": "https://pic1.ajkimg.com/display/hj/12fdb8f369ff6848817cd4a22fe54b72/1600x1200.jpg",
     "date": "2026-06-14",
     "id": 182
+  },
+  {
+    "name": "芒果网大厦",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 后海大道2378号",
+    "size": "166",
+    "price": "47元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共30层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/00e5bab7a2c7f839af23e8ac42f9414a/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 183
+  },
+  {
+    "name": "深圳软件产业基地",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 海天一路",
+    "size": "380",
+    "price": "38元/㎡/月",
+    "decoration": "精装修",
+    "floor": "低中区/共24层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/7c42f7b4ed2ec0d34c4cde3d7dbed5ac/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 184
+  },
+  {
+    "name": "怡化金融科技大厦",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 后海大道2388号",
+    "size": "200",
+    "price": "65元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共33层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积80m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/6665a8f5200fd0f865262d12bead134f/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 185
+  },
+  {
+    "name": "怡化金融科技大厦",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 后海大道2388号",
+    "size": "150",
+    "price": "60元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共21层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积80m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/0cad8386d047ea6b70f7729f04a538ad/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 186
+  },
+  {
+    "name": "深投控软件产业基地",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 海天一路17号",
+    "size": "200",
+    "price": "58元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共30层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/a19164dfcfe0727bed1acf6924cff9af/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 187
+  },
+  {
+    "name": "深圳软件产业基地",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 海天一路",
+    "size": "100",
+    "price": "60元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共25层",
+    "features": [
+      "暂无数据",
+      "不可分割",
+      "押2付1",
+      "1个月起租"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/419adc74f77fb2e3af481f6b1b819868/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 188
+  },
+  {
+    "name": "芒果网大厦",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 后海大道2378号",
+    "size": "300",
+    "price": "58元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共30层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积190m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/5ac30c05ffdd12a2eeae7e25a0cb6732/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 189
+  },
+  {
+    "name": "芒果网大厦",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 后海大道2378号",
+    "size": "166",
+    "price": "47元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共30层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/00e5bab7a2c7f839af23e8ac42f9414a/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 190
+  },
+  {
+    "name": "怡化金融科技大厦",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 后海大道2388号",
+    "size": "168",
+    "price": "50元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共32层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/cc5931000ddc2a2aca1af8c7d3644b6a/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 191
+  },
+  {
+    "name": "芒果网大厦",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 后海大道2378号",
+    "size": "150",
+    "price": "69元/㎡/月",
+    "decoration": "精装修",
+    "floor": "独栋/共35层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积50m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/b7f4f065cd614a871289dcea6cebb33f/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 192
+  },
+  {
+    "name": "芒果网大厦",
+    "area": "南山中心区",
+    "location": "深圳市南山-南山中心区 后海大道2378号",
+    "size": "500",
+    "price": "54元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共30层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/0735208f032c644540c84bab8f262461/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 193
   }
 ]
