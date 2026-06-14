@@ -4240,5 +4240,383 @@
     "image": "https://pic1.ajkimg.com/display/hj/0735208f032c644540c84bab8f262461/1600x1200.jpg",
     "date": "2026-06-14",
     "id": 193
+  },
+  {
+    "name": "阿里中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 科苑南路3331号",
+    "size": "1000",
+    "price": "80元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共100层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期12个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/142cd5e6e18c82df73d7b6633a6a9990/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 194
+  },
+  {
+    "name": "中洲控股中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 文心三路9号",
+    "size": "500",
+    "price": "65元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共55层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/653afc85b75ecd763816a43f8bdc592d/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 195
+  },
+  {
+    "name": "中洲控股中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 文心三路9号",
+    "size": "680",
+    "price": "70元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共45层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200m²",
+      "押2付1",
+      "36个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/1f997bb2f85cd917c68ae479da07cc50/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 196
+  },
+  {
+    "name": "中国华润大厦",
+    "area": "后海",
+    "location": "深圳市南山-后海 科苑南路2666号",
+    "size": "300",
+    "price": "130元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共68层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/fcb0901c52c592448729dc35f9a6fdff/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 197
+  },
+  {
+    "name": "中国华润大厦",
+    "area": "后海",
+    "location": "深圳市南山-后海 科苑南路2666号",
+    "size": "1700",
+    "price": "70元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共60层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200m²",
+      "押2付1",
+      "12个月起租/免租期12个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/5c48d221edf35edd4c124b1ae8c73705/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 198
+  },
+  {
+    "name": "深圳湾1号",
+    "area": "后海",
+    "location": "深圳市南山-后海 中心路1号",
+    "size": "2600",
+    "price": "45元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共62层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积150m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/0f0a624bb25bef9364bf076d0f8e2752/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 199
+  },
+  {
+    "name": "中铁南方总部大厦",
+    "area": "后海",
+    "location": "深圳市南山-后海 中心路深圳湾段3333号",
+    "size": "218",
+    "price": "66元/㎡/月",
+    "decoration": "精装修",
+    "floor": "低区/共38层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/63bb907d37c5a793806c4b66d0306222/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 200
+  },
+  {
+    "name": "中洲控股中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 文心三路9号",
+    "size": "100",
+    "price": "56元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共35层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/21b14c3bbc3e51e8721430eb072fe965/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 201
+  },
+  {
+    "name": "深圳湾1号",
+    "area": "后海",
+    "location": "深圳市南山-后海 中心路1号",
+    "size": "1147.25",
+    "price": "45元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共53层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积300m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/a4795eed7afd9d269b8cb4d2d012f0fe/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 202
+  },
+  {
+    "name": "中洲控股中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 文心三路9号",
+    "size": "500",
+    "price": "80元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共52层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200m²",
+      "押1付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/c0ffd5ee94a184de2f4d4b00eb8ebe48/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 203
+  },
+  {
+    "name": "中国华润大厦",
+    "area": "后海",
+    "location": "深圳市南山-后海 科苑南路2666号",
+    "size": "700",
+    "price": "70元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共36层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200m²",
+      "押2付1",
+      "12个月起租/免租期12个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/eec3faa747ef2250e9e37443d08dfc5c/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 204
+  },
+  {
+    "name": "海信南方大厦",
+    "area": "后海",
+    "location": "深圳市南山-后海 创业路1777号",
+    "size": "2000",
+    "price": "70元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "24个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/0ba2de27498f766ac96fa5e1bbab80f2/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 205
+  },
+  {
+    "name": "卓越后海中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 海德三道126号",
+    "size": "200",
+    "price": "70元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "24个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/325875c9d82b7a720ebf13817416b001/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 206
+  },
+  {
+    "name": "深圳湾1号",
+    "area": "后海",
+    "location": "深圳市南山-后海 中心路1号",
+    "size": "500",
+    "price": "100元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共72层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/26af5791abadec2e7f511196aac45e64/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 207
+  },
+  {
+    "name": "中洲控股中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 文心三路9号",
+    "size": "300",
+    "price": "80元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/d865a3643a45e479c40c972baef92386/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 208
+  },
+  {
+    "name": "深圳湾1号",
+    "area": "后海",
+    "location": "深圳市南山-后海 中心路1号",
+    "size": "1000",
+    "price": "90元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共32层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积500m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/5acd7bdd4e1bfa6826ad825e4fb97bd8/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 209
+  },
+  {
+    "name": "中洲控股中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 文心三路9号",
+    "size": "100",
+    "price": "70元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共37层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/3f708485291d62168f45405f8dd319ad/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 210
+  },
+  {
+    "name": "卓越后海中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 海德三道126号",
+    "size": "310",
+    "price": "80元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共50层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "24个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/86acc324b2143249e0b49a885ba40a90/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 211
+  },
+  {
+    "name": "荣超后海大厦",
+    "area": "后海",
+    "location": "深圳市南山-后海 海天二路",
+    "size": "300",
+    "price": "90元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共38层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积150m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/f8f0292154047a56e5299ccdccaa630d/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 212
+  },
+  {
+    "name": "中国华润大厦",
+    "area": "后海",
+    "location": "深圳市南山-后海 科苑南路2666号",
+    "size": "1000",
+    "price": "90元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共66层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "24个月起租/免租期12个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/8526bdc03a8f6ae141c0f1bea3cbbf3b/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 213
+  },
+  {
+    "name": "卓越后海中心",
+    "area": "后海",
+    "location": "深圳市南山-后海 海德三道126号",
+    "size": "200",
+    "price": "86元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "36个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/42da2f3cd16b675976056e04d8c2f9c5/1600x1200.jpg",
+    "date": "2026-06-14",
+    "id": 214
   }
 ]
