@@ -4815,6 +4815,16 @@
         .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
         .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
 
+        /* ===== District Buttons (Two-Level Nav for Sub-Pages) ===== */
+        .district-btn {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+        }
+        .district-btn:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .district-btn.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
     </style>
 </head>
 <body>
@@ -4863,112 +4873,112 @@
         </div>
     </div>
         <div class="area-cards">
-                <a href="nanshan-kejiyuan.html" class="area-card">
+                <a href="nanshan-kejiyuan.html" class="area-card" data-area="南山科技园">
                     <div class="area-card-header">
                         <span class="area-card-title">南山科技园</span>
                         <span class="badge-count">22套房源</span>
                     </div>
                     <div class="area-card-desc">南山科技园核心区域办公室出租，近地铁，配套完善，多种面积可选，精装修拎包入驻。</div>
                 </a>
-                <a href="qianhai.html" class="area-card">
+                <a href="qianhai.html" class="area-card" data-area="前海">
                     <div class="area-card-header">
                         <span class="area-card-title">前海</span>
                         <span class="badge-count">47套房源</span>
                     </div>
                     <div class="area-card-desc">前海自贸区核心区域办公室出租，政策优惠，一线海景，甲级写字楼，可注册公司。</div>
                 </a>
-                <a href="baoan-zhongxin.html" class="area-card">
+                <a href="baoan-zhongxin.html" class="area-card" data-area="宝安中心">
                     <div class="area-card-header">
                         <span class="area-card-title">宝安中心</span>
                         <span class="badge-count">30套房源</span>
                     </div>
                     <div class="area-card-desc">宝安中心区核心地段办公室出租，近地铁，商业配套成熟，甲级写字楼，拎包入驻。</div>
                 </a>
-                <a href="xixiang.html" class="area-card">
+                <a href="xixiang.html" class="area-card" data-area="西乡">
                     <div class="area-card-header">
                         <span class="area-card-title">西乡</span>
                         <span class="badge-count">32套房源</span>
                     </div>
                     <div class="area-card-desc">西乡片区办公室出租，交通便利，价格实惠，适合初创企业和中小企业。</div>
                 </a>
-                <a href="fanshen.html" class="area-card">
+                <a href="fanshen.html" class="area-card" data-area="翻身">
                     <div class="area-card-header">
                         <span class="area-card-title">翻身</span>
                         <span class="badge-count">1套房源</span>
                     </div>
                     <div class="area-card-desc">翻身片区办公室出租，近前海，交通便捷，性价比高，多种户型可选。</div>
                 </a>
-                <a href="xinan.html" class="area-card">
+                <a href="xinan.html" class="area-card" data-area="新安">
                     <div class="area-card-header">
                         <span class="area-card-title">新安</span>
                         <span class="badge-count">18套房源</span>
                     </div>
                     <div class="area-card-desc">新安片区办公室出租，宝安老城区核心地段，配套成熟，生活便利。</div>
                 </a>
-                <a href="pingzhou.html" class="area-card">
+                <a href="pingzhou.html" class="area-card" data-area="坪洲">
                     <div class="area-card-header">
                         <span class="area-card-title">坪洲</span>
                         <span class="badge-count">1套房源</span>
                     </div>
                     <div class="area-card-desc">坪洲片区办公室出租，近地铁坪洲站，周边商业繁华，办公生活两相宜。</div>
                 </a>
-                <a href="bihaiwan.html" class="area-card">
+                <a href="bihaiwan.html" class="area-card" data-area="碧海湾">
                     <div class="area-card-header">
                         <span class="area-card-title">碧海湾</span>
                         <span class="badge-count">6套房源</span>
                     </div>
                     <div class="area-card-desc">碧海湾片区办公室出租，近地铁碧海湾站，海景办公，环境优美。</div>
                 </a>
-                <a href="gushu.html" class="area-card">
+                <a href="gushu.html" class="area-card" data-area="固戍">
                     <div class="area-card-header">
                         <span class="area-card-title">固戍</span>
                         <span class="badge-count">8套房源</span>
                     </div>
                     <div class="area-card-desc">固戍片区办公室出租，近地铁固戍站，租金实惠，适合仓储办公一体化。</div>
                 </a>
-                <a href="fuyong.html" class="area-card">
+                <a href="fuyong.html" class="area-card" data-area="福永">
                     <div class="area-card-header">
                         <span class="area-card-title">福永</span>
                         <span class="badge-count">10套房源</span>
                     </div>
                     <div class="area-card-desc">福永片区办公室出租，近深圳国际会展中心、地铁11号线，甲级写字楼，配套食堂。</div>
                 </a>
-                <a href="shajing.html" class="area-card">
+                <a href="shajing.html" class="area-card" data-area="沙井">
                     <div class="area-card-header">
                         <span class="area-card-title">沙井</span>
                         <span class="badge-count">30套房源</span>
                     </div>
                     <div class="area-card-desc">沙井片区办公室出租，大空港辐射区，交通便利，发展潜力大。</div>
                 </a>
-                <a href="nanshan-zhongxinqu.html" class="area-card">
+                <a href="nanshan-zhongxinqu.html" class="area-card" data-area="南山中心区">
                     <div class="area-card-header">
                         <span class="area-card-title">南山中心区</span>
                         <span class="badge-count">11套房源</span>
                     </div>
                     <div class="area-card-desc">南山中心区片区办公室出租，交通便利，多种面积可选，精装修拎包入驻。</div>
                 </a>
-                <a href="houhai.html" class="area-card">
+                <a href="houhai.html" class="area-card" data-area="后海">
                     <div class="area-card-header">
                         <span class="area-card-title">后海</span>
                         <span class="badge-count">21套房源</span>
                     </div>
                     <div class="area-card-desc">后海片区办公室出租，交通便利，多种面积可选，精装修拎包入驻。</div>
                 </a>
-                <a href="tangwei.html" class="area-card">
+                <a href="tangwei.html" class="area-card" data-area="塘尾">
                     <div class="area-card-header">
                         <span class="area-card-title">塘尾</span>
                         <span class="badge-count">2套房源</span>
                     </div>
                     <div class="area-card-desc">塘尾片区办公室出租，交通便利，多种面积可选，精装修拎包入驻。</div>
                 </a>
-                <a href="dachong.html" class="area-card">
+                <a href="dachong.html" class="area-card" data-area="大冲">
                     <div class="area-card-header">
                         <span class="area-card-title">大冲</span>
                         <span class="badge-count">38套房源</span>
                     </div>
                     <div class="area-card-desc">大冲片区办公室出租，交通便利，多种面积可选，精装修拎包入驻。</div>
                 </a>
-                <a href="shenzhenwan.html" class="area-card">
+                <a href="shenzhenwan.html" class="area-card" data-area="深圳湾">
                     <div class="area-card-header">
                         <span class="area-card-title">深圳湾</span>
                         <span class="badge-count">37套房源</span>
@@ -5643,7 +5653,11 @@
         }
 
         function applyAreaFilter() {
-            var cards = document.querySelectorAll('.project-card'), visibleCount = 0;
+            // 首页：筛选区域目录卡片（.area-card），不影响精选推荐（.project-card）
+            // 子页面：筛选房源卡片（.project-card）
+            var isIndex = !!document.querySelector('.area-cards');
+            var selector = isIndex ? '.area-card' : '.project-card';
+            var cards = document.querySelectorAll(selector), visibleCount = 0;
             cards.forEach(function(card) {
                 if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
                 else {
@@ -5653,7 +5667,7 @@
                 }
             });
             var el = document.getElementById('searchCount');
-            if (el) { var t = document.querySelectorAll('.project-card').length; el.textContent = (visibleCount < t) ? ('显示 ' + visibleCount + '/' + t) : ''; }
+            if (el) { var t = document.querySelectorAll(selector).length; el.textContent = (_currentArea !== 'all') ? ('显示 ' + visibleCount + '/' + t + ' 个区域') : ''; }
         }
 
         document.addEventListener('DOMContentLoaded', initAreaFilter);
@@ -5769,6 +5783,66 @@
         function escapeRegExp(s) {
             return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
+
+    
+        // ===== Sub-Page Two-Level Area Navigation =====
+        (function() {
+            var districtAreas = {
+                baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+                nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+            };
+            // 区域名 → slug 映射（从页面中的 filter-tag href 提取）
+            function buildAreaLinks(district) {
+                var names = districtAreas[district] || [];
+                var html = '';
+                names.forEach(function(name) {
+                    // 查找页面中所有 filter-tag 链接，匹配文字
+                    var allLinks = document.querySelectorAll('#subAreaTags .filter-tag');
+                    var found = false;
+                    allLinks.forEach(function(link) {
+                        if (link.textContent.trim() === name) {
+                            html += link.outerHTML;
+                            found = true;
+                        }
+                    });
+                    if (!found) {
+                        html += '<span class="filter-tag" style="opacity:0.4;pointer-events:none;">' + name + '</span>';
+                    }
+                });
+                return html;
+            }
+
+            function initSubNav() {
+                var btns = document.querySelectorAll('#districtTags .district-btn');
+                if (btns.length === 0) return; // 首页没有这个结构，跳过
+                btns.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        btns.forEach(function(b) { b.classList.remove('active'); });
+                        this.classList.add('active');
+                        var dist = this.dataset.district;
+                        var container = document.getElementById('subAreaTags');
+                        if (container) {
+                            if (dist === 'all') {
+                                // 全部：显示所有区域
+                                var allHtml = '';
+                                ['baoan', 'nanshan'].forEach(function(d) {
+                                    allHtml += buildAreaLinks(d);
+                                });
+                                container.innerHTML = allHtml;
+                            } else {
+                                container.innerHTML = buildAreaLinks(dist);
+                            }
+                        }
+                    });
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initSubNav);
+            } else {
+                initSubNav();
+            }
+        })();
 
     </script>
 </body>

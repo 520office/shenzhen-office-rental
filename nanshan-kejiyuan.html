@@ -703,6 +703,40 @@
         .search-no-result.visible { display: block; }
         .highlight { background: #fef08a; border-radius: 2px; padding: 0 2px; }
 
+        /* ===== Area Filter Bar (Two-Level: District → Area) ===== */
+        .area-filter-bar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+        }
+        .filter-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+        .filter-row:last-child { margin-bottom: 0; }
+        .filter-label {
+            font-size: 14px; font-weight: 600; color: var(--text);
+            white-space: nowrap; line-height: 34px; padding-right: 4px;
+        }
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .filter-tag {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap; line-height: 1.4;
+        }
+        .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
+        /* ===== District Buttons (Two-Level Nav for Sub-Pages) ===== */
+        .district-btn {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+        }
+        .district-btn:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .district-btn.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
     </style>
 </head>
 <body>
@@ -727,27 +761,25 @@
         <a href="tel:15914050727" class="hero-cta">📞 立即咨询 谢经理 15914050727</a>
     </section>
 
-    <!-- Navigation -->
+    <!-- Navigation (Two-Level) -->
     <div class="nav-section">
-        <div class="nav-bar">
-            <span class="nav-label">📍 区域切换</span>
+        <div class="nav-bar" style="flex-direction:column;align-items:stretch;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <span class="nav-label">📍 区域切换</span>
+                <div class="filter-tags" id="districtTags" style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="district-btn" data-district="all">全部</button>
+                    <button class="district-btn" data-district="baoan">宝安区</button>
+                    <button class="district-btn active" data-district="nanshan">南山区</button>
+                </div>
+            </div>
+            <div class="filter-tags" id="subAreaTags" style="display:flex;gap:8px;flex-wrap:wrap;">
                 <a href="nanshan-kejiyuan.html" class="filter-tag active">南山科技园</a>
-                <a href="qianhai.html" class="filter-tag">前海</a>
-                <a href="baoan-zhongxin.html" class="filter-tag">宝安中心</a>
-                <a href="xixiang.html" class="filter-tag">西乡</a>
-                <a href="fanshen.html" class="filter-tag">翻身</a>
-                <a href="xinan.html" class="filter-tag">新安</a>
-                <a href="pingzhou.html" class="filter-tag">坪洲</a>
-                <a href="bihaiwan.html" class="filter-tag">碧海湾</a>
-                <a href="gushu.html" class="filter-tag">固戍</a>
-                <a href="fuyong.html" class="filter-tag">福永</a>
-                <a href="shajing.html" class="filter-tag">沙井</a>
-                <a href="huizhan-xincheng.html" class="filter-tag">会展新城</a>
-                <a href="nanshan-zhongxinqu.html" class="filter-tag">南山中心区</a>
-                <a href="houhai.html" class="filter-tag">后海</a>
-                <a href="tangwei.html" class="filter-tag">塘尾</a>
-                <a href="dachong.html" class="filter-tag">大冲</a>
-                <a href="shenzhenwan.html" class="filter-tag">深圳湾</a>
+<a href="qianhai.html" class="filter-tag">前海</a>
+<a href="nanshan-zhongxinqu.html" class="filter-tag">南山中心区</a>
+<a href="houhai.html" class="filter-tag">后海</a>
+<a href="dachong.html" class="filter-tag">大冲</a>
+<a href="shenzhenwan.html" class="filter-tag">深圳湾</a>
+            </div>
         </div>
     </div>
 
@@ -767,7 +799,7 @@
         <p class="section-subtitle">南山·科技园区域共 <strong style="color:var(--primary);">22</strong> 套办公室出租，更新时间：2026年6月13日</p>
         <div class="projects-grid">
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/d4b9eee5fb4ff2d476bdb3b022c7bca0/800x600c.jpg" alt="深圳湾科技生态园" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -802,7 +834,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/4e3d5cb3bd4964956097e649db8223a3/800x600c.jpg" alt="科兴科学园" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -837,7 +869,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/bb98d7e7292093c8415c25a589886c5a/800x600c.jpg" alt="深圳软件园" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -872,7 +904,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/bdbc392a5688753b032890dae48d31c6/800x600c.jpg" alt="讯美科技广场(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -907,7 +939,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/09227d6b6456719dfb45c63cfcb4badb/800x600c.jpg" alt="汉京金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -942,7 +974,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/4f899bf5550cfe581c0d0aa5933ae42e/800x600c.jpg" alt="国信投资大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -977,7 +1009,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/9e5f54dc6c9acff72c8fb9d65a2977c7/800x600c.jpg" alt="深圳湾科技生态园" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1012,7 +1044,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/510c07647e675b6d7adcf340a308c75b/800x600c.jpg" alt="北邮科技大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1047,7 +1079,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/09ec1f0f34a748f17b19676252094a23/800x600c.jpg" alt="阳光粤海大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1082,7 +1114,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/68761ab3ca66624a4669c37bf671a2ae/800x600c.jpg" alt="中山大学深圳产学研大楼" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1117,7 +1149,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/629f35eeae0d0df8c212b272dc30efd8/800x600c.jpg" alt="汉京金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1152,7 +1184,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/9b55852e99677323c7addb446a4641e8/800x600c.jpg" alt="三诺智慧大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1187,7 +1219,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/3e0403a36ff58855d66d666104076864/800x600c.jpg" alt="康泰创新广场" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1222,7 +1254,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/c134a3e8b45713976847b47e2b43b8a3/800x600c.jpg" alt="中电长城大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1257,7 +1289,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/7430120a62dc50fe82e95dce5da4cc73/800x600c.jpg" alt="粤美特大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1292,7 +1324,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/172f2ff85da940d3920a72c799e1fb38/800x600c.jpg" alt="豪威科技大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1327,7 +1359,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/4e390e4d17470a5aac46ed3de425c192/800x600c.jpg" alt="创维半导体设计大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1362,7 +1394,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/8abbcc52c7b67435ffb939b83441fc94/800x600c.jpg" alt="中国储能大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1397,7 +1429,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/65b5bcd8d68f1361bd482ae99b440f30/800x600c.jpg" alt="彩讯科技大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1432,7 +1464,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/b1d803cceb4e0de2aac978842af15044/800x600c.jpg" alt="深圳北航大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1467,7 +1499,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/7635fcfcea96aec45408855869e2cf1a/800x600c.jpg" alt="赛西科技大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1502,7 +1534,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop" alt="南山科技园甲级写字楼" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -1561,7 +1593,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-links">
-            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="huizhan-xincheng.html">会展新城办公室出租</a> | <a href="nanshan-zhongxinqu.html">南山中心区办公室出租</a> | <a href="houhai.html">后海办公室出租</a> | <a href="tangwei.html">塘尾办公室出租</a> | <a href="dachong.html">大冲办公室出租</a> | <a href="shenzhenwan.html">深圳湾办公室出租</a>
+            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="nanshan-zhongxinqu.html">南山中心区办公室出租</a> | <a href="houhai.html">后海办公室出租</a> | <a href="tangwei.html">塘尾办公室出租</a> | <a href="dachong.html">大冲办公室出租</a> | <a href="shenzhenwan.html">深圳湾办公室出租</a>
         </div>
         <p>© 2026 深圳办公室出租 | 联系人：谢经理 | 电话：15914050727</p>
         <p style="margin-top:4px;font-size:12px;">
@@ -1572,6 +1604,63 @@
     <script>
         var _totalCards = 0;
         var _timer = null;
+
+        // ===== Area Filter (Two-Level: District → Area) =====
+        var DISTRICT_MAP = {
+            baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+            nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+        };
+        var _currentDistrict = 'all';
+        var _currentArea = 'all';
+
+        function initAreaFilter() {
+            document.querySelectorAll('#districtTags .filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#districtTags .filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentDistrict = this.dataset.district;
+                    renderAreaTags();
+                });
+            });
+            renderAreaTags();
+        }
+
+        function renderAreaTags() {
+            var container = document.getElementById('areaTags');
+            var areas = (_currentDistrict === 'all') ? Object.values(DISTRICT_MAP).flat().sort() : (DISTRICT_MAP[_currentDistrict] || []);
+            var html = '<button class="filter-tag' + (_currentArea==='all'?' active':'') + '" data-area="all">全部</button>';
+            areas.forEach(function(a) { html += '<button class="filter-tag' + (_currentArea===a?' active':'') + '" data-area="' + a + '">' + a + '</button>'; });
+            container.innerHTML = html;
+            container.querySelectorAll('.filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    container.querySelectorAll('.filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentArea = this.dataset.area;
+                    applyAreaFilter();
+                });
+            });
+            applyAreaFilter();
+        }
+
+        function applyAreaFilter() {
+            // 首页：筛选区域目录卡片（.area-card），不影响精选推荐（.project-card）
+            // 子页面：筛选房源卡片（.project-card）
+            var isIndex = !!document.querySelector('.area-cards');
+            var selector = isIndex ? '.area-card' : '.project-card';
+            var cards = document.querySelectorAll(selector), visibleCount = 0;
+            cards.forEach(function(card) {
+                if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
+                else {
+                    var a = card.getAttribute('data-area') || '';
+                    if (a.indexOf(_currentArea) !== -1 || _currentArea.indexOf(a) !== -1) { card.style.display = ''; visibleCount++; }
+                    else { card.style.display = 'none'; }
+                }
+            });
+            var el = document.getElementById('searchCount');
+            if (el) { var t = document.querySelectorAll(selector).length; el.textContent = (_currentArea !== 'all') ? ('显示 ' + visibleCount + '/' + t + ' 个区域') : ''; }
+        }
+
+        document.addEventListener('DOMContentLoaded', initAreaFilter);
 
         document.addEventListener('DOMContentLoaded', function() {
             var input = document.getElementById('searchInput');
@@ -1684,6 +1773,66 @@
         function escapeRegExp(s) {
             return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
+
+    
+        // ===== Sub-Page Two-Level Area Navigation =====
+        (function() {
+            var districtAreas = {
+                baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+                nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+            };
+            // 区域名 → slug 映射（从页面中的 filter-tag href 提取）
+            function buildAreaLinks(district) {
+                var names = districtAreas[district] || [];
+                var html = '';
+                names.forEach(function(name) {
+                    // 查找页面中所有 filter-tag 链接，匹配文字
+                    var allLinks = document.querySelectorAll('#subAreaTags .filter-tag');
+                    var found = false;
+                    allLinks.forEach(function(link) {
+                        if (link.textContent.trim() === name) {
+                            html += link.outerHTML;
+                            found = true;
+                        }
+                    });
+                    if (!found) {
+                        html += '<span class="filter-tag" style="opacity:0.4;pointer-events:none;">' + name + '</span>';
+                    }
+                });
+                return html;
+            }
+
+            function initSubNav() {
+                var btns = document.querySelectorAll('#districtTags .district-btn');
+                if (btns.length === 0) return; // 首页没有这个结构，跳过
+                btns.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        btns.forEach(function(b) { b.classList.remove('active'); });
+                        this.classList.add('active');
+                        var dist = this.dataset.district;
+                        var container = document.getElementById('subAreaTags');
+                        if (container) {
+                            if (dist === 'all') {
+                                // 全部：显示所有区域
+                                var allHtml = '';
+                                ['baoan', 'nanshan'].forEach(function(d) {
+                                    allHtml += buildAreaLinks(d);
+                                });
+                                container.innerHTML = allHtml;
+                            } else {
+                                container.innerHTML = buildAreaLinks(dist);
+                            }
+                        }
+                    });
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initSubNav);
+            } else {
+                initSubNav();
+            }
+        })();
 
     </script>
 </body>

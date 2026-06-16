@@ -314,12 +314,73 @@ def make_html_head(area_info=None):
 
 
 def area_nav_html(all_areas, current_slug=None):
-    """生成区域导航标签"""
+    """生成区域导航标签（旧版平铺，保留兼容）"""
     tags = []
     for a in all_areas:
         active = ' active' if a["slug"] == current_slug else ''
         tags.append(f'                <a href="{a["slug"]}.html" class="filter-tag{active}">{a["name"]}</a>')
     return "\n".join(tags)
+
+
+# 区域 → 行政区映射
+AREA_DISTRICT_MAP = {
+    "宝安中心区": "baoan", "西乡": "baoan", "翻身": "baoan", "新安": "baoan",
+    "坪洲": "baoan", "碧海湾": "baoan", "固戍": "baoan", "福永": "baoan",
+    "沙井": "baoan", "会展新城": "baoan", "塘尾": "baoan",
+    "南山科技园": "nanshan", "前海": "nanshan", "南山中心区": "nanshan",
+    "后海": "nanshan", "大冲": "nanshan", "深圳湾": "nanshan",
+}
+
+DISTRICT_AREAS = {
+    "baoan": ["宝安中心区","西乡","翻身","新安","坪洲","碧海湾","固戍","福永","沙井","会展新城","塘尾"],
+    "nanshan": ["南山科技园","前海","南山中心区","后海","大冲","深圳湾"],
+}
+
+DISTRICT_NAMES = {"baoan": "宝安区", "nanshan": "南山区"}
+
+
+def area_nav_two_level_html(all_areas, current_slug=None):
+    """生成两级联动区域导航（宝安/南山 → 商圈），用于独立页面"""
+    # 构建 slug → area_info 映射
+    slug_map = {a["slug"]: a for a in all_areas}
+
+    # 确定当前所属行政区
+    current_district = 'all'
+    if current_slug:
+        for a in all_areas:
+            if a["slug"] == current_slug:
+                current_district = AREA_DISTRICT_MAP.get(a["name"], 'all')
+                break
+
+    # 生成第二行：商圈链接（根据默认选中第一个有当前区域的行政区）
+    def _render_area_links(district_key):
+        areas = DISTRICT_AREAS.get(district_key, [])
+        links = []
+        for area_name in areas:
+            # 找到对应的 area info
+            area_info = None
+            for a in all_areas:
+                if a["name"] == area_name:
+                    area_info = a
+                    break
+            if area_info:
+                active = ' active' if area_info["slug"] == current_slug else ''
+                links.append(f'<a href="{area_info["slug"]}.html" class="filter-tag{active}">{area_info["name"]}</a>')
+        return "\n".join(links)
+
+    return f"""        <div class="nav-bar" style="flex-direction:column;align-items:stretch;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <span class="nav-label">📍 区域切换</span>
+                <div class="filter-tags" id="districtTags" style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="district-btn{' active' if current_district == 'all' else ''}" data-district="all">全部</button>
+                    <button class="district-btn{' active' if current_district == 'baoan' else ''}" data-district="baoan">宝安区</button>
+                    <button class="district-btn{' active' if current_district == 'nanshan' else ''}" data-district="nanshan">南山区</button>
+                </div>
+            </div>
+            <div class="filter-tags" id="subAreaTags" style="display:flex;gap:8px;flex-wrap:wrap;">
+                {_render_area_links(current_district if current_district != 'all' else 'baoan')}
+            </div>
+        </div>"""
 
 
 def area_directory_html(all_areas, grouped):
@@ -328,7 +389,7 @@ def area_directory_html(all_areas, grouped):
     for a in all_areas:
         count = len(grouped.get(a["slug"], []))
         badge = f'<span class="badge-count">{count}套房源</span>' if count > 0 else '<span class="badge-empty">暂无房源</span>'
-        rows.append(f"""                <a href="{a['slug']}.html" class="area-card">
+        rows.append(f"""                <a href="{a['slug']}.html" class="area-card" data-area="{a['name']}">
                     <div class="area-card-header">
                         <span class="area-card-title">{a['name']}</span>
                         {badge}
@@ -768,6 +829,16 @@ SHARED_CSS = r"""
         }
         .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
         .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
+        /* ===== District Buttons (Two-Level Nav for Sub-Pages) ===== */
+        .district-btn {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+        }
+        .district-btn:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .district-btn.active { color: #fff; background: var(--primary); border-color: var(--primary); }
 """
 
 # ===== 搜索框 HTML =====
@@ -803,7 +874,67 @@ def area_filter_html():
     </div>"""
 
 
-# ===== 搜索功能 JavaScript =====
+# ===== 子页面两级导航 JavaScript =====
+SUBPAGE_NAV_JS = r"""
+        // ===== Sub-Page Two-Level Area Navigation =====
+        (function() {
+            var districtAreas = {
+                baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+                nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+            };
+            // 区域名 → slug 映射（从页面中的 filter-tag href 提取）
+            function buildAreaLinks(district) {
+                var names = districtAreas[district] || [];
+                var html = '';
+                names.forEach(function(name) {
+                    // 查找页面中所有 filter-tag 链接，匹配文字
+                    var allLinks = document.querySelectorAll('#subAreaTags .filter-tag');
+                    var found = false;
+                    allLinks.forEach(function(link) {
+                        if (link.textContent.trim() === name) {
+                            html += link.outerHTML;
+                            found = true;
+                        }
+                    });
+                    if (!found) {
+                        html += '<span class="filter-tag" style="opacity:0.4;pointer-events:none;">' + name + '</span>';
+                    }
+                });
+                return html;
+            }
+
+            function initSubNav() {
+                var btns = document.querySelectorAll('#districtTags .district-btn');
+                if (btns.length === 0) return; // 首页没有这个结构，跳过
+                btns.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        btns.forEach(function(b) { b.classList.remove('active'); });
+                        this.classList.add('active');
+                        var dist = this.dataset.district;
+                        var container = document.getElementById('subAreaTags');
+                        if (container) {
+                            if (dist === 'all') {
+                                // 全部：显示所有区域
+                                var allHtml = '';
+                                ['baoan', 'nanshan'].forEach(function(d) {
+                                    allHtml += buildAreaLinks(d);
+                                });
+                                container.innerHTML = allHtml;
+                            } else {
+                                container.innerHTML = buildAreaLinks(dist);
+                            }
+                        }
+                    });
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initSubNav);
+            } else {
+                initSubNav();
+            }
+        })();
+"""
 SEARCH_JS = r"""
         var _totalCards = 0;
         var _timer = null;
@@ -846,7 +977,11 @@ SEARCH_JS = r"""
         }
 
         function applyAreaFilter() {
-            var cards = document.querySelectorAll('.project-card'), visibleCount = 0;
+            // 首页：筛选区域目录卡片（.area-card），不影响精选推荐（.project-card）
+            // 子页面：筛选房源卡片（.project-card）
+            var isIndex = !!document.querySelector('.area-cards');
+            var selector = isIndex ? '.area-card' : '.project-card';
+            var cards = document.querySelectorAll(selector), visibleCount = 0;
             cards.forEach(function(card) {
                 if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
                 else {
@@ -856,7 +991,7 @@ SEARCH_JS = r"""
                 }
             });
             var el = document.getElementById('searchCount');
-            if (el) { var t = document.querySelectorAll('.project-card').length; el.textContent = (visibleCount < t) ? ('显示 ' + visibleCount + '/' + t) : ''; }
+            if (el) { var t = document.querySelectorAll(selector).length; el.textContent = (_currentArea !== 'all') ? ('显示 ' + visibleCount + '/' + t + ' 个区域') : ''; }
         }
 
         document.addEventListener('DOMContentLoaded', initAreaFilter);
@@ -976,8 +1111,8 @@ SEARCH_JS = r"""
 
 
 def search_script_tag():
-    """返回搜索脚本标签"""
-    return f"    <script>{SEARCH_JS}\n    </script>"
+    """返回搜索+导航脚本标签"""
+    return f"    <script>{SEARCH_JS}\n    {SUBPAGE_NAV_JS}\n    </script>"
 
 
 def build_index(all_areas, grouped):
@@ -1208,12 +1343,9 @@ def build_area_page(all_areas, area_info, projects):
         <a href="tel:{CONTACT_PHONE}" class="hero-cta">📞 立即咨询 {CONTACT_NAME} {CONTACT_PHONE}</a>
     </section>
 
-    <!-- Navigation -->
+    <!-- Navigation (Two-Level) -->
     <div class="nav-section">
-        <div class="nav-bar">
-            <span class="nav-label">📍 区域切换</span>
-{area_nav_html(all_areas, slug)}
-        </div>
+{area_nav_two_level_html(all_areas, slug)}
     </div>
 
 {search_box_html()}

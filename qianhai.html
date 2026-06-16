@@ -1053,6 +1053,40 @@
         .search-no-result.visible { display: block; }
         .highlight { background: #fef08a; border-radius: 2px; padding: 0 2px; }
 
+        /* ===== Area Filter Bar (Two-Level: District → Area) ===== */
+        .area-filter-bar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+        }
+        .filter-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+        .filter-row:last-child { margin-bottom: 0; }
+        .filter-label {
+            font-size: 14px; font-weight: 600; color: var(--text);
+            white-space: nowrap; line-height: 34px; padding-right: 4px;
+        }
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .filter-tag {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap; line-height: 1.4;
+        }
+        .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
+        /* ===== District Buttons (Two-Level Nav for Sub-Pages) ===== */
+        .district-btn {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+        }
+        .district-btn:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .district-btn.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
     </style>
 </head>
 <body>
@@ -1077,27 +1111,25 @@
         <a href="tel:15914050727" class="hero-cta">📞 立即咨询 谢经理 15914050727</a>
     </section>
 
-    <!-- Navigation -->
+    <!-- Navigation (Two-Level) -->
     <div class="nav-section">
-        <div class="nav-bar">
-            <span class="nav-label">📍 区域切换</span>
+        <div class="nav-bar" style="flex-direction:column;align-items:stretch;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <span class="nav-label">📍 区域切换</span>
+                <div class="filter-tags" id="districtTags" style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="district-btn" data-district="all">全部</button>
+                    <button class="district-btn" data-district="baoan">宝安区</button>
+                    <button class="district-btn active" data-district="nanshan">南山区</button>
+                </div>
+            </div>
+            <div class="filter-tags" id="subAreaTags" style="display:flex;gap:8px;flex-wrap:wrap;">
                 <a href="nanshan-kejiyuan.html" class="filter-tag">南山科技园</a>
-                <a href="qianhai.html" class="filter-tag active">前海</a>
-                <a href="baoan-zhongxin.html" class="filter-tag">宝安中心</a>
-                <a href="xixiang.html" class="filter-tag">西乡</a>
-                <a href="fanshen.html" class="filter-tag">翻身</a>
-                <a href="xinan.html" class="filter-tag">新安</a>
-                <a href="pingzhou.html" class="filter-tag">坪洲</a>
-                <a href="bihaiwan.html" class="filter-tag">碧海湾</a>
-                <a href="gushu.html" class="filter-tag">固戍</a>
-                <a href="fuyong.html" class="filter-tag">福永</a>
-                <a href="shajing.html" class="filter-tag">沙井</a>
-                <a href="huizhan-xincheng.html" class="filter-tag">会展新城</a>
-                <a href="nanshan-zhongxinqu.html" class="filter-tag">南山中心区</a>
-                <a href="houhai.html" class="filter-tag">后海</a>
-                <a href="tangwei.html" class="filter-tag">塘尾</a>
-                <a href="dachong.html" class="filter-tag">大冲</a>
-                <a href="shenzhenwan.html" class="filter-tag">深圳湾</a>
+<a href="qianhai.html" class="filter-tag active">前海</a>
+<a href="nanshan-zhongxinqu.html" class="filter-tag">南山中心区</a>
+<a href="houhai.html" class="filter-tag">后海</a>
+<a href="dachong.html" class="filter-tag">大冲</a>
+<a href="shenzhenwan.html" class="filter-tag">深圳湾</a>
+            </div>
         </div>
     </div>
 
@@ -1117,7 +1149,7 @@
         <p class="section-subtitle">前海自贸区区域共 <strong style="color:var(--primary);">47</strong> 套办公室出租，更新时间：2026年6月14日</p>
         <div class="projects-grid">
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/6c3b270caf02d460bace54f9b04b75e6/1600x1200.jpg" alt="前海嘉里中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1152,7 +1184,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/c2840609ae75176db6255c5c8d50e909/1600x1200.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1187,7 +1219,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/c8f460df10ead2443df61ad1f10cbceb/1600x1200.jpg" alt="香缤国际金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1222,7 +1254,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/b42066dc040286d0318486422f760cd7/1600x1200.jpg" alt="前海深港基金小镇" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1257,7 +1289,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/b24d2539221dac2efa9c57669655e0db/1600x1200.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1292,7 +1324,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/bfa85ce1130b490482253661edbe4190/1600x1200.jpg" alt="华海金融创新中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1327,7 +1359,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/0a944e2238ea74e57f01ab1f9e1caec9/1600x1200.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1362,7 +1394,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/312b11e20aad78d49f78c2486b829c01/1600x1200.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1397,7 +1429,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/1776eb881813fae3da06b2f0d33e634f/1600x1200.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1432,7 +1464,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/64bb6f0bda6d91dc29f0a7df5ff4f20b/1600x1200.jpg" alt="前海世茂大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1467,7 +1499,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/dd95330d02a196d31a668dedb40774a7/1600x1200.jpg" alt="前海嘉里中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1502,7 +1534,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/139cfe71285c04326558c2c45acdd9aa/1600x1200.jpg" alt="招商前海国际中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1537,7 +1569,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/a61de2b5845e90aea5f5f0b85003fea8/1600x1200.jpg" alt="前海金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1572,7 +1604,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/101fb74e5c44af12d36aecc1defd738c/1600x1200.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1607,7 +1639,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/33534bd3726a9c435569e7bbc3606e17/1600x1200.jpg" alt="前海金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1642,7 +1674,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/12fdb8f369ff6848817cd4a22fe54b72/1600x1200.jpg" alt="前海深港基金小镇" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1677,7 +1709,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop" alt="前海金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1712,7 +1744,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop" alt="华润前海大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1747,7 +1779,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?w=600&h=400&fit=crop" alt="前海周大福金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1782,7 +1814,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&h=400&fit=crop" alt="前海鸿荣源中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1817,7 +1849,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop" alt="前海金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1852,7 +1884,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop" alt="华润前海中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1887,7 +1919,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop" alt="前海世贸大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1922,7 +1954,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/91c465b698cfa49b856280cc8485be80/800x600c.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1957,7 +1989,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/5c8f2482e99daf9394c0712893b27157/800x600c.jpg" alt="前海周大福金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -1992,7 +2024,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/ec1ab9835acd1ec271cd0d696783aa45/800x600c.jpg" alt="前海周大福金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2027,7 +2059,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/8db238920cc85d6f594aabc3badbf5e2/800x600c.jpg" alt="立桥金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2062,7 +2094,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/5b1c667ba846f6fbe9c21be983aa5ec8/800x600c.jpg" alt="前海鸿荣源中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2097,7 +2129,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/dedf6438159564ec5f583b6bd1fd5439/800x600c.jpg" alt="前海深港基金小镇" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2132,7 +2164,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/a5fd3ef75176865dbf87eba4256bc353/800x600c.jpg" alt="前海金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2167,7 +2199,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/a9e166df0e354c645e4dbf430deea942/800x600c.jpg" alt="华强金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2202,7 +2234,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/be4fc881a3f45eb0a28494d04a86d0a0/800x600c.jpg" alt="前海嘉里中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2237,7 +2269,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/b679c2a43897c32f07b8e748b9634583/800x600c.jpg" alt="华润前海中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2272,7 +2304,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/a06d9bc3e0b0894c52a6cd40192b089e/800x600c.jpg" alt="弘毅大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2307,7 +2339,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/a25941f8ebaa50edb49d350c93e4caa5/800x600c.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2342,7 +2374,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/e76d2ba765b2095733e8c62a9f18413c/800x600c.jpg" alt="前海嘉里中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2377,7 +2409,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/651777a0f45bc606087a071b23062734/800x600c.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2412,7 +2444,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/df04101498c1fedf43db517e6b0dc67a/800x600c.jpg" alt="前海嘉里中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2447,7 +2479,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/3ddee5c947316c1e7735d44a7a2405b7/800x600c.jpg" alt="前海世茂大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2482,7 +2514,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/8874a8151d3ebad93e99c18816425607/800x600c.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2517,7 +2549,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/05977eb1dbb8a5a7c3f5c7e000f86a5f/800x600c.jpg" alt="前海金融中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2552,7 +2584,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/f5955264c349d272ffee799320bf17f3/800x600c.jpg" alt="前海颐都大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2587,7 +2619,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/4e33f94267c51c7ef1c38b23228ad6f2/800x600c.jpg" alt="前海世茂大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2622,7 +2654,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/19b55da401140854ad0e8ba0b43b977a/800x600c.jpg" alt="华润前海中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2657,7 +2689,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/55b1f8c591d06df77ffd19d6b686ad1c/800x600c.jpg" alt="卓越前海壹号(办公)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2692,7 +2724,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/425d83c711a990628b955dfe9ffc7da4/800x600c.jpg" alt="前海恒昌大厦东座" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2727,7 +2759,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop" alt="前海金融中心办公室" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -2786,7 +2818,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-links">
-            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="huizhan-xincheng.html">会展新城办公室出租</a> | <a href="nanshan-zhongxinqu.html">南山中心区办公室出租</a> | <a href="houhai.html">后海办公室出租</a> | <a href="tangwei.html">塘尾办公室出租</a> | <a href="dachong.html">大冲办公室出租</a> | <a href="shenzhenwan.html">深圳湾办公室出租</a>
+            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="nanshan-zhongxinqu.html">南山中心区办公室出租</a> | <a href="houhai.html">后海办公室出租</a> | <a href="tangwei.html">塘尾办公室出租</a> | <a href="dachong.html">大冲办公室出租</a> | <a href="shenzhenwan.html">深圳湾办公室出租</a>
         </div>
         <p>© 2026 深圳办公室出租 | 联系人：谢经理 | 电话：15914050727</p>
         <p style="margin-top:4px;font-size:12px;">
@@ -2797,6 +2829,63 @@
     <script>
         var _totalCards = 0;
         var _timer = null;
+
+        // ===== Area Filter (Two-Level: District → Area) =====
+        var DISTRICT_MAP = {
+            baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+            nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+        };
+        var _currentDistrict = 'all';
+        var _currentArea = 'all';
+
+        function initAreaFilter() {
+            document.querySelectorAll('#districtTags .filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#districtTags .filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentDistrict = this.dataset.district;
+                    renderAreaTags();
+                });
+            });
+            renderAreaTags();
+        }
+
+        function renderAreaTags() {
+            var container = document.getElementById('areaTags');
+            var areas = (_currentDistrict === 'all') ? Object.values(DISTRICT_MAP).flat().sort() : (DISTRICT_MAP[_currentDistrict] || []);
+            var html = '<button class="filter-tag' + (_currentArea==='all'?' active':'') + '" data-area="all">全部</button>';
+            areas.forEach(function(a) { html += '<button class="filter-tag' + (_currentArea===a?' active':'') + '" data-area="' + a + '">' + a + '</button>'; });
+            container.innerHTML = html;
+            container.querySelectorAll('.filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    container.querySelectorAll('.filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentArea = this.dataset.area;
+                    applyAreaFilter();
+                });
+            });
+            applyAreaFilter();
+        }
+
+        function applyAreaFilter() {
+            // 首页：筛选区域目录卡片（.area-card），不影响精选推荐（.project-card）
+            // 子页面：筛选房源卡片（.project-card）
+            var isIndex = !!document.querySelector('.area-cards');
+            var selector = isIndex ? '.area-card' : '.project-card';
+            var cards = document.querySelectorAll(selector), visibleCount = 0;
+            cards.forEach(function(card) {
+                if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
+                else {
+                    var a = card.getAttribute('data-area') || '';
+                    if (a.indexOf(_currentArea) !== -1 || _currentArea.indexOf(a) !== -1) { card.style.display = ''; visibleCount++; }
+                    else { card.style.display = 'none'; }
+                }
+            });
+            var el = document.getElementById('searchCount');
+            if (el) { var t = document.querySelectorAll(selector).length; el.textContent = (_currentArea !== 'all') ? ('显示 ' + visibleCount + '/' + t + ' 个区域') : ''; }
+        }
+
+        document.addEventListener('DOMContentLoaded', initAreaFilter);
 
         document.addEventListener('DOMContentLoaded', function() {
             var input = document.getElementById('searchInput');
@@ -2909,6 +2998,66 @@
         function escapeRegExp(s) {
             return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
+
+    
+        // ===== Sub-Page Two-Level Area Navigation =====
+        (function() {
+            var districtAreas = {
+                baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+                nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+            };
+            // 区域名 → slug 映射（从页面中的 filter-tag href 提取）
+            function buildAreaLinks(district) {
+                var names = districtAreas[district] || [];
+                var html = '';
+                names.forEach(function(name) {
+                    // 查找页面中所有 filter-tag 链接，匹配文字
+                    var allLinks = document.querySelectorAll('#subAreaTags .filter-tag');
+                    var found = false;
+                    allLinks.forEach(function(link) {
+                        if (link.textContent.trim() === name) {
+                            html += link.outerHTML;
+                            found = true;
+                        }
+                    });
+                    if (!found) {
+                        html += '<span class="filter-tag" style="opacity:0.4;pointer-events:none;">' + name + '</span>';
+                    }
+                });
+                return html;
+            }
+
+            function initSubNav() {
+                var btns = document.querySelectorAll('#districtTags .district-btn');
+                if (btns.length === 0) return; // 首页没有这个结构，跳过
+                btns.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        btns.forEach(function(b) { b.classList.remove('active'); });
+                        this.classList.add('active');
+                        var dist = this.dataset.district;
+                        var container = document.getElementById('subAreaTags');
+                        if (container) {
+                            if (dist === 'all') {
+                                // 全部：显示所有区域
+                                var allHtml = '';
+                                ['baoan', 'nanshan'].forEach(function(d) {
+                                    allHtml += buildAreaLinks(d);
+                                });
+                                container.innerHTML = allHtml;
+                            } else {
+                                container.innerHTML = buildAreaLinks(dist);
+                            }
+                        }
+                    });
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initSubNav);
+            } else {
+                initSubNav();
+            }
+        })();
 
     </script>
 </body>

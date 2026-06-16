@@ -40,20 +40,6 @@
     },
     {
         "@type": "Product",
-        "name": "大冲商务中心",
-        "description": "大冲 168 办公室出租，豪华装修，58元/㎡/月",
-        "offers": {
-            "@type": "Offer",
-            "price": "58",
-            "priceCurrency": "CNY",
-            "areaServed": {
-                "@type": "City",
-                "name": "深圳"
-            }
-        }
-    },
-    {
-        "@type": "Product",
         "name": "华润置地大厦",
         "description": "大冲 1000 办公室出租，豪华装修，63元/㎡/月",
         "offers": {
@@ -941,6 +927,40 @@
         .search-no-result.visible { display: block; }
         .highlight { background: #fef08a; border-radius: 2px; padding: 0 2px; }
 
+        /* ===== Area Filter Bar (Two-Level: District → Area) ===== */
+        .area-filter-bar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+        }
+        .filter-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+        .filter-row:last-child { margin-bottom: 0; }
+        .filter-label {
+            font-size: 14px; font-weight: 600; color: var(--text);
+            white-space: nowrap; line-height: 34px; padding-right: 4px;
+        }
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .filter-tag {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap; line-height: 1.4;
+        }
+        .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
+        /* ===== District Buttons (Two-Level Nav for Sub-Pages) ===== */
+        .district-btn {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+        }
+        .district-btn:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .district-btn.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
     </style>
 </head>
 <body>
@@ -965,27 +985,25 @@
         <a href="tel:15914050727" class="hero-cta">📞 立即咨询 谢经理 15914050727</a>
     </section>
 
-    <!-- Navigation -->
+    <!-- Navigation (Two-Level) -->
     <div class="nav-section">
-        <div class="nav-bar">
-            <span class="nav-label">📍 区域切换</span>
+        <div class="nav-bar" style="flex-direction:column;align-items:stretch;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <span class="nav-label">📍 区域切换</span>
+                <div class="filter-tags" id="districtTags" style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="district-btn" data-district="all">全部</button>
+                    <button class="district-btn" data-district="baoan">宝安区</button>
+                    <button class="district-btn active" data-district="nanshan">南山区</button>
+                </div>
+            </div>
+            <div class="filter-tags" id="subAreaTags" style="display:flex;gap:8px;flex-wrap:wrap;">
                 <a href="nanshan-kejiyuan.html" class="filter-tag">南山科技园</a>
-                <a href="qianhai.html" class="filter-tag">前海</a>
-                <a href="baoan-zhongxin.html" class="filter-tag">宝安中心</a>
-                <a href="xixiang.html" class="filter-tag">西乡</a>
-                <a href="fanshen.html" class="filter-tag">翻身</a>
-                <a href="xinan.html" class="filter-tag">新安</a>
-                <a href="pingzhou.html" class="filter-tag">坪洲</a>
-                <a href="bihaiwan.html" class="filter-tag">碧海湾</a>
-                <a href="gushu.html" class="filter-tag">固戍</a>
-                <a href="fuyong.html" class="filter-tag">福永</a>
-                <a href="shajing.html" class="filter-tag">沙井</a>
-                <a href="huizhan-xincheng.html" class="filter-tag">会展新城</a>
-                <a href="nanshan-zhongxinqu.html" class="filter-tag">南山中心区</a>
-                <a href="houhai.html" class="filter-tag">后海</a>
-                <a href="tangwei.html" class="filter-tag">塘尾</a>
-                <a href="dachong.html" class="filter-tag active">大冲</a>
-                <a href="shenzhenwan.html" class="filter-tag">深圳湾</a>
+<a href="qianhai.html" class="filter-tag">前海</a>
+<a href="nanshan-zhongxinqu.html" class="filter-tag">南山中心区</a>
+<a href="houhai.html" class="filter-tag">后海</a>
+<a href="dachong.html" class="filter-tag active">大冲</a>
+<a href="shenzhenwan.html" class="filter-tag">深圳湾</a>
+            </div>
         </div>
     </div>
 
@@ -1002,10 +1020,10 @@
     <!-- Listings -->
     <section class="projects-section">
         <h2 class="section-title">大冲在租房源</h2>
-        <p class="section-subtitle">深圳·大冲区域共 <strong style="color:var(--primary);">39</strong> 套办公室出租，更新时间：2026年6月16日</p>
+        <p class="section-subtitle">深圳·大冲区域共 <strong style="color:var(--primary);">38</strong> 套办公室出租，更新时间：2026年6月16日</p>
         <div class="projects-grid">
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/f1fc96768d33432e0f4789165490f23a/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1040,42 +1058,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
-                <div style="position:relative;">
-                    <img class="card-image" src="https://pic1.ajkimg.com/display/hj/0a02216baae44ebb3d3f484f19823837/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
-                    <span class="card-badge">大冲</span>
-                </div>
-                <div class="card-body">
-                    <div class="card-title">大冲商务中心</div>
-                    <div class="card-location">📍 深圳市南山-大冲 深南大道9678号</div>
-                    <div style="font-size:12px;color:#94a3b8;margin-top:-6px;margin-bottom:12px;">📅 更新于 2026/06/16</div>
-                    <div class="card-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">面积</span>
-                            <span class="meta-value">168</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">价格</span>
-                            <span class="meta-value price">58元/㎡/月</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">装修</span>
-                            <span class="meta-value" style="font-size:14px;color:#64748b;">豪华装修</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">楼层</span>
-                            <span class="meta-value" style="font-size:14px;color:#64748b;">中区/共45层</span>
-                        </div>
-                    </div>
-                    <div class="card-tags"><span class="card-tag">可注册</span><span class="card-tag">不可分割</span><span class="card-tag">押2付1</span><span class="card-tag">12个月起租/免租期2个月</span></div>
-                    <div class="card-footer">
-                        <span style="font-size:13px;color:#94a3b8;">☎️ 谢经理 15914050727</span>
-                        <a href="tel:15914050727" class="card-contact-btn">马上咨询</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/0bf49492bc62437db0e564b837983b90/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1110,7 +1093,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/e3f9bfcd795ccdb354324f950ef47428/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1145,7 +1128,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/41a6c5dbd8be35bb669d957ece5a8149/1600x1200.jpg" alt="南山金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1180,7 +1163,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/1ec77899b57563f3351368cf620c90d5/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1215,7 +1198,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/0a4c635a4b039ee21b03d875da56ff33/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1250,7 +1233,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/aecc80a2498021639762ae5c42206d91/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1285,7 +1268,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/f3cce82f187aeee12ea62f08eb96a7d6/1600x1200.jpg" alt="中检大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1320,7 +1303,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/2191943378ff5966980b99a21a256348/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1355,7 +1338,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/aedc08592877fb7014410225f72ae54e/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1390,7 +1373,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/566517e338db193ab6324d20d58f12d8/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1425,7 +1408,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/5e51f74f8dc384b1c4abff7b83e26732/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1460,7 +1443,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/e720773e15a2754ad1fd95a977e4e964/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1495,7 +1478,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/1ec77899b57563f3351368cf620c90d5/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1530,7 +1513,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/0200fb2405e11df5c47cb178a4872fab/1600x1200.jpg" alt="曙光大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1565,7 +1548,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/ba8d024f347de2cb1bc3c551c8d1a7dd/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1600,7 +1583,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/6a1759a3f42c6c2f9691401d3801c401/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1635,7 +1618,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/aecc80a2498021639762ae5c42206d91/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1670,7 +1653,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/f70b16c02b09e997099107c75449f692/1600x1200.jpg" alt="南山金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1705,7 +1688,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/7e403b70bdd61faf1dd73871d1f88393/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1740,7 +1723,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/2cf4a605ea6da170754ce39070512075/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1775,7 +1758,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/9ecef7824db180077137bb3beeeae624/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1810,7 +1793,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/9ff7c151f4acc07d48f8b2521562a75b/1600x1200.jpg" alt="曙光大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1845,7 +1828,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/9ff7c151f4acc07d48f8b2521562a75b/1600x1200.jpg" alt="曙光大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1880,7 +1863,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/cf76cf641e46663e9124ee672df8f284/1600x1200.jpg" alt="南山金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1915,7 +1898,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/9abb80c5d9be895a57d7a5ccde077c7c/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1950,7 +1933,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/99c4dfbe45da79cfc3c3bbc73770ffd7/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -1985,7 +1968,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/78674484604ee91c9b23dd5ba6742d8b/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2020,7 +2003,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/e3f9bfcd795ccdb354324f950ef47428/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2055,7 +2038,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/273bc6b2e70647f8598164a04a3561c6/1600x1200.jpg" alt="南山金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2090,7 +2073,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/fd5106cc17f314bfc5314f64ad45f42b/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2125,7 +2108,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/3042194108a98175e86d1a174b964292/1600x1200.jpg" alt="南山金融大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2160,7 +2143,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/5a5c80e443985497caf5211e546c16a7/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2195,7 +2178,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/438c92b5cb479ade92affb30f32aeee2/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2230,7 +2213,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/222c0afa85e04c42f6f40cc588108b95/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2265,7 +2248,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/e720773e15a2754ad1fd95a977e4e964/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2300,7 +2283,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/24c4d9f0f8e6faaa26e0d59ec30ff054/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2335,7 +2318,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/b772fa949be45467d9371e04b56b9d3e/1600x1200.jpg" alt="华润置地大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -2394,7 +2377,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-links">
-            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="huizhan-xincheng.html">会展新城办公室出租</a> | <a href="nanshan-zhongxinqu.html">南山中心区办公室出租</a> | <a href="houhai.html">后海办公室出租</a> | <a href="tangwei.html">塘尾办公室出租</a> | <a href="dachong.html">大冲办公室出租</a> | <a href="shenzhenwan.html">深圳湾办公室出租</a>
+            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="nanshan-zhongxinqu.html">南山中心区办公室出租</a> | <a href="houhai.html">后海办公室出租</a> | <a href="tangwei.html">塘尾办公室出租</a> | <a href="dachong.html">大冲办公室出租</a> | <a href="shenzhenwan.html">深圳湾办公室出租</a>
         </div>
         <p>© 2026 深圳办公室出租 | 联系人：谢经理 | 电话：15914050727</p>
         <p style="margin-top:4px;font-size:12px;">
@@ -2405,6 +2388,63 @@
     <script>
         var _totalCards = 0;
         var _timer = null;
+
+        // ===== Area Filter (Two-Level: District → Area) =====
+        var DISTRICT_MAP = {
+            baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+            nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+        };
+        var _currentDistrict = 'all';
+        var _currentArea = 'all';
+
+        function initAreaFilter() {
+            document.querySelectorAll('#districtTags .filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#districtTags .filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentDistrict = this.dataset.district;
+                    renderAreaTags();
+                });
+            });
+            renderAreaTags();
+        }
+
+        function renderAreaTags() {
+            var container = document.getElementById('areaTags');
+            var areas = (_currentDistrict === 'all') ? Object.values(DISTRICT_MAP).flat().sort() : (DISTRICT_MAP[_currentDistrict] || []);
+            var html = '<button class="filter-tag' + (_currentArea==='all'?' active':'') + '" data-area="all">全部</button>';
+            areas.forEach(function(a) { html += '<button class="filter-tag' + (_currentArea===a?' active':'') + '" data-area="' + a + '">' + a + '</button>'; });
+            container.innerHTML = html;
+            container.querySelectorAll('.filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    container.querySelectorAll('.filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentArea = this.dataset.area;
+                    applyAreaFilter();
+                });
+            });
+            applyAreaFilter();
+        }
+
+        function applyAreaFilter() {
+            // 首页：筛选区域目录卡片（.area-card），不影响精选推荐（.project-card）
+            // 子页面：筛选房源卡片（.project-card）
+            var isIndex = !!document.querySelector('.area-cards');
+            var selector = isIndex ? '.area-card' : '.project-card';
+            var cards = document.querySelectorAll(selector), visibleCount = 0;
+            cards.forEach(function(card) {
+                if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
+                else {
+                    var a = card.getAttribute('data-area') || '';
+                    if (a.indexOf(_currentArea) !== -1 || _currentArea.indexOf(a) !== -1) { card.style.display = ''; visibleCount++; }
+                    else { card.style.display = 'none'; }
+                }
+            });
+            var el = document.getElementById('searchCount');
+            if (el) { var t = document.querySelectorAll(selector).length; el.textContent = (_currentArea !== 'all') ? ('显示 ' + visibleCount + '/' + t + ' 个区域') : ''; }
+        }
+
+        document.addEventListener('DOMContentLoaded', initAreaFilter);
 
         document.addEventListener('DOMContentLoaded', function() {
             var input = document.getElementById('searchInput');
@@ -2517,6 +2557,66 @@
         function escapeRegExp(s) {
             return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
+
+    
+        // ===== Sub-Page Two-Level Area Navigation =====
+        (function() {
+            var districtAreas = {
+                baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+                nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+            };
+            // 区域名 → slug 映射（从页面中的 filter-tag href 提取）
+            function buildAreaLinks(district) {
+                var names = districtAreas[district] || [];
+                var html = '';
+                names.forEach(function(name) {
+                    // 查找页面中所有 filter-tag 链接，匹配文字
+                    var allLinks = document.querySelectorAll('#subAreaTags .filter-tag');
+                    var found = false;
+                    allLinks.forEach(function(link) {
+                        if (link.textContent.trim() === name) {
+                            html += link.outerHTML;
+                            found = true;
+                        }
+                    });
+                    if (!found) {
+                        html += '<span class="filter-tag" style="opacity:0.4;pointer-events:none;">' + name + '</span>';
+                    }
+                });
+                return html;
+            }
+
+            function initSubNav() {
+                var btns = document.querySelectorAll('#districtTags .district-btn');
+                if (btns.length === 0) return; // 首页没有这个结构，跳过
+                btns.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        btns.forEach(function(b) { b.classList.remove('active'); });
+                        this.classList.add('active');
+                        var dist = this.dataset.district;
+                        var container = document.getElementById('subAreaTags');
+                        if (container) {
+                            if (dist === 'all') {
+                                // 全部：显示所有区域
+                                var allHtml = '';
+                                ['baoan', 'nanshan'].forEach(function(d) {
+                                    allHtml += buildAreaLinks(d);
+                                });
+                                container.innerHTML = allHtml;
+                            } else {
+                                container.innerHTML = buildAreaLinks(dist);
+                            }
+                        }
+                    });
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initSubNav);
+            } else {
+                initSubNav();
+            }
+        })();
 
     </script>
 </body>
