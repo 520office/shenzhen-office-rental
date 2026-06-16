@@ -250,7 +250,7 @@ def card_html(proj):
     date_str = proj.get("date", "").replace("-", "/") if proj.get("date") else ""
 
     return f"""
-            <div class="project-card">
+            <div class="project-card" data-area="{proj.get('area', '')}">
                 <div style="position:relative;">
                     {img_html}
                     <span class="card-badge">{proj.get('area', '')}</span>
@@ -744,6 +744,30 @@ SHARED_CSS = r"""
         }
         .search-no-result.visible { display: block; }
         .highlight { background: #fef08a; border-radius: 2px; padding: 0 2px; }
+
+        /* ===== Area Filter Bar (Two-Level: District → Area) ===== */
+        .area-filter-bar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+        }
+        .filter-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+        .filter-row:last-child { margin-bottom: 0; }
+        .filter-label {
+            font-size: 14px; font-weight: 600; color: var(--text);
+            white-space: nowrap; line-height: 34px; padding-right: 4px;
+        }
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .filter-tag {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap; line-height: 1.4;
+        }
+        .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
 """
 
 # ===== 搜索框 HTML =====
@@ -759,11 +783,83 @@ def search_box_html():
         </div>
     </div>"""
 
+# ===== 区域筛选栏 HTML（两级联动：区域 → 商圈）=====
+def area_filter_html():
+    """生成两级区域筛选栏 HTML"""
+    return """    <!-- Two-Level Area Filter -->
+    <div class="area-filter-bar">
+        <div class="filter-row">
+            <span class="filter-label">区域：</span>
+            <div class="filter-tags" id="districtTags">
+                <button class="filter-tag active" data-district="all">全部</button>
+                <button class="filter-tag" data-district="baoan">宝安区</button>
+                <button class="filter-tag" data-district="nanshan">南山区</button>
+            </div>
+        </div>
+        <div class="filter-row">
+            <span class="filter-label">商圈：</span>
+            <div class="filter-tags" id="areaTags"></div>
+        </div>
+    </div>"""
+
 
 # ===== 搜索功能 JavaScript =====
 SEARCH_JS = r"""
         var _totalCards = 0;
         var _timer = null;
+
+        // ===== Area Filter (Two-Level: District → Area) =====
+        var DISTRICT_MAP = {
+            baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+            nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+        };
+        var _currentDistrict = 'all';
+        var _currentArea = 'all';
+
+        function initAreaFilter() {
+            document.querySelectorAll('#districtTags .filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#districtTags .filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentDistrict = this.dataset.district;
+                    renderAreaTags();
+                });
+            });
+            renderAreaTags();
+        }
+
+        function renderAreaTags() {
+            var container = document.getElementById('areaTags');
+            var areas = (_currentDistrict === 'all') ? Object.values(DISTRICT_MAP).flat().sort() : (DISTRICT_MAP[_currentDistrict] || []);
+            var html = '<button class="filter-tag' + (_currentArea==='all'?' active':'') + '" data-area="all">全部</button>';
+            areas.forEach(function(a) { html += '<button class="filter-tag' + (_currentArea===a?' active':'') + '" data-area="' + a + '">' + a + '</button>'; });
+            container.innerHTML = html;
+            container.querySelectorAll('.filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    container.querySelectorAll('.filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentArea = this.dataset.area;
+                    applyAreaFilter();
+                });
+            });
+            applyAreaFilter();
+        }
+
+        function applyAreaFilter() {
+            var cards = document.querySelectorAll('.project-card'), visibleCount = 0;
+            cards.forEach(function(card) {
+                if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
+                else {
+                    var a = card.getAttribute('data-area') || '';
+                    if (a.indexOf(_currentArea) !== -1 || _currentArea.indexOf(a) !== -1) { card.style.display = ''; visibleCount++; }
+                    else { card.style.display = 'none'; }
+                }
+            });
+            var el = document.getElementById('searchCount');
+            if (el) { var t = document.querySelectorAll('.project-card').length; el.textContent = (visibleCount < t) ? ('显示 ' + visibleCount + '/' + t) : ''; }
+        }
+
+        document.addEventListener('DOMContentLoaded', initAreaFilter);
 
         document.addEventListener('DOMContentLoaded', function() {
             var input = document.getElementById('searchInput');
@@ -957,6 +1053,7 @@ def build_index(all_areas, grouped):
         <h2 class="section-title">📍 选择区域</h2>
         <p class="section-subtitle">覆盖深圳{area_count}大核心商务区域，共 <strong style="color:var(--primary);">{total}</strong> 套房源任您挑选</p>
 {search_box_html()}
+{area_filter_html()}
         <div class="area-cards">
 {area_cards}
         </div>

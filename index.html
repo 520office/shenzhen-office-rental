@@ -2896,20 +2896,6 @@
     },
     {
         "@type": "Product",
-        "name": "会展新城地标写字楼",
-        "description": "会展新城 250-1500㎡ 办公室出租，豪华装修，68元/㎡/月",
-        "offers": {
-            "@type": "Offer",
-            "price": "68",
-            "priceCurrency": "CNY",
-            "areaServed": {
-                "@type": "City",
-                "name": "深圳"
-            }
-        }
-    },
-    {
-        "@type": "Product",
         "name": "芒果网大厦",
         "description": "南山中心区 166 办公室出租，精装修，47元/㎡/月",
         "offers": {
@@ -3391,20 +3377,6 @@
         "offers": {
             "@type": "Offer",
             "price": "56",
-            "priceCurrency": "CNY",
-            "areaServed": {
-                "@type": "City",
-                "name": "深圳"
-            }
-        }
-    },
-    {
-        "@type": "Product",
-        "name": "大冲商务中心",
-        "description": "大冲 168 办公室出租，豪华装修，58元/㎡/月",
-        "offers": {
-            "@type": "Offer",
-            "price": "58",
             "priceCurrency": "CNY",
             "areaServed": {
                 "@type": "City",
@@ -4819,6 +4791,30 @@
         .search-no-result.visible { display: block; }
         .highlight { background: #fef08a; border-radius: 2px; padding: 0 2px; }
 
+        /* ===== Area Filter Bar (Two-Level: District → Area) ===== */
+        .area-filter-bar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+        }
+        .filter-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+        .filter-row:last-child { margin-bottom: 0; }
+        .filter-label {
+            font-size: 14px; font-weight: 600; color: var(--text);
+            white-space: nowrap; line-height: 34px; padding-right: 4px;
+        }
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .filter-tag {
+            display: inline-block; padding: 6px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            background: #f1f5f9; border: 1.5px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; white-space: nowrap; line-height: 1.4;
+        }
+        .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+        .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
     </style>
 </head>
 <body>
@@ -4834,14 +4830,14 @@
     <!-- Hero -->
     <section class="hero">
         <h1>深圳<em>办公室出租</em></h1>
-        <p>南山科技园 · 前海 · 宝安 | 17大区域覆盖 | 精装修拎包入驻 | 多面积可选</p>
+        <p>南山科技园 · 前海 · 宝安 | 16大区域覆盖 | 精装修拎包入驻 | 多面积可选</p>
         <a href="tel:15914050727" class="hero-cta">📞 立即咨询 谢经理 15914050727</a>
     </section>
 
     <!-- Area Directory -->
     <section class="projects-section">
         <h2 class="section-title">📍 选择区域</h2>
-        <p class="section-subtitle">覆盖深圳17大核心商务区域，共 <strong style="color:var(--primary);">316</strong> 套房源任您挑选</p>
+        <p class="section-subtitle">覆盖深圳16大核心商务区域，共 <strong style="color:var(--primary);">314</strong> 套房源任您挑选</p>
     <!-- Search -->
     <div class="search-section">
         <div class="search-box-wrap">
@@ -4849,6 +4845,21 @@
             <input type="text" class="search-input" id="searchInput" placeholder="搜索项目名称、位置、面积..." autocomplete="off">
             <button class="search-clear" id="searchClear" onclick="clearSearch()" title="清除搜索">✕</button>
             <span class="search-count" id="searchCount"></span>
+        </div>
+    </div>
+    <!-- Two-Level Area Filter -->
+    <div class="area-filter-bar">
+        <div class="filter-row">
+            <span class="filter-label">区域：</span>
+            <div class="filter-tags" id="districtTags">
+                <button class="filter-tag active" data-district="all">全部</button>
+                <button class="filter-tag" data-district="baoan">宝安区</button>
+                <button class="filter-tag" data-district="nanshan">南山区</button>
+            </div>
+        </div>
+        <div class="filter-row">
+            <span class="filter-label">商圈：</span>
+            <div class="filter-tags" id="areaTags"></div>
         </div>
     </div>
         <div class="area-cards">
@@ -4929,13 +4940,6 @@
                     </div>
                     <div class="area-card-desc">沙井片区办公室出租，大空港辐射区，交通便利，发展潜力大。</div>
                 </a>
-                <a href="huizhan-xincheng.html" class="area-card">
-                    <div class="area-card-header">
-                        <span class="area-card-title">会展新城</span>
-                        <span class="badge-count">1套房源</span>
-                    </div>
-                    <div class="area-card-desc">会展新城片区办公室出租，紧邻深圳国际会展中心，配套完善，全新写字楼。</div>
-                </a>
                 <a href="nanshan-zhongxinqu.html" class="area-card">
                     <div class="area-card-header">
                         <span class="area-card-title">南山中心区</span>
@@ -4960,7 +4964,7 @@
                 <a href="dachong.html" class="area-card">
                     <div class="area-card-header">
                         <span class="area-card-title">大冲</span>
-                        <span class="badge-count">39套房源</span>
+                        <span class="badge-count">38套房源</span>
                     </div>
                     <div class="area-card-desc">大冲片区办公室出租，交通便利，多种面积可选，精装修拎包入驻。</div>
                 </a>
@@ -4982,7 +4986,7 @@
     <section class="projects-section" style="margin-top:0;">
         <div class="projects-grid">
 
-            <div class="project-card">
+            <div class="project-card" data-area="科技园">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/d4b9eee5fb4ff2d476bdb3b022c7bca0/800x600c.jpg" alt="深圳湾科技生态园" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">科技园</span>
@@ -5017,7 +5021,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="前海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/6c3b270caf02d460bace54f9b04b75e6/1600x1200.jpg" alt="前海嘉里中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">前海</span>
@@ -5052,7 +5056,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="宝安中心区">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/880c3870fc5435b36b309dfe9eace6f6/800x600c.jpg" alt="前海卓越宝中时代广场" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">宝安中心区</span>
@@ -5087,7 +5091,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="西乡">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/eed9f4515aa641d3da0023e6b420030e/800x600c.jpg" alt="金环宇G-LINK" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">西乡</span>
@@ -5122,7 +5126,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="翻身">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop" alt="翻身地铁口写字楼" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">翻身</span>
@@ -5157,7 +5161,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="新安">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/c98912d67a76f845c385532154962988/1600x1200.jpg" alt="雪花科创城" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">新安</span>
@@ -5192,7 +5196,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="坪洲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop" alt="坪洲地铁口商务楼" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">坪洲</span>
@@ -5227,7 +5231,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="碧海湾">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/7c75f38e437a0ba70ae6b14f5af4f2b8/1600x1200.jpg" alt="前海科兴科学园" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">碧海湾</span>
@@ -5262,7 +5266,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="固戍">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/8c339a51b52838f3463b53101322b80b/1600x1200.jpg" alt="森业创达大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">固戍</span>
@@ -5297,7 +5301,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="福永">
                 <div style="position:relative;">
                     <img class="card-image" src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop" alt="福永空港商务大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">福永</span>
@@ -5332,7 +5336,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="沙井">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/0fa9cd88a583c37fe63d385d4ad00e15/1600x1200.jpg" alt="卓越时代大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">沙井</span>
@@ -5367,42 +5371,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
-                <div style="position:relative;">
-                    <img class="card-image" src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop" alt="会展新城地标写字楼" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
-                    <span class="card-badge">会展新城</span>
-                </div>
-                <div class="card-body">
-                    <div class="card-title">会展新城地标写字楼</div>
-                    <div class="card-location">📍 深圳市宝安区会展新城</div>
-                    <div style="font-size:12px;color:#94a3b8;margin-top:-6px;margin-bottom:12px;">📅 更新于 2026/06/08</div>
-                    <div class="card-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">面积</span>
-                            <span class="meta-value">250-1500㎡</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">价格</span>
-                            <span class="meta-value price">68元/㎡/月</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">装修</span>
-                            <span class="meta-value" style="font-size:14px;color:#64748b;">豪华装修</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">楼层</span>
-                            <span class="meta-value" style="font-size:14px;color:#64748b;">高区全景</span>
-                        </div>
-                    </div>
-                    <div class="card-tags"><span class="card-tag">会展中心旁</span><span class="card-tag">地标建筑</span><span class="card-tag">形象好</span><span class="card-tag">配套顶级</span></div>
-                    <div class="card-footer">
-                        <span style="font-size:13px;color:#94a3b8;">☎️ 谢经理 15914050727</span>
-                        <a href="tel:15914050727" class="card-contact-btn">马上咨询</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="project-card">
+            <div class="project-card" data-area="南山中心区">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/00e5bab7a2c7f839af23e8ac42f9414a/1600x1200.jpg" alt="芒果网大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">南山中心区</span>
@@ -5437,7 +5406,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="后海">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/142cd5e6e18c82df73d7b6633a6a9990/1600x1200.jpg" alt="阿里中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">后海</span>
@@ -5472,7 +5441,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="塘尾">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/0e8f4421c830f65f4109e02c65d32b8c/1600x1200.jpg" alt="卓越共赢大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">塘尾</span>
@@ -5507,7 +5476,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="大冲">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/f1fc96768d33432e0f4789165490f23a/1600x1200.jpg" alt="大冲商务中心" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">大冲</span>
@@ -5542,7 +5511,7 @@
                 </div>
             </div>
 
-            <div class="project-card">
+            <div class="project-card" data-area="深圳湾">
                 <div style="position:relative;">
                     <img class="card-image" src="https://pic1.ajkimg.com/display/hj/f29b2e4e0d184af05668c413f18275e9/1600x1200.jpg" alt="喜之郎大厦" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder>🏢</div>'">
                     <span class="card-badge">深圳湾</span>
@@ -5585,8 +5554,8 @@
         <h2 class="section-title" style="margin-bottom:24px;">💼 服务优势</h2>
         <div class="info-grid">
             <div class="info-card">
-                <h3>🏢 17大区域覆盖</h3>
-                <p>南山科技园、前海、宝安中心、西乡、翻身、新安、坪洲、碧海湾等17大核心商务区域，全深圳核心商务区房源一网打尽。</p>
+                <h3>🏢 16大区域覆盖</h3>
+                <p>南山科技园、前海、宝安中心、西乡、翻身、新安、坪洲、碧海湾等16大核心商务区域，全深圳核心商务区房源一网打尽。</p>
             </div>
             <div class="info-card">
                 <h3>📐 面积灵活</h3>
@@ -5624,7 +5593,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-links">
-            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="huizhan-xincheng.html">会展新城办公室出租</a> | <a href="nanshan-zhongxinqu.html">南山中心区办公室出租</a> | <a href="houhai.html">后海办公室出租</a> | <a href="tangwei.html">塘尾办公室出租</a> | <a href="dachong.html">大冲办公室出租</a> | <a href="shenzhenwan.html">深圳湾办公室出租</a>
+            <a href="nanshan-kejiyuan.html">南山科技园办公室出租</a> | <a href="qianhai.html">前海办公室出租</a> | <a href="baoan-zhongxin.html">宝安中心办公室出租</a> | <a href="xixiang.html">西乡办公室出租</a> | <a href="fanshen.html">翻身办公室出租</a> | <a href="xinan.html">新安办公室出租</a> | <a href="pingzhou.html">坪洲办公室出租</a> | <a href="bihaiwan.html">碧海湾办公室出租</a> | <a href="gushu.html">固戍办公室出租</a> | <a href="fuyong.html">福永办公室出租</a> | <a href="shajing.html">沙井办公室出租</a> | <a href="nanshan-zhongxinqu.html">南山中心区办公室出租</a> | <a href="houhai.html">后海办公室出租</a> | <a href="tangwei.html">塘尾办公室出租</a> | <a href="dachong.html">大冲办公室出租</a> | <a href="shenzhenwan.html">深圳湾办公室出租</a>
         </div>
         <p>© 2026 深圳办公室出租 | 联系人：谢经理 | 电话：15914050727</p>
         <p style="margin-top:4px;font-size:12px;">
@@ -5635,6 +5604,59 @@
     <script>
         var _totalCards = 0;
         var _timer = null;
+
+        // ===== Area Filter (Two-Level: District → Area) =====
+        var DISTRICT_MAP = {
+            baoan: ['宝安中心区','西乡','翻身','新安','坪洲','碧海湾','固戍','福永','沙井','会展新城','塘尾'],
+            nanshan: ['南山科技园','前海','南山中心区','后海','大冲','深圳湾']
+        };
+        var _currentDistrict = 'all';
+        var _currentArea = 'all';
+
+        function initAreaFilter() {
+            document.querySelectorAll('#districtTags .filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#districtTags .filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentDistrict = this.dataset.district;
+                    renderAreaTags();
+                });
+            });
+            renderAreaTags();
+        }
+
+        function renderAreaTags() {
+            var container = document.getElementById('areaTags');
+            var areas = (_currentDistrict === 'all') ? Object.values(DISTRICT_MAP).flat().sort() : (DISTRICT_MAP[_currentDistrict] || []);
+            var html = '<button class="filter-tag' + (_currentArea==='all'?' active':'') + '" data-area="all">全部</button>';
+            areas.forEach(function(a) { html += '<button class="filter-tag' + (_currentArea===a?' active':'') + '" data-area="' + a + '">' + a + '</button>'; });
+            container.innerHTML = html;
+            container.querySelectorAll('.filter-tag').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    container.querySelectorAll('.filter-tag').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentArea = this.dataset.area;
+                    applyAreaFilter();
+                });
+            });
+            applyAreaFilter();
+        }
+
+        function applyAreaFilter() {
+            var cards = document.querySelectorAll('.project-card'), visibleCount = 0;
+            cards.forEach(function(card) {
+                if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
+                else {
+                    var a = card.getAttribute('data-area') || '';
+                    if (a.indexOf(_currentArea) !== -1 || _currentArea.indexOf(a) !== -1) { card.style.display = ''; visibleCount++; }
+                    else { card.style.display = 'none'; }
+                }
+            });
+            var el = document.getElementById('searchCount');
+            if (el) { var t = document.querySelectorAll('.project-card').length; el.textContent = (visibleCount < t) ? ('显示 ' + visibleCount + '/' + t) : ''; }
+        }
+
+        document.addEventListener('DOMContentLoaded', initAreaFilter);
 
         document.addEventListener('DOMContentLoaded', function() {
             var input = document.getElementById('searchInput');
