@@ -830,6 +830,10 @@ SHARED_CSS = r"""
         .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
         .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
 
+        /* 首页商圈链接（点击跳转独立页面） */
+        .area-link { text-decoration: none; color: inherit; cursor: pointer; }
+        .area-link:hover, .area-link.active { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+
         /* ===== District Buttons (Two-Level Nav for Sub-Pages) ===== */
         .district-btn {
             display: inline-block; padding: 6px 16px; border-radius: 6px;
@@ -856,8 +860,19 @@ def search_box_html():
 
 # ===== 区域筛选栏 HTML（两级联动：区域 → 商圈）=====
 def area_filter_html():
-    """生成两级区域筛选栏 HTML"""
-    return """    <!-- Two-Level Area Filter -->
+    """生成两级区域筛选栏 HTML（第二行商圈为链接，点击跳转独立页面）"""
+    # 构建区域名→slug映射，注入JS供链接使用（包含AREAS + PINYIN_SLUG覆盖）
+    slug_map = {}
+    for a in AREAS:
+        slug_map[a["name"]] = a["slug"]
+    # 补充PINYIN_SLUG中可能缺失的自动创建区域
+    for name, slug in PINYIN_SLUG.items():
+        if name not in slug_map:
+            slug_map[name] = slug
+    # 补充自动创建的区域（从PINYIN_SLUG中提取已有slug）
+    import json
+    slug_json = json.dumps(slug_map, ensure_ascii=False)
+    return f"""    <!-- Two-Level Area Filter -->
     <div class="area-filter-bar">
         <div class="filter-row">
             <span class="filter-label">区域：</span>
@@ -871,7 +886,8 @@ def area_filter_html():
             <span class="filter-label">商圈：</span>
             <div class="filter-tags" id="areaTags"></div>
         </div>
-    </div>"""
+    </div>
+    <script>var AREA_SLUG_MAP = {slug_json};</script>"""
 
 
 # ===== 子页面两级导航 JavaScript =====
@@ -962,15 +978,32 @@ SEARCH_JS = r"""
         function renderAreaTags() {
             var container = document.getElementById('areaTags');
             var areas = (_currentDistrict === 'all') ? Object.values(DISTRICT_MAP).flat().sort() : (DISTRICT_MAP[_currentDistrict] || []);
+            // "全部"是按钮（筛选区域目录卡片），具体商圈是链接（跳转独立页面）
             var html = '<button class="filter-tag' + (_currentArea==='all'?' active':'') + '" data-area="all">全部</button>';
-            areas.forEach(function(a) { html += '<button class="filter-tag' + (_currentArea===a?' active':'') + '" data-area="' + a + '">' + a + '</button>'; });
+            areas.forEach(function(a) {
+                var slug = (AREA_SLUG_MAP && AREA_SLUG_MAP[a]) || a;
+                html += '<a href="' + slug + '.html" class="filter-tag area-link">' + a + '</a>';
+            });
             container.innerHTML = html;
-            container.querySelectorAll('.filter-tag').forEach(function(btn) {
-                btn.addEventListener('click', function() {
+            // 只给"全部"按钮绑定筛选事件
+            var allBtn = container.querySelector('[data-area="all"]');
+            if (allBtn) {
+                allBtn.addEventListener('click', function() {
                     container.querySelectorAll('.filter-tag').forEach(function(b) { b.classList.remove('active'); });
                     this.classList.add('active');
-                    _currentArea = this.dataset.area;
+                    _currentArea = 'all';
                     applyAreaFilter();
+                });
+            }
+            // 商圈链接点击时高亮但不阻止跳转
+            container.querySelectorAll('.area-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    container.querySelectorAll('.filter-tag, .area-link').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentArea = this.textContent.trim();
+                    // 点击商圈链接后，隐藏区域目录（用户即将离开首页）
+                    var section = document.getElementById('areaDirectory');
+                    if (section) { section.style.display = 'none'; }
                 });
             });
             applyAreaFilter();
@@ -981,17 +1014,22 @@ SEARCH_JS = r"""
             // 子页面：筛选房源卡片（.project-card）
             var isIndex = !!document.querySelector('.area-cards');
             var selector = isIndex ? '.area-card' : '.project-card';
+            // 首页选择具体商圈时，隐藏整个区域目录（用户即将跳转独立页面）
+            if (isIndex && _currentArea !== 'all') {
+                var section = document.getElementById('areaDirectory');
+                if (section) { section.style.display = 'none'; }
+                return;
+            } else if (isIndex) {
+                var section = document.getElementById('areaDirectory');
+                if (section) { section.style.display = ''; }
+            }
             var cards = document.querySelectorAll(selector), visibleCount = 0;
             cards.forEach(function(card) {
-                if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
-                else {
-                    var a = card.getAttribute('data-area') || '';
-                    if (a.indexOf(_currentArea) !== -1 || _currentArea.indexOf(a) !== -1) { card.style.display = ''; visibleCount++; }
-                    else { card.style.display = 'none'; }
-                }
+                card.style.display = '';
+                visibleCount++;
             });
             var el = document.getElementById('searchCount');
-            if (el) { var t = document.querySelectorAll(selector).length; el.textContent = (_currentArea !== 'all') ? ('显示 ' + visibleCount + '/' + t + ' 个区域') : ''; }
+            if (el) el.textContent = '';
         }
 
         document.addEventListener('DOMContentLoaded', initAreaFilter);
@@ -1184,7 +1222,7 @@ def build_index(all_areas, grouped):
     </section>
 
     <!-- Area Directory -->
-    <section class="projects-section">
+    <section class="projects-section" id="areaDirectory">
         <h2 class="section-title">📍 选择区域</h2>
         <p class="section-subtitle">覆盖深圳{area_count}大核心商务区域，共 <strong style="color:var(--primary);">{total}</strong> 套房源任您挑选</p>
 {search_box_html()}

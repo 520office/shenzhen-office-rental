@@ -4815,6 +4815,10 @@
         .filter-tag:hover { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
         .filter-tag.active { color: #fff; background: var(--primary); border-color: var(--primary); }
 
+        /* 首页商圈链接（点击跳转独立页面） */
+        .area-link { text-decoration: none; color: inherit; cursor: pointer; }
+        .area-link:hover, .area-link.active { color: var(--primary); background: #eef2ff; border-color: #c7d2fe; }
+
         /* ===== District Buttons (Two-Level Nav for Sub-Pages) ===== */
         .district-btn {
             display: inline-block; padding: 6px 16px; border-radius: 6px;
@@ -4845,7 +4849,7 @@
     </section>
 
     <!-- Area Directory -->
-    <section class="projects-section">
+    <section class="projects-section" id="areaDirectory">
         <h2 class="section-title">📍 选择区域</h2>
         <p class="section-subtitle">覆盖深圳16大核心商务区域，共 <strong style="color:var(--primary);">314</strong> 套房源任您挑选</p>
     <!-- Search -->
@@ -4872,6 +4876,7 @@
             <div class="filter-tags" id="areaTags"></div>
         </div>
     </div>
+    <script>var AREA_SLUG_MAP = {"南山科技园": "nanshan-kejiyuan", "前海": "qianhai", "宝安中心": "baoan-zhongxin", "西乡": "xixiang", "翻身": "fanshen", "新安": "xinan", "兴东": "xingdong", "坪洲": "pingzhou", "碧海湾": "bihaiwan", "固戍": "gushu", "福永": "fuyong", "沙井": "shajing", "会展新城": "huizhan-xincheng", "科技园": "nanshan-kejiyuan", "宝安中心区": "baoan-zhongxin", "塘尾": "tangwei", "南山中心区": "nanshan-zhongxinqu", "后海": "houhai", "龙华": "longhua", "龙岗": "longgang", "光明": "guangming", "罗湖": "luohu", "福田": "futian", "盐田": "yantian", "坪山": "pingshan", "大鹏": "dapeng", "布吉": "buji", "坂田": "bantian", "横岗": "henggang", "观澜": "guanlan", "民治": "minzhi", "平湖": "pinghu", "南头": "nantou", "蛇口": "shekou", "大冲": "dachong", "白石洲": "baishizhou", "深圳湾": "shenzhenwan", "西丽": "xili", "笋岗": "sungang", "石岩": "shiyan", "松岗": "songgang", "燕罗": "yanluo", "公明": "gongming", "葵涌": "kuichong", "南澳": "nanao", "南山": "nanshan-qu", "蔡屋围": "caiwuwei", "车公庙": "chegongmiao", "华强北": "huaqiangbei", "香蜜湖": "xiangmihu", "梅林": "meilin", "上梅林": "shangmeilin", "皇岗": "huanggang", "保税区": "baoshuiqu"};</script>
         <div class="area-cards">
                 <a href="nanshan-kejiyuan.html" class="area-card" data-area="南山科技园">
                     <div class="area-card-header">
@@ -5638,15 +5643,32 @@
         function renderAreaTags() {
             var container = document.getElementById('areaTags');
             var areas = (_currentDistrict === 'all') ? Object.values(DISTRICT_MAP).flat().sort() : (DISTRICT_MAP[_currentDistrict] || []);
+            // "全部"是按钮（筛选区域目录卡片），具体商圈是链接（跳转独立页面）
             var html = '<button class="filter-tag' + (_currentArea==='all'?' active':'') + '" data-area="all">全部</button>';
-            areas.forEach(function(a) { html += '<button class="filter-tag' + (_currentArea===a?' active':'') + '" data-area="' + a + '">' + a + '</button>'; });
+            areas.forEach(function(a) {
+                var slug = (AREA_SLUG_MAP && AREA_SLUG_MAP[a]) || a;
+                html += '<a href="' + slug + '.html" class="filter-tag area-link">' + a + '</a>';
+            });
             container.innerHTML = html;
-            container.querySelectorAll('.filter-tag').forEach(function(btn) {
-                btn.addEventListener('click', function() {
+            // 只给"全部"按钮绑定筛选事件
+            var allBtn = container.querySelector('[data-area="all"]');
+            if (allBtn) {
+                allBtn.addEventListener('click', function() {
                     container.querySelectorAll('.filter-tag').forEach(function(b) { b.classList.remove('active'); });
                     this.classList.add('active');
-                    _currentArea = this.dataset.area;
+                    _currentArea = 'all';
                     applyAreaFilter();
+                });
+            }
+            // 商圈链接点击时高亮但不阻止跳转
+            container.querySelectorAll('.area-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    container.querySelectorAll('.filter-tag, .area-link').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    _currentArea = this.textContent.trim();
+                    // 点击商圈链接后，隐藏区域目录（用户即将离开首页）
+                    var section = document.getElementById('areaDirectory');
+                    if (section) { section.style.display = 'none'; }
                 });
             });
             applyAreaFilter();
@@ -5657,17 +5679,22 @@
             // 子页面：筛选房源卡片（.project-card）
             var isIndex = !!document.querySelector('.area-cards');
             var selector = isIndex ? '.area-card' : '.project-card';
+            // 首页选择具体商圈时，隐藏整个区域目录（用户即将跳转独立页面）
+            if (isIndex && _currentArea !== 'all') {
+                var section = document.getElementById('areaDirectory');
+                if (section) { section.style.display = 'none'; }
+                return;
+            } else if (isIndex) {
+                var section = document.getElementById('areaDirectory');
+                if (section) { section.style.display = ''; }
+            }
             var cards = document.querySelectorAll(selector), visibleCount = 0;
             cards.forEach(function(card) {
-                if (_currentArea === 'all') { card.style.display = ''; visibleCount++; }
-                else {
-                    var a = card.getAttribute('data-area') || '';
-                    if (a.indexOf(_currentArea) !== -1 || _currentArea.indexOf(a) !== -1) { card.style.display = ''; visibleCount++; }
-                    else { card.style.display = 'none'; }
-                }
+                card.style.display = '';
+                visibleCount++;
             });
             var el = document.getElementById('searchCount');
-            if (el) { var t = document.querySelectorAll(selector).length; el.textContent = (_currentArea !== 'all') ? ('显示 ' + visibleCount + '/' + t + ' 个区域') : ''; }
+            if (el) el.textContent = '';
         }
 
         document.addEventListener('DOMContentLoaded', initAreaFilter);
