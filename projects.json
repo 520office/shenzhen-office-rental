@@ -5788,5 +5788,671 @@
     "image": "https://pic1.ajkimg.com/display/hj/b772fa949be45467d9371e04b56b9d3e/1600x1200.jpg",
     "date": "2026-06-16",
     "id": 279
+  },
+  {
+    "name": "喜之郎大厦",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 中心路3033号",
+    "size": "200",
+    "price": "100元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共36层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "24个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/f29b2e4e0d184af05668c413f18275e9/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 280
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "200",
+    "price": "100元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共42层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/cebf9fefcefdc251a75dd94dc4753601/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 281
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "150",
+    "price": "75元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共37层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/d63e05e0ad8bad6938067963c303346d/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 282
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "150",
+    "price": "90元/㎡/月",
+    "decoration": "精装修",
+    "floor": "低区/共38层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "24个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/8c2357a86c69b8c0c091e7a791746b97/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 283
+  },
+  {
+    "name": "喜之郎大厦",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 中心路3033号",
+    "size": "200",
+    "price": "100元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共36层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/a87827155afabf40fc65164fd29e5398/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 284
+  },
+  {
+    "name": "SIC超级总部中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 白石三道",
+    "size": "500",
+    "price": "90元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "独栋/共72层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积300m²",
+      "押2付1",
+      "36个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/b5773554567aa8f2df3479795faaf751/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 285
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "491",
+    "price": "70元/㎡/月",
+    "decoration": "精装修",
+    "floor": "低区/共48层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/dbdb9198e274808fc1869680d27865e5/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 286
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "300",
+    "price": "99元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/41a669c50b8ef86a9151642fc096f219/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 287
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "300",
+    "price": "60元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/943606cb3e6d7734452a00d125a08187/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 288
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "430",
+    "price": "90元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共48层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/fda2b41d6b87a36f852ab14a0df5a5af/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 289
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "680",
+    "price": "90元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积300m²",
+      "押1付2",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/c64243dfe4a2e47d48076efe6f8cc8f7/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 290
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "100",
+    "price": "78元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共45层",
+    "features": [
+      "暂无数据",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/f61ca355e3f3f84998fafd68c9202deb/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 291
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "300",
+    "price": "65元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共39层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/691eeaacd2fe18282d2c50db5bd02c5a/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 292
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "320",
+    "price": "68元/㎡/月",
+    "decoration": "精装修",
+    "floor": "低区/共38层",
+    "features": [
+      "不可注册",
+      "可分割，最小分割面积150m²",
+      "押2付1",
+      "24个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/3f4f7f16eec810b250530b1aa456e30c/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 293
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "3000",
+    "price": "60元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共63层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/acb9d0b6db32391fd3d9d3338c416f6b/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 294
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "280",
+    "price": "68元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共33层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200.0m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/1ecf365972c4e288ed10ef27861dc462/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 295
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "200",
+    "price": "68元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共47层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积150.0m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/2776ef3f69b9080483b035f42d2cfbee/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 296
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "568",
+    "price": "80元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共50层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/fdce9a0c18bcb1280e15692acff0eb15/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 297
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "200",
+    "price": "77元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共50层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期9个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/d61cfbddbd994207fa6c624cb637a27f/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 298
+  },
+  {
+    "name": "喜之郎大厦",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 中心路3033号",
+    "size": "200",
+    "price": "100元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共36层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/1b470e6ce182861e5b19bdb39d45a622/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 299
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "300",
+    "price": "120元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "独栋/共46层",
+    "features": [
+      "暂无数据",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期2个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/ba913a3277cd637b64e382009ad47e16/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 300
+  },
+  {
+    "name": "喜之郎大厦",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 中心路3033号",
+    "size": "300",
+    "price": "75元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "独栋/共48层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200m²",
+      "押2付1",
+      "36个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/f7a4adab98e76cb33edf655758e34d4d/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 301
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "500",
+    "price": "65元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共45层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "36个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/4632514cba35bf70664488d5efceecea/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 302
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "150",
+    "price": "159元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共40层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/f61ca355e3f3f84998fafd68c9202deb/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 303
+  },
+  {
+    "name": "喜之郎大厦",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 中心路3033号",
+    "size": "500",
+    "price": "100元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共65层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/174b8a7aa8cf4705a29665c61134df59/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 304
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "400",
+    "price": "60元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共30层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "24个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/267d5acc7cb0318704812628da6b58a7/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 305
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "1000",
+    "price": "80元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共50层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期12个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/db609cf932028d74b2e2e8af8e8cc86b/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 306
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "200",
+    "price": "60元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共51层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "24个月起租/免租期4个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/cf01821b1cc4bc7fa56b076e2fa3bef0/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 307
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "500",
+    "price": "80元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共60层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "36个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/d8fccc06bb3905822533d1c54c71d743/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 308
+  },
+  {
+    "name": "SIC超级总部中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 白石三道",
+    "size": "1500",
+    "price": "75元/㎡/月",
+    "decoration": "精装修",
+    "floor": "高区/共45层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积500m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/4dc98bc53ac028acbc73e7cd881cdb15/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 309
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "300",
+    "price": "75元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共45层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积150m²",
+      "押2付1",
+      "12个月起租/免租期1个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/2db90aecfad2ec9b06e2ccef446aee3a/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 310
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "573.38",
+    "price": "63元/㎡/月",
+    "decoration": "精装修",
+    "floor": "中区/共45层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积300m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/2c0b2ff3b40aa66ba5eff0c2573411b2/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 311
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "300",
+    "price": "63元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共42层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积100m²",
+      "押2付1",
+      "12个月起租/免租期6个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/0c68f2fbb31bbbddce32871735742643/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 312
+  },
+  {
+    "name": "航天科技广场",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 海德三道(深圳湾段)168号",
+    "size": "290",
+    "price": "70元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "低区/共60层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积203.70m²",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/e9312bc5c020b844b1541c0b9af32531/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 313
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "800",
+    "price": "60元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共48层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积200m²",
+      "押2付1",
+      "12个月起租/免租期8个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/8df878e03bbb4705822e8c0d26595518/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 314
+  },
+  {
+    "name": "喜之郎大厦",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 中心路3033号",
+    "size": "500",
+    "price": "100元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "高区/共65层",
+    "features": [
+      "可注册",
+      "不可分割",
+      "押2付1",
+      "12个月起租/免租期3个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/174b8a7aa8cf4705a29665c61134df59/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 315
+  },
+  {
+    "name": "联想后海中心",
+    "area": "深圳湾",
+    "location": "深圳市南山-深圳湾 后海滨路",
+    "size": "2000",
+    "price": "80元/㎡/月",
+    "decoration": "豪华装修",
+    "floor": "中区/共60层",
+    "features": [
+      "可注册",
+      "可分割，最小分割面积300m²",
+      "押1付1",
+      "12个月起租/免租期12个月"
+    ],
+    "image": "https://pic1.ajkimg.com/display/hj/4a1870c025c3b943ae6730d7021ce759/1600x1200.jpg",
+    "date": "2026-06-16",
+    "id": 316
   }
 ]

@@ -34,7 +34,7 @@ PINYIN_SLUG = {
     "坪山": "pingshan", "大鹏": "dapeng", "布吉": "buji",
     "坂田": "bantian", "横岗": "henggang", "观澜": "guanlan",
     "民治": "minzhi", "平湖": "pinghu", "南头": "nantou",
-    "蛇口": "shekou", "后海": "houhai", "大冲": "dachong", "白石洲": "baishizhou",
+    "蛇口": "shekou", "后海": "houhai", "大冲": "dachong", "白石洲": "baishizhou", "深圳湾": "shenzhenwan",
     "西丽": "xili", "笋岗": "sungang", "石岩": "shiyan",
     "松岗": "songgang", "燕罗": "yanluo", "公明": "gongming",
     "葵涌": "kuichong", "南澳": "nanao", "南山": "nanshan-qu",
